@@ -91,6 +91,10 @@
             </div>
 
             <div class="space-y-1 bg-slate-950/20 p-1.5 rounded-xl border border-slate-800/40">
+                <a href="{{ route('admin.pengaturan-logo.index') }}" 
+                    class="flex items-center gap-3 px-2 py-2 text-xs font-semibold rounded-lg transition-colors {{ request()->routeIs('admin.pengaturan-logo.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800 hover:text-slate-100' }}">
+                    <span>🖼️</span> Pengaturan Logo & Cap
+                </a>
                 <a href="{{ route('admin.tentang.index') }}" 
                    class="flex items-center gap-3 px-2 py-2 text-xs font-semibold rounded-lg transition-colors {{ request()->routeIs('admin.tentang.*') ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800 hover:text-slate-100' }}">
                     <span>🏫</span> Tentang Sekolah

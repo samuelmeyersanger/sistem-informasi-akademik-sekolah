@@ -22,6 +22,7 @@ use App\Http\Controllers\Admin\PageController as AdminPageController;
 use App\Http\Controllers\Admin\KontakController;
 use App\Http\Controllers\Admin\SettingKontakController;
 use App\Http\Controllers\Admin\FooterLinkController;
+use App\Http\Controllers\Admin\PengaturanLogoController;
 
 
 /*
@@ -108,6 +109,9 @@ Route::get('/dashboard', function () {
         Route::get('tentang', [TentangController::class, 'index'])->name('tentang.index');
         Route::post('tentang', [TentangController::class, 'storeOrUpdate'])->name('tentang.save');
         Route::post('tentang/reset', [TentangController::class, 'destroy'])->name('tentang.reset');
+
+        //Pengaaturan Logo
+        
         
         // Profil Identitas Sekolah (Menghilangkan kata 'admin/' di depan URL)
         Route::get('profil-sekolah', [ProfilSekolahController::class, 'index'])->name('profil-sekolah.index');
@@ -152,6 +156,8 @@ Route::get('/dashboard', function () {
         Route::post('setting-kontak', [SettingKontakController::class, 'storeOrUpdate'])->name('setting-kontak.save');
         // Footer Link
         Route::resource('footer-link', FooterLinkController::class)->except(['create', 'show', 'edit'])->names('footer-link');
+        Route::get('pengaturan-logo', [PengaturanLogoController::class, 'index'])->name('pengaturan-logo.index');
+        Route::post('pengaturan-logo', [PengaturanLogoController::class, 'storeOrUpdate'])->name('pengaturan-logo.save');
     });
 });
 
