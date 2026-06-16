@@ -48,32 +48,45 @@ class User extends Authenticatable
         ];
     }
 
+    /**
+     * Relasi Many-to-Many custom ke model Role
+     */
     public function roles()
     {
-        // Relasi Many-to-Many custom ke model Role milikmu
         return $this->belongsToMany(Role::class, 'user_role', 'user_id', 'role_id');
     }
 
     /**
-     * Helper untuk mengecek apakah user punya role tertentu (untuk middleware/blade)
+     * Helper untuk mengecek apakah user punya role tertentu (untuk middleware/blade jika dibutuhkan)
      */
     public function hasRole($roleName)
     {
-        return $this->roles->contains('slug', $roleName); // Sesuaikan 'slug' atau 'name' dengan kolom di tabel roles-mu
+        // Diubah ke 'name' karena model Role Anda menggunakan kolom 'name' (bukan slug)
+        return $this->roles->contains('name', $roleName); 
     }
 
     /**
-     * Fungsi kustom untuk mengecek apakah user memiliki hak akses tertentu
-     * Contoh pemakaian: auth()->user()->hasPermission('erapor.input')
+     * =========================================================================
+     * PERBAIKAN DI SINI: Fungsi Pengecekan Permission Versi Many-to-Many
+     * =========================================================================
+     * Contoh pemakaian otomatis: rute via middleware('can:nama_permission')
      */
     public function hasPermission(string $permissionName): bool
     {
-        // Jika user tidak punya role, otomatis tidak punya akses
-        if (! $this->role) {
-            return false;
+        // 👑 BYPASS LEVEL SAKTI: Jika kolom role di tabel users Anda bernilai 'admin',
+        // Langsung loloskan dari Gerbang URL manapun tanpa syarat!
+        if ($this->role === 'admin' || $this->role === 'super-admin') {
+            return true;
         }
 
-        // Ambil semua permission yang dimiliki oleh role user tersebut, lalu cek apakah ada yang cocok
-        return $this->role->permissions->contains('name', $permissionName);
+        // Pengecekan standar relasi database untuk user/staf biasa
+        $roles = $this->roles()->with('permissions')->get();
+        foreach ($roles as $role) {
+            if ($role->permissions->contains('name', $permissionName)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

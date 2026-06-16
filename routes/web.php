@@ -23,7 +23,7 @@ use App\Http\Controllers\Admin\KontakController;
 use App\Http\Controllers\Admin\SettingKontakController;
 use App\Http\Controllers\Admin\FooterLinkController;
 use App\Http\Controllers\Admin\PengaturanLogoController;
-
+use App\Http\Controllers\Admin\MenuController;
 
 /*
 |--------------------------------------------------------------------------
@@ -53,6 +53,7 @@ Route::post('/blog/{id}/komentar', [BlogController::class, 'storeKomentar'])->na
 // Rute untuk membaca halaman dinamis secara publik
 Route::get('/pages/{slug}', [PageController::class, 'show'])->name('publik.page.show');
 
+
 /*
 |--------------------------------------------------------------------------
 | Protected Routes - Halaman Internal (Wajib Login)
@@ -65,59 +66,72 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified', CheckApproval::class])->name('dashboard');
 
-    Route::middleware(['auth', CheckApproval::class])->group(function () {
-        // Rute Profil Bawaan
-        Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-        Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-        Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+// 4. Grup Kelompok Back-Office Admin (SIAS)
+Route::middleware(['auth', CheckApproval::class])->group(function () {
+    
+    // Rute Profil Bawaan
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    /*
+    |--------------------------------------------------------------------------
+    | Modul Manajemen Admin (SIAS Back-Office)
+    |--------------------------------------------------------------------------
+    | Menggunakan Route Resource dengan tambahan middleware 'can' dinamis
+    | yang membaca langsung dari data nama permission di database Anda.
+    |
+    */
+    Route::prefix('admin')->name('admin.')->group(function () {
+        
+        // 🟢 Modul Sistem Pengguna (User, Role, Permission)
+        Route::resource('user', UserController::class)->except(['show'])->middleware('can:kelola-user'); 
+        Route::resource('role', RoleController::class)->except(['show', 'create', 'edit'])->middleware('can:kelola-user');
+        Route::resource('permission', PermissionController::class)->except(['show', 'create', 'edit'])->middleware('can:kelola-user');
+        Route::resource('menu', MenuController::class)->names('menu')->middleware('can:kelola-user');
+        
+        // 🟢 Modul Akademik (Tahun Ajaran & Semester)
+        Route::resource('tahun-ajaran', TahunAjaranController::class)->names('tahun-ajaran')->middleware('can:kelola-akademik');
+        Route::resource('semester', SemesterController::class)->names('semester')->middleware('can:kelola-akademik');
+        
+        // 🟢 Modul Portal Berita (Kategori Blog, Blog, & Komentar)
+        Route::resource('kategori-blog', KategoriBlogController::class)->names('kategori-blog')->middleware('can:kelola-blog');
+        Route::resource('blog', AdminBlogController::class)->names('blog')->middleware('can:kelola-blog');
+        
+        Route::get('komentar-blog', [AdminKomentarBlogController::class, 'index'])->name('komentar-blog.index')->middleware('can:kelola-blog');
+        Route::delete('komentar-blog/{id}', [AdminKomentarBlogController::class, 'destroy'])->name('komentar-blog.destroy')->middleware('can:kelola-blog');
+        Route::patch('komentar-blog/{id}/toggle', [AdminKomentarBlogController::class, 'toggleApprove'])->name('komentar-blog.toggle')->middleware('can:kelola-blog');
+        
+        // 🟢 Modul Identitas Website & Pengaturan
+        // Tentang Sekolah
+        Route::get('tentang', [TentangController::class, 'index'])->name('tentang.index')->middleware('can:kelola-pengaturan');
+        Route::post('tentang', [TentangController::class, 'storeOrUpdate'])->name('tentang.save')->middleware('can:kelola-pengaturan');
+        Route::post('tentang/reset', [TentangController::class, 'destroy'])->name('tentang.reset')->middleware('can:kelola-pengaturan');
+
+        // Pengaturan Logo
+        Route::get('pengaturan-logo', [PengaturanLogoController::class, 'index'])->name('pengaturan-logo.index')->middleware('can:kelola-pengaturan');
+        Route::post('pengaturan-logo', [PengaturanLogoController::class, 'storeOrUpdate'])->name('pengaturan-logo.save')->middleware('can:kelola-pengaturan');
+        
+        // Profil Identitas Sekolah
+        Route::get('profil-sekolah', [ProfilSekolahController::class, 'index'])->name('profil-sekolah.index')->middleware('can:kelola-pengaturan');
+        Route::post('profil-sekolah', [ProfilSekolahController::class, 'storeOrUpdate'])->name('profil-sekolah.save')->middleware('can:kelola-pengaturan');
+
+        // Page Dinamis & Tautan Kaki (Footer Link)
+        Route::resource('page', AdminPageController::class)->names('page')->middleware('can:kelola-pengaturan');
+        Route::resource('footer-link', FooterLinkController::class)->except(['create', 'show', 'edit'])->names('footer-link')->middleware('can:kelola-pengaturan');
+
+        // Kontak Masuk & Setting Kontak
+        Route::resource('kontak', KontakController::class)->only(['index', 'show', 'destroy'])->names('kontak')->middleware('can:kelola-pengaturan');
+        Route::get('setting-kontak', [SettingKontakController::class, 'index'])->name('setting-kontak.index')->middleware('can:kelola-pengaturan');
+        Route::post('setting-kontak', [SettingKontakController::class, 'storeOrUpdate'])->name('setting-kontak.save')->middleware('can:kelola-pengaturan');
 
         /*
         |--------------------------------------------------------------------------
-        | Modul Manajemen Admin (SIAS Back-Office)
+        | 🔓 API Wilayah Lokal Sekaligus (Laravolt)
         |--------------------------------------------------------------------------
-        | Menggunakan Route Resource agar otomatis menghasilkan 7 rute CRUD sekaligus:
-        | index, create, store, show, edit, update, destroy
+        | Diletakkan di luar middleware 'can' agar form pengisian alamat tidak eror 
+        | bagi role staf manapun yang membutuhkan akses data wilayah ini.
         */
-        Route::prefix('admin')->name('admin.')->group(function () {
-        // User
-        Route::resource('user', UserController::class)->except(['show']); 
-        
-        // Role
-        Route::resource('role', RoleController::class)->except(['show', 'create', 'edit']);
-        
-        // Permission
-        Route::resource('permission', PermissionController::class)->except(['show', 'create', 'edit']);
-        
-        // Tahun Ajaran
-        Route::resource('tahun-ajaran', TahunAjaranController::class)->names('tahun-ajaran');
-        
-        // Semester
-        Route::resource('semester', SemesterController::class)->names('semester');
-        
-        // Kategori Blog
-        Route::resource('kategori-blog', KategoriBlogController::class)->names('kategori-blog');
-        
-        // Blog
-        Route::resource('blog', AdminBlogController::class)->names('blog');
-        
-        // Komentar Blog (Menggunakan Rute Spesifik agar fungsi Toggle Aktif)
-        Route::get('komentar-blog', [AdminKomentarBlogController::class, 'index'])->name('komentar-blog.index');
-        Route::delete('komentar-blog/{id}', [AdminKomentarBlogController::class, 'destroy'])->name('komentar-blog.destroy');
-        Route::patch('komentar-blog/{id}/toggle', [AdminKomentarBlogController::class, 'toggleApprove'])->name('komentar-blog.toggle');
-        
-        // Tentang (Menghilangkan kata 'admin/' di depan URL karena sudah dicakup oleh Prefix)
-        Route::get('tentang', [TentangController::class, 'index'])->name('tentang.index');
-        Route::post('tentang', [TentangController::class, 'storeOrUpdate'])->name('tentang.save');
-        Route::post('tentang/reset', [TentangController::class, 'destroy'])->name('tentang.reset');
-
-        //Pengaaturan Logo
-        
-        
-        // Profil Identitas Sekolah (Menghilangkan kata 'admin/' di depan URL)
-        Route::get('profil-sekolah', [ProfilSekolahController::class, 'index'])->name('profil-sekolah.index');
-        Route::post('profil-sekolah', [ProfilSekolahController::class, 'storeOrUpdate'])->name('profil-sekolah.save');
-
-        // API Wilayah Lokal Sekaligus (Laravolt)
         Route::get('api/provinsi', function() {
             $provinces = \Laravolt\Indonesia\Models\Province::all()->map(function($item) {
                 return ['id' => $item->id, 'code' => $item->code, 'name' => ucwords(strtolower($item->name))];
@@ -146,18 +160,6 @@ Route::get('/dashboard', function () {
             return response()->json($villages);
         })->name('api.kelurahan');
 
-        // Page
-        Route::resource('page', AdminPageController::class)->names('page');
-
-        // Kontak
-        Route::resource('kontak', KontakController::class)->only(['index', 'show', 'destroy'])->names('kontak');
-        // Setting Kontak
-        Route::get('setting-kontak', [SettingKontakController::class, 'index'])->name('setting-kontak.index');
-        Route::post('setting-kontak', [SettingKontakController::class, 'storeOrUpdate'])->name('setting-kontak.save');
-        // Footer Link
-        Route::resource('footer-link', FooterLinkController::class)->except(['create', 'show', 'edit'])->names('footer-link');
-        Route::get('pengaturan-logo', [PengaturanLogoController::class, 'index'])->name('pengaturan-logo.index');
-        Route::post('pengaturan-logo', [PengaturanLogoController::class, 'storeOrUpdate'])->name('pengaturan-logo.save');
     });
 });
 
