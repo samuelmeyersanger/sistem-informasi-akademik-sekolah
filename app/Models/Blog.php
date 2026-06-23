@@ -6,9 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use App\Models\User;
 use App\Models\KategoriBlog;
+use App\Traits\Loggable;
 
 class Blog extends Model
 {
+    use Loggable;
+    
     /**
      * Nama tabel yang terikat dengan model ini.
      * Wajib didefinisikan agar Laravel tidak mencari tabel bernama 'blogs'.

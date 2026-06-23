@@ -14,7 +14,8 @@
 
     <nav class="bg-white shadow-sm sticky top-0 z-50 border-b border-gray-100">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-20 items-center"> <div class="flex items-center gap-3">
+            <div class="flex justify-between h-20 items-center"> 
+                <div class="flex items-center gap-3">
                     <img src="{{ !empty($logoSetting->logo_sekolah) ? asset('storage/' . $logoSetting->logo_sekolah) : asset('images/default-logo.png') }}" 
                          class="w-12 h-12 object-contain" alt="Logo">
                     <div>
@@ -33,6 +34,8 @@
                             {{ $pge->title }}
                         </a>
                     @endforeach
+
+                    <a href="#hubungi-kami" class="text-sm font-medium text-gray-600 hover:text-indigo-600 border-b-2 border-transparent hover:border-indigo-600 h-full flex items-center px-1 transition-all">Kontak</a>
 
                     @if (Route::has('login'))
                         <div class="flex items-center space-x-6 pl-4 border-l border-gray-200 h-8">
@@ -102,9 +105,8 @@
         </div>
     </header>
 
-    <main class="flex-grow py-20 bg-white">
+    <main class="flex-grow py-20 bg-white space-y-24">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            
             <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
                 <div>
                     <h2 class="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">
@@ -156,7 +158,120 @@
                     </div>
                 @endforelse
             </div>
+        </div>
 
+        <div id="hubungi-kami" class="bg-slate-50 py-16 border-t border-b border-gray-100">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-start"
+                     x-data="{
+                        loading: false,
+                        successMessage: '',
+                        errorMessage: '',
+                        errors: {},
+                        
+                        async submitForm(e) {
+                            this.loading = true;
+                            this.successMessage = '';
+                            this.errorMessage = '';
+                            this.errors = {};
+
+                            let formData = new FormData(e.target);
+
+                            try {
+                                let response = await fetch('{{ route('publik.kontak.store') }}', {
+                                    method: 'POST',
+                                    body: formData,
+                                    headers: {
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                        'Accept': 'application/json'
+                                    }
+                                });
+
+                                let result = await response.json();
+
+                                if (response.ok) {
+                                    this.successMessage = result.message;
+                                    e.target.reset();
+                                } else {
+                                    if(result.errors) {
+                                        this.errors = result.errors;
+                                    }
+                                    this.errorMessage = result.message || 'Gagal mengirim pesan. Sila periksa kembali kolom isian Anda.';
+                                }
+                            } catch (error) {
+                                this.errorMessage = 'Terjadi gangguan jaringan, silakan coba sesaat lagi.';
+                            } finally {
+                                this.loading = false;
+                            }
+                        }
+                     }">
+                    
+                    <div class="md:col-span-5 space-y-4">
+                        <h3 class="text-2xl font-extrabold text-gray-900 tracking-tight">Hubungi Kami</h3>
+                        <p class="text-sm text-gray-500 leading-relaxed">
+                            Memiliki pertanyaan terkait operasional sekolah, kerja sama instansi, atau sistem PPDB? Kirim pesan langsung melalui form terpadu ini.
+                        </p>
+                        <div class="pt-4 text-xs space-y-2 text-gray-600 font-medium">
+                            <div>📍 <span class="text-gray-900 font-bold">Alamat:</span> {{ $schoolProfile->alamat ?? 'Jl. Pendidikan No. 1' }}</div>
+                            <div>📞 <span class="text-gray-900 font-bold">Telepon:</span> {{ $schoolProfile->telepon ?? '-' }}</div>
+                            <div>✉️ <span class="text-gray-900 font-bold">Email:</span> {{ $schoolProfile->email ?? 'info@sekolah.sch.id' }}</div>
+                        </div>
+                    </div>
+
+                    <div class="md:col-span-7 bg-white p-6 rounded-2xl border border-gray-200/80 shadow-sm">
+                        <div x-show="successMessage" x-transition class="p-3 mb-4 text-xs font-semibold text-emerald-700 bg-emerald-50 rounded-lg border border-emerald-200" style="display: none;">
+                            ✅ <span x-text="successMessage"></span>
+                        </div>
+
+                        <div x-show="errorMessage" x-transition class="p-3 mb-4 text-xs font-semibold text-rose-700 bg-rose-50 rounded-lg border border-rose-200" style="display: none;">
+                            ⚠️ <span x-text="errorMessage"></span>
+                        </div>
+
+                        <form @submit.prevent="submitForm" class="space-y-4 text-xs">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block font-bold text-gray-700 mb-1">Nama Lengkap <span class="text-rose-500">*</span></label>
+                                    <input type="text" name="nama" required placeholder="Nama Anda..." class="w-full rounded-lg border-gray-200 text-xs shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                    <template x-if="errors.nama">
+                                        <p class="text-[11px] text-rose-600 mt-1 font-medium" x-text="errors.nama[0]"></p>
+                                    </template>
+                                </div>
+                                <div>
+                                    <label class="block font-bold text-gray-700 mb-1">Alamat Email <span class="text-rose-500">*</span></label>
+                                    <input type="email" name="email" required placeholder="anda@email.com" class="w-full rounded-lg border-gray-200 text-xs shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                    <template x-if="errors.email">
+                                        <p class="text-[11px] text-rose-600 mt-1 font-medium" x-text="errors.email[0]"></p>
+                                    </template>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block font-bold text-gray-700 mb-1">Subjek / Perihal <span class="text-rose-500">*</span></label>
+                                <input type="text" name="subject" required placeholder="Contoh: Informasi Pendaftaran" class="w-full rounded-lg border-gray-200 text-xs shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                <template x-if="errors.subject">
+                                    <p class="text-[11px] text-rose-600 mt-1 font-medium" x-text="errors.subject[0]"></p>
+                                </template>
+                            </div>
+
+                            <div>
+                                <label class="block font-bold text-gray-700 mb-1">Isi Pesan <span class="text-rose-500">*</span></label>
+                                <textarea name="pesan" required rows="4" placeholder="Tuliskan detail pertanyaan atau aspirasi Anda disini..." class="w-full rounded-lg border-gray-200 text-xs shadow-sm focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+                                <template x-if="errors.pesan">
+                                    <p class="text-[11px] text-rose-600 mt-1 font-medium" x-text="errors.pesan[0]"></p>
+                                </template>
+                            </div>
+
+                            <button type="submit" 
+                                    :disabled="loading"
+                                    class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg cursor-pointer transition-all disabled:opacity-50 text-center shadow-md">
+                                <span x-show="!loading">🚀 Kirim Pesan</span>
+                                <span x-show="loading" style="display: none;">⏳ Mengirimkan Pesan...</span>
+                            </button>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
         </div>
     </main>
 

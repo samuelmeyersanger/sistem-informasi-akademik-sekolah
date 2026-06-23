@@ -4,11 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Traits\Loggable;
 
 class TahunAjaran extends Model
 {
     // Mengaktifkan fitur Soft Deletes agar data history akademik masa lalu aman dari terhapus tidak sengaja
-    use SoftDeletes;
+    use SoftDeletes, Loggable;
 
     /**
      * Nama tabel yang terikat dengan model ini.

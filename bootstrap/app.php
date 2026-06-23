@@ -11,9 +11,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-    // Daftarkan alias middleware kustom Anda di sini
+    // Ubah key-nya dari 'check_perm' menjadi 'permission'
     $middleware->alias([
-        'check_perm' => \App\Http\Middleware\CheckPermission::class,
+        'permission' => \App\Http\Middleware\CheckPermission::class,
     ]);
 })
     ->withExceptions(function (Exceptions $exceptions) {

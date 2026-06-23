@@ -4,11 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Traits\Loggable;
 
 class PengaturanLogo extends Model
 {
     // Mengaktifkan fitur Soft Deletes agar aset gambar penting tidak hilang permanen jika tidak sengaja terhapus
-    use SoftDeletes;
+    use SoftDeletes, Loggable;
 
     /**
      * Nama tabel yang terikat dengan model ini.

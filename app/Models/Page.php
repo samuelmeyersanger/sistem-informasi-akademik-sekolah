@@ -4,9 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use App\Traits\Loggable;
 
 class Page extends Model
 {
+
+    use Loggable;
+
     /**
      * Kolom-kolom yang diizinkan untuk diisi secara massal.
      *

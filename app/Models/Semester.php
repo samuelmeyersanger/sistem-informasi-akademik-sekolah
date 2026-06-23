@@ -5,11 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\TahunAjaran;
+use App\Traits\Loggable;
 
 class Semester extends Model
 {
     // Mengaktifkan fitur Soft Deletes sesuai dengan migration Anda
-    use SoftDeletes;
+    use SoftDeletes, Loggable;
 
     /**
      * Nama tabel yang terikat dengan model ini.

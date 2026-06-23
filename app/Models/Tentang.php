@@ -4,11 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Traits\Loggable;
 
 class Tentang extends Model
 {
     // Mengaktifkan fitur Soft Deletes sesuai dengan isi migration Anda ($table->softDeletes())
-    use SoftDeletes;
+    use SoftDeletes, Loggable;
 
     /**
      * Nama tabel yang terikat dengan model ini.

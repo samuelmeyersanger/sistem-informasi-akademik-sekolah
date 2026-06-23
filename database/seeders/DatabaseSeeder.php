@@ -15,9 +15,9 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // Perbaikan: Arahkan ke namespace Seeds\DatabaseSeeder
+        $this->call(\Laravolt\Indonesia\Seeds\DatabaseSeeder::class);
         $this->call(RoleAndPermissionSeeder::class);
-        $this->call([
-            MenuSeeder::class,
-        ]);
+        $this->call(MenuSeeder::class);
     }
 }

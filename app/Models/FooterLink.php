@@ -3,9 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\Loggable;
 
 class FooterLink extends Model
 {
+
+    use Loggable;
+
     /**
      * Nama tabel yang terikat dengan model ini.
      *

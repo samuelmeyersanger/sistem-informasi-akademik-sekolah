@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\Loggable;
 
 class Menu extends Model
 {
-    use HasFactory;
+    use HasFactory, Loggable;
 
     // 1. Beritahu Laravel nama tabel yang kita buat di migration tadi
     protected $table = 'menus';

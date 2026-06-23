@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\Loggable;
 
 class Role extends Model
 {
+    use Loggable;
     protected $fillable = ['name', 'display_name'];
 
     // Relasi: Satu Role memiliki banyak Permission (Many-to-Many)

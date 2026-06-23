@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\Loggable;
 
 class Kontak extends Model
 {
+    use Loggable;
     /**
      * Nama tabel yang terikat dengan model ini.
      * Wajib didefinisikan agar Laravel tidak mencari tabel bernama 'kontaks'.
