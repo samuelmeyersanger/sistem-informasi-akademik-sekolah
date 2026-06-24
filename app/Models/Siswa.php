@@ -75,8 +75,9 @@ class Siswa extends Model
     /**
      * Relasi Many-to-Many ke data Wali Murid (Orang Tua / Wali Asuh)
      */
-    public function wali(): BelongsToMany
+    public function wali()
     {
+        // Parameter ke-2 adalah nama tabel asli kamu di database jika bukan 'siswa_wali'
         return $this->belongsToMany(WaliSiswa::class, 'siswa_wali', 'siswa_id', 'wali_siswa_id')
                     ->withPivot('hubungan')
                     ->withTimestamps();
@@ -111,5 +112,10 @@ class Siswa extends Model
     public function dokumen(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(DokumenSiswa::class, 'siswa_id');
+    }
+
+    public function prestasi() 
+    {
+        return $this->hasMany(PrestasiSiswa::class, 'siswa_id');
     }
 }

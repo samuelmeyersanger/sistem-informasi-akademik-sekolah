@@ -16,7 +16,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('set null');
             $table->string('nama_lengkap');
-            $table->string('nik')->nullable()->unique();
+            $table->string('nik')->nullable();
             $table->enum('jenis_kelamin', ['Laki-laki', 'Perempuan']);
             $table->string('tempat_lahir')->nullable();
             $table->date('tanggal_lahir')->nullable();

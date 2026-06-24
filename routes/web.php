@@ -184,6 +184,8 @@ Route::middleware(['auth', CheckApproval::class])->group(function () {
 
     Route::prefix('kesiswaan')->name('kesiswaan.')->middleware(['permission'])->group(function () {
         // Domain 1: Manajemen Data Siswa & Wali Murid
+        Route::get('siswa/download-template', [SiswaController::class, 'downloadTemplate'])->name('siswa.downloadTemplate');
+        Route::post('siswa/import-lengkap', [SiswaController::class, 'importSiswaWali'])->name('siswa.importLengkap');
         Route::get('/siswa', [SiswaController::class, 'index'])->name('siswa');
         Route::post('/siswa', [SiswaController::class, 'store'])->name('siswa.store');
         Route::get('/siswa/{id}', [SiswaController::class, 'show'])->name('siswa.show');
@@ -191,9 +193,13 @@ Route::middleware(['auth', CheckApproval::class])->group(function () {
         Route::put('/siswa/{id}/status', [SiswaController::class, 'updateStatus'])->name('siswa.updateStatus');
         Route::delete('/siswa/{id}', [SiswaController::class, 'destroy'])->name('siswa.destroy');
 
-        // Domain 2: Berkas & Dokumen Tambahan Siswa
-        Route::post('/siswa/{siswa_id}/dokumen', [DokumenSiswaController::class, 'store'])->name('dokumen.store');
-        Route::delete('/dokumen/{id}', [DokumenSiswaController::class, 'destroy'])->name('dokumen.destroy');
+        // Route dokumen kesiswaan bawaan Anda sebelumnya
+        Route::post('siswa/{siswa}/dokumen', [DokumenSiswaController::class, 'store'])->name('dokumen.store');
+        Route::delete('dokumen/{id}', [DokumenSiswaController::class, 'destroy'])->name('dokumen.destroy');
+
+        // Tambahan Route untuk Prestasi
+        Route::post('siswa/{siswa}/prestasi', [DokumenSiswaController::class, 'storePrestasi'])->name('prestasi.store');
+        Route::delete('prestasi/{id}', [DokumenSiswaController::class, 'destroyPrestasi'])->name('prestasi.destroy');
 
         // Domain 3: Master Ruang Kelas & Wali Kelas (Pegawai)
         Route::get('/kelas', [KelasController::class, 'index'])->name('kelas');

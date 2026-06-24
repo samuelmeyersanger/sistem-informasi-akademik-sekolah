@@ -51,22 +51,23 @@
                             <h3 class="text-base font-bold text-gray-900">Daftar Induk Siswa</h3>
                             <p class="text-xs text-gray-500">Gunakan bilah pencarian dan filter di bawah untuk memilah status operasional akademik siswa.</p>
                         </div>
-                        <button @click="openCreate = true" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg shadow-sm transition-all flex items-center justify-center gap-1 cursor-pointer">
+                        
+                        <button @click="openCreate = true" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg shadow-sm transition-all flex items-center justify-center gap-1 cursor-pointer whitespace-nowrap">
                             ➕ Tambah Siswa Baru
                         </button>
                     </div>
 
                     <form action="{{ route('kesiswaan.siswa') }}" method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-3 pt-2">
-                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari Nama, NISN, NIPD, NIK..." class="text-xs rounded-lg border-gray-200 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm w-full">
+                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari Nama, NISN, NIPD, NIK..." class="text-xs rounded-lg border-gray-200 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm w-full bg-white">
                         
-                        <select name="tingkat" class="text-xs rounded-lg border-gray-200 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm text-gray-600">
+                        <select name="tingkat" class="text-xs rounded-lg border-gray-200 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm text-gray-600 bg-white">
                             <option value="">-- Semua Tingkat --</option>
                             <option value="7" {{ request('tingkat') == '7' ? 'selected' : '' }}>Tingkat 7</option>
                             <option value="8" {{ request('tingkat') == '8' ? 'selected' : '' }}>Tingkat 8</option>
                             <option value="9" {{ request('tingkat') == '9' ? 'selected' : '' }}>Tingkat 9</option>
                         </select>
 
-                        <select name="status" class="text-xs rounded-lg border-gray-200 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm text-gray-600">
+                        <select name="status" class="text-xs rounded-lg border-gray-200 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm text-gray-600 bg-white">
                             <option value="">-- Semua Status --</option>
                             <option value="Aktif" {{ request('status') == 'Aktif' ? 'selected' : '' }}>🟢 Aktif</option>
                             <option value="Lulus" {{ request('status') == 'Lulus' ? 'selected' : '' }}>🔵 Lulus</option>
@@ -79,6 +80,45 @@
                             <a href="{{ route('kesiswaan.siswa') }}" class="w-1/2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-medium rounded-lg flex items-center justify-center transition-colors">Reset</a>
                         </div>
                     </form>
+
+                    <div class="border-t border-gray-200/60 my-2"></div>
+
+                    <div class="bg-gradient-to-br from-white to-slate-50/50 p-4 border border-gray-200/80 rounded-2xl shadow-sm flex flex-col md:flex-row md:items-center gap-4 transition-all hover:shadow-md">
+                        <div class="flex items-start gap-3 md:max-w-[240px]">
+                            <div class="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center text-lg shadow-inner flex-shrink-0 border border-emerald-100">
+                                📊
+                            </div>
+                            <div class="space-y-0.5">
+                                <h5 class="text-xs font-bold text-gray-800 uppercase tracking-wider">Import Kolektif</h5>
+                                <p class="text-[10px] text-gray-400 leading-relaxed mb-1">Unggah satu file Excel/CSV untuk entri data masal siswa & wali sekaligus.</p>
+                                
+                                <a href="{{ route('kesiswaan.siswa.downloadTemplate') }}" class="inline-flex items-center gap-1 text-[10px] text-indigo-600 hover:text-indigo-800 font-bold transition-colors underline decoration-dashed">
+                                    📄 Unduh Format Excel (.xlsx)
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <div class="hidden md:block h-10 w-px bg-gray-200"></div>
+                        
+                        <form action="{{ route('kesiswaan.siswa.importLengkap') }}" method="POST" enctype="multipart/form-data" class="flex-1 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 text-xs">
+                            @csrf
+                            <div class="relative flex-1 flex items-center">
+                                <input type="file" name="file_excel" required 
+                                    class="w-full text-xs text-gray-500
+                                            file:mr-3 file:py-1.5 file:px-3
+                                            file:rounded-xl file:border-0
+                                            file:text-[11px] file:font-semibold
+                                            file:bg-indigo-50 file:text-indigo-700
+                                            hover:file:bg-indigo-100
+                                            file:cursor-pointer cursor-pointer
+                                            bg-white border border-gray-200 rounded-xl p-1 shadow-sm focus:outline-none" />
+                            </div>
+                            <button type="submit" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl shadow-sm transition-all flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap">
+                                📥 Mulai Import
+                            </button>
+                        </form>
+                    </div>
+
                 </div>
 
                 <div class="overflow-x-auto">
@@ -169,7 +209,7 @@
                     @csrf
 
                     <div x-show="currentStep === 1" class="space-y-4">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
                                 <label class="block font-semibold text-gray-600 mb-1">Nama Lengkap Sesuai Dokumen Resmi *</label>
                                 <input type="text" name="nama_lengkap" required class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 shadow-sm">
@@ -178,7 +218,12 @@
                                 <label class="block font-semibold text-gray-600 mb-1">NIK (Nomor Induk Kependudukan) *</label>
                                 <input type="text" name="nik" required maxlength="16" class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 shadow-sm">
                             </div>
+                            <div>
+                                <label class="block font-semibold text-gray-600 mb-1">Anak Ke *</label>
+                                <input type="text" name="anak_ke" required maxlength="2" class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 shadow-sm">
+                            </div>
                         </div>
+
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
                                 <label class="block font-semibold text-gray-600 mb-1">NIPD *</label>
@@ -196,6 +241,7 @@
                                 </select>
                             </div>
                         </div>
+
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
                                 <label class="block font-semibold text-gray-600 mb-1">Tempat Lahir *</label>
@@ -216,19 +262,24 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
                                 <label class="block font-semibold text-gray-600 mb-1">Nomor Handphone / WhatsApp *</label>
                                 <input type="text" name="nomor_hp" required class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 shadow-sm">
                             </div>
                             <div>
                                 <label class="block font-semibold text-gray-600 mb-1">Asal Sekolah Dasar (SD/MI) *</label>
-                                <input type="text" name="asal_sekolah" required class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 shadow-sm">
+                                <input type="text" name="asal_sekolah" required class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm">
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-gray-600 mb-1">No Peserta UN *</label>
+                                <input type="text" name="no_peserta_un" required class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm">
                             </div>
                         </div>
                     </div>
 
-                    <div x-show="currentStep === 2" class="space-y-4">
+                    <div x-show="currentStep === 2" class="space-y-4" x-cloak>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label class="block font-semibold text-gray-600 mb-1">Provinsi *</label>
@@ -259,24 +310,25 @@
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div class="md:col-span-2">
+                        <div class="grid grid-cols-1 gap-4">
+                            <div>
                                 <label class="block font-semibold text-gray-600 mb-1">Alamat Jalan / Blok / Kampung *</label>
                                 <input type="text" name="alamat_lengkap" required placeholder="Nama jalan, RT/RW, nomor rumah..." class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 shadow-sm">
                             </div>
-                            <div class="grid grid-cols-3 gap-1">
-                                <div>
-                                    <label class="block font-semibold text-gray-600 mb-1">RT *</label>
-                                    <input type="text" name="rt" required class="w-full text-xs rounded-lg border-gray-300 shadow-sm">
-                                </div>
-                                <div>
-                                    <label class="block font-semibold text-gray-600 mb-1">RW *</label>
-                                    <input type="text" name="rw" required class="w-full text-xs rounded-lg border-gray-300 shadow-sm">
-                                </div>
-                                <div>
-                                    <label class="block font-semibold text-gray-600 mb-1">Pos *</label>
-                                    <input type="text" name="kode_pos" required class="w-full text-xs rounded-lg border-gray-300 shadow-sm">
-                                </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block font-semibold text-gray-600 mb-1">RT *</label>
+                                <input type="text" name="rt" required class="w-full text-xs rounded-lg border-gray-300 shadow-sm">
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-gray-600 mb-1">RW *</label>
+                                <input type="text" name="rw" required class="w-full text-xs rounded-lg border-gray-300 shadow-sm">
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-gray-600 mb-1">Kode Pos *</label>
+                                <input type="text" name="kode_pos" required class="w-full text-xs rounded-lg border-gray-300 shadow-sm">
                             </div>
                         </div>
 
@@ -306,31 +358,497 @@
                         </div>
                     </div>
 
-                    <div x-show="currentStep === 3" class="space-y-4">
-                        @foreach(['Ayah', 'Ibu', 'Wali'] as $index => $hub)
-                        <div class="p-3 bg-gray-50/80 border border-gray-100 rounded-xl space-y-3">
-                            <div class="font-bold text-gray-800 border-b border-gray-200/60 pb-1">
-                                Hubungan Keluarga: {{ $hub }}
-                                <input type="hidden" name="wali[{{ $index }}][hubungan]" value="{{ $hub }}">
+                    <div x-show="currentStep === 3" class="space-y-6 max-h-[60vh] overflow-y-auto pr-2" x-cloak>
+                        
+                        <!-- ================= AYAH KANDUNG ================= -->
+                        <div class="p-5 bg-blue-50/40 border border-blue-100 rounded-2xl space-y-4">
+                            <div class="font-bold text-xs uppercase tracking-wider text-blue-700 border-b border-blue-200/60 pb-2 flex items-center gap-1.5">
+                                👨 DATA REKAM IDENTITAS AYAH KANDUNG
+                                <input type="hidden" name="wali[0][hubungan]" value="Ayah">
                             </div>
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div>
-                                    <label class="block text-gray-600 mb-1">Nama Lengkap {{ $hub }}</label>
-                                    <input type="text" name="wali[{{ $index }}][nama_lengkap]" class="w-full border-gray-300 text-xs bg-white rounded-lg shadow-sm">
+                                    <label class="block font-semibold text-gray-600 mb-1">Nama Lengkap Ayah *</label>
+                                    <input type="text" name="wali[0][nama_lengkap]" required class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
                                 </div>
                                 <div>
-                                    <label class="block text-gray-600 mb-1">NIK {{ $hub }}</label>
-                                    <input type="text" name="wali[{{ $index }}][nik]" maxlength="16" class="w-full border-gray-300 text-xs bg-white rounded-lg shadow-sm">
+                                    <label class="block font-semibold text-gray-600 mb-1">NIK Ayah</label>
+                                    <input type="text" name="wali[0][nik]" maxlength="16" placeholder="16 Digit NIK" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
                                 </div>
                                 <div>
-                                    <label class="block text-gray-600 mb-1">No. Handphone / Telp</label>
-                                    <input type="text" name="wali[{{ $index }}][nomor_hp]" class="w-full border-gray-300 text-xs bg-white rounded-lg shadow-sm">
+                                    <label class="block font-semibold text-gray-600 mb-1">Jenis Kelamin</label>
+                                    <select name="wali[0][jenis_kelamin]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                        <option value="Laki-laki" selected>Laki-laki</option>
+                                        <option value="Perempuan">Perempuan</option>
+                                    </select>
                                 </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">Tempat Lahir</label>
+                                    <input type="text" name="wali[0][tempat_lahir]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                </div>
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">Tanggal Lahir</label>
+                                    <input type="date" name="wali[0][tanggal_lahir]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                </div>
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">Agama</label>
+                                    <select name="wali[0][agama]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                        <option value="">-- Pilih Agama --</option>
+                                        <option value="Islam">Islam</option>
+                                        <option value="Kristen">Kristen</option>
+                                        <option value="Katholik">Katholik</option>
+                                        <option value="Hindu">Hindu</option>
+                                        <option value="Budha">Budha</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">Pendidikan Terakhir</label>
+                                    <select name="wali[0][pendidikan_terakhir]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                        <option value="">-- Pilih Pendidikan --</option>
+                                        <option value="Tidak Sekolah">Tidak Sekolah</option>
+                                        <option value="Putus SD">Putus SD</option>
+                                        <option value="SD / Sederajat">SD / Sederajat</option>
+                                        <option value="SMP / Sederajat">SMP / Sederajat</option>
+                                        <option value="SMA / Sederajat">SMA / Sederajat</option>
+                                        <option value="D1 (Diploma 1)">D1 (Diploma 1)</option>
+                                        <option value="D2 (Diploma 2)">D2 (Diploma 2)</option>
+                                        <option value="D3 (Diploma 3)">D3 (Diploma 3)</option>
+                                        <option value="D4 / S1 (Sarjana)">D4 / S1 (Sarjana)</option>
+                                        <option value="S2 (Magister)">S2 (Magister)</option>
+                                        <option value="S3 (Doktor)">S3 (Doktor)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">Pekerjaan</label>
+                                    <select name="wali[0][pekerjaan]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                        <option value="">-- Pilih Pekerjaan --</option>
+                                        <option value="Tidak Bekerja">Tidak Bekerja</option>
+                                        <option value="Nelayan">Nelayan</option>
+                                        <option value="Petani">Petani</option>
+                                        <option value="Peternak">Peternak</option>
+                                        <option value="PNS/TNI/Polri">PNS/TNI/Polri</option>
+                                        <option value="Karyawan Swasta">Karyawan Swasta</option>
+                                        <option value="Pedagang Kecil">Pedagang Kecil</option>
+                                        <option value="Pedagang Besar">Pedagang Besar</option>
+                                        <option value="Wiraswasta">Wiraswasta</option>
+                                        <option value="Buruh">Buruh</option>
+                                        <option value="Pensiunan">Pensiunan</option>
+                                        <option value="Tenaga Kerja Indonesia (TKI)">Tenaga Kerja Indonesia (TKI)</option>
+                                        <option value="Sudah Meninggal Dunia">Sudah Meninggal Dunia</option>
+                                        <option value="Lainnya">Lainnya</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">Penghasilan Bulanan</label>
+                                    <input type="number" step="0.01" name="wali[0][penghasilan_bulanan]" placeholder="Contoh: 3500000" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                </div>
+                            </div>
+
+                            <!-- Alamat Utama & RT/RW -->
+                            <div class="grid grid-cols-3 gap-4">
+                                <div class="md:col-span-2">
+                                    <label class="block font-semibold text-gray-600 mb-1">Alamat Lengkap Rumah Jalan/Kampung *</label>
+                                    <input type="text" name="wali[0][alamat_lengkap]" required placeholder="Nama jalan, RT/RW, nomor rumah" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">RT</label>
+                                    <input type="text" name="wali[0][rt]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                </div>
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">RW</label>
+                                    <input type="text" name="wali[0][rw]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                </div>
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">Kode Pos</label>
+                                    <input type="text" name="wali[0][kode_pos]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                </div>
+                            </div>
+
+                            <!-- Dropdown Wilayah Ayah -->
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">Provinsi</label>
+                                    <select id="ayah_provinsi" name="wali[0][provinsi]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm focus:ring-indigo-500">
+                                        <option value="">-- Pilih Provinsi --</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">Kota / Kabupaten</label>
+                                    <select id="ayah_kota" name="wali[0][kota]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm focus:ring-indigo-500">
+                                        <option value="">-- Pilih Kota/Kabupaten --</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">Kecamatan</label>
+                                    <select id="ayah_kecamatan" name="wali[0][kecamatan]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm focus:ring-indigo-500">
+                                        <option value="">-- Pilih Kecamatan --</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">Kelurahan / Desa</label>
+                                    <select id="ayah_kelurahan" name="wali[0][kelurahan_desa]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm focus:ring-indigo-500">
+                                        <option value="">-- Pilih Kelurahan/Desa --</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">Nomor Handphone / WA</label>
+                                    <input type="text" name="wali[0][nomor_hp]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                </div>
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">Email Aktif</label>
+                                    <input type="email" name="wali[0][email]" placeholder="contoh@gmail.com" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                </div>
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">No. HP Darurat</label>
+                                    <input type="text" name="wali[0][nomor_hp_darurat]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block font-semibold text-gray-600 mb-1">Catatan Khusus Mengenai Ayah</label>
+                                <textarea name="wali[0][catatan]" rows="1" placeholder="Informasi tambahan jika diperlukan..." class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm"></textarea>
                             </div>
                         </div>
-                        @endforeach
+
+                        <!-- ================= IBU KANDUNG ================= -->
+                        <div class="p-5 bg-rose-50/40 border border-rose-100 rounded-2xl space-y-4">
+                            <div class="font-bold text-xs uppercase tracking-wider text-rose-700 border-b border-rose-200/60 pb-2 flex items-center gap-1.5">
+                                👩 DATA REKAM IDENTITAS IBU KANDUNG
+                                <input type="hidden" name="wali[1][hubungan]" value="Ibu">
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">Nama Lengkap Ibu *</label>
+                                    <input type="text" name="wali[1][nama_lengkap]" required class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                </div>
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">NIK Ibu</label>
+                                    <input type="text" name="wali[1][nik]" maxlength="16" placeholder="16 Digit NIK" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                </div>
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">Jenis Kelamin</label>
+                                    <select name="wali[1][jenis_kelamin]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                        <option value="Laki-laki">Laki-laki</option>
+                                        <option value="Perempuan" selected>Perempuan</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">Tempat Lahir</label>
+                                    <input type="text" name="wali[1][tempat_lahir]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                </div>
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">Tanggal Lahir</label>
+                                    <input type="date" name="wali[1][tanggal_lahir]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                </div>
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">Agama</label>
+                                    <select name="wali[1][agama]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                        <option value="">-- Pilih Agama --</option>
+                                        <option value="Islam">Islam</option>
+                                        <option value="Kristen">Kristen</option>
+                                        <option value="Katholik">Katholik</option>
+                                        <option value="Hindu">Hindu</option>
+                                        <option value="Budha">Budha</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">Pendidikan Terakhir</label>
+                                    <select name="wali[1][pendidikan_terakhir]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                        <option value="">-- Pilih Pendidikan --</option>
+                                        <option value="Tidak Sekolah">Tidak Sekolah</option>
+                                        <option value="Putus SD">Putus SD</option>
+                                        <option value="SD / Sederajat">SD / Sederajat</option>
+                                        <option value="SMP / Sederajat">SMP / Sederajat</option>
+                                        <option value="SMA / Sederajat">SMA / Sederajat</option>
+                                        <option value="D1 (Diploma 1)">D1 (Diploma 1)</option>
+                                        <option value="D2 (Diploma 2)">D2 (Diploma 2)</option>
+                                        <option value="D3 (Diploma 3)">D3 (Diploma 3)</option>
+                                        <option value="D4 / S1 (Sarjana)">D4 / S1 (Sarjana)</option>
+                                        <option value="S2 (Magister)">S2 (Magister)</option>
+                                        <option value="S3 (Doktor)">S3 (Doktor)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">Pekerjaan</label>
+                                    <select name="wali[1][pekerjaan]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                        <option value="">-- Pilih Pekerjaan --</option>
+                                        <option value="Tidak Bekerja">Tidak Bekerja</option>
+                                        <option value="Nelayan">Nelayan</option>
+                                        <option value="Petani">Petani</option>
+                                        <option value="Peternak">Peternak</option>
+                                        <option value="PNS/TNI/Polri">PNS/TNI/Polri</option>
+                                        <option value="Karyawan Swasta">Karyawan Swasta</option>
+                                        <option value="Pedagang Kecil">Pedagang Kecil</option>
+                                        <option value="Pedagang Besar">Pedagang Besar</option>
+                                        <option value="Wiraswasta">Wiraswasta</option>
+                                        <option value="Buruh">Buruh</option>
+                                        <option value="Pensiunan">Pensiunan</option>
+                                        <option value="Tenaga Kerja Indonesia (TKI)">Tenaga Kerja Indonesia (TKI)</option>
+                                        <option value="Sudah Meninggal Dunia">Sudah Meninggal Dunia</option>
+                                        <option value="Lainnya">Lainnya</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">Penghasilan Bulanan</label>
+                                    <input type="number" step="0.01" name="wali[1][penghasilan_bulanan]" placeholder="0" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                </div>
+                            </div>
+
+                            <!-- Alamat Utama & RT/RW -->
+                            <div class="grid grid-cols-3 gap-4">
+                                <div class="md:col-span-2">
+                                    <label class="block font-semibold text-gray-600 mb-1">Alamat Lengkap Rumah Jalan/Kampung *</label>
+                                    <input type="text" name="wali[1][alamat_lengkap]" required placeholder="Nama jalan, RT/RW, nomor rumah" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">RT</label>
+                                    <input type="text" name="wali[1][rt]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                </div>
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">RW</label>
+                                    <input type="text" name="wali[1][rw]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                </div>
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">Kode Pos</label>
+                                    <input type="text" name="wali[1][kode_pos]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                </div>
+                            </div>
+
+                            <!-- Dropdown Wilayah Ibu -->
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">Provinsi</label>
+                                    <select id="ibu_provinsi" name="wali[1][provinsi]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm focus:ring-indigo-500">
+                                        <option value="">-- Pilih Provinsi --</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">Kota / Kabupaten</label>
+                                    <select id="ibu_kota" name="wali[1][kota]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm focus:ring-indigo-500">
+                                        <option value="">-- Pilih Kota/Kabupaten --</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">Kecamatan</label>
+                                    <select id="ibu_kecamatan" name="wali[1][kecamatan]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm focus:ring-indigo-500">
+                                        <option value="">-- Pilih Kecamatan --</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">Kelurahan / Desa</label>
+                                    <select id="ibu_kelurahan" name="wali[1][kelurahan_desa]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm focus:ring-indigo-500">
+                                        <option value="">-- Pilih Kelurahan/Desa --</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">Nomor Handphone / WA</label>
+                                    <input type="text" name="wali[1][nomor_hp]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                </div>
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">Email Aktif</label>
+                                    <input type="email" name="wali[1][email]" placeholder="contoh@gmail.com" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                </div>
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">No. HP Darurat</label>
+                                    <input type="text" name="wali[1][nomor_hp_darurat]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block font-semibold text-gray-600 mb-1">Catatan Khusus Mengenai Ibu</label>
+                                <textarea name="wali[1][catatan]" rows="1" placeholder="Informasi tambahan jika diperlukan..." class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- ================= WALI (OPSIONAL) ================= -->
+                        <div class="p-5 bg-slate-100 border border-slate-200 rounded-2xl space-y-4">
+                            <div class="font-bold text-xs uppercase tracking-wider text-slate-700 border-b border-slate-300 pb-2 flex items-center justify-between">
+                                <span>👤 DATA REKAM IDENTITAS WALI (OPSIONAL)</span>
+                                <input type="hidden" name="wali[2][hubungan]" value="Wali">
+                                <span class="text-[10px] text-gray-400 normal-case font-normal">Kosongkan jika siswa terikat langsung dengan Orang Tua Kandung</span>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">Nama Lengkap Wali</label>
+                                    <input type="text" name="wali[2][nama_lengkap]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                </div>
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">NIK Wali</label>
+                                    <input type="text" name="wali[2][nik]" maxlength="16" placeholder="16 Digit NIK" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                </div>
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">Jenis Kelamin</label>
+                                    <select name="wali[2][jenis_kelamin]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                        <option value="Laki-laki">Laki-laki</option>
+                                        <option value="Perempuan">Perempuan</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">Tempat Lahir</label>
+                                    <input type="text" name="wali[2][tempat_lahir]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                </div>
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">Tanggal Lahir</label>
+                                    <input type="date" name="wali[2][tanggal_lahir]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                </div>
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">Agama</label>
+                                    <select name="wali[2][agama]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                        <option value="">-- Pilih Agama --</option>
+                                        <option value="Islam">Islam</option>
+                                        <option value="Kristen">Kristen</option>
+                                        <option value="Katholik">Katholik</option>
+                                        <option value="Hindu">Hindu</option>
+                                        <option value="Budha">Budha</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">Pendidikan Terakhir</label>
+                                    <select name="wali[2][pendidikan_terakhir]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                        <option value="">-- Pilih Pendidikan --</option>
+                                        <option value="Tidak Sekolah">Tidak Sekolah</option>
+                                        <option value="Putus SD">Putus SD</option>
+                                        <option value="SD / Sederajat">SD / Sederajat</option>
+                                        <option value="SMP / Sederajat">SMP / Sederajat</option>
+                                        <option value="SMA / Sederajat">SMA / Sederajat</option>
+                                        <option value="D1 (Diploma 1)">D1 (Diploma 1)</option>
+                                        <option value="D2 (Diploma 2)">D2 (Diploma 2)</option>
+                                        <option value="D3 (Diploma 3)">D3 (Diploma 3)</option>
+                                        <option value="D4 / S1 (Sarjana)">D4 / S1 (Sarjana)</option>
+                                        <option value="S2 (Magister)">S2 (Magister)</option>
+                                        <option value="S3 (Doktor)">S3 (Doktor)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">Pekerjaan</label>
+                                    <select name="wali[2][pekerjaan]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                        <option value="">-- Pilih Pekerjaan --</option>
+                                        <option value="Tidak Bekerja">Tidak Bekerja</option>
+                                        <option value="Nelayan">Nelayan</option>
+                                        <option value="Petani">Petani</option>
+                                        <option value="Peternak">Peternak</option>
+                                        <option value="PNS/TNI/Polri">PNS/TNI/Polri</option>
+                                        <option value="Karyawan Swasta">Karyawan Swasta</option>
+                                        <option value="Pedagang Kecil">Pedagang Kecil</option>
+                                        <option value="Pedagang Besar">Pedagang Besar</option>
+                                        <option value="Wiraswasta">Wiraswasta</option>
+                                        <option value="Buruh">Buruh</option>
+                                        <option value="Pensiunan">Pensiunan</option>
+                                        <option value="Tenaga Kerja Indonesia (TKI)">Tenaga Kerja Indonesia (TKI)</option>
+                                        <option value="Sudah Meninggal Dunia">Sudah Meninggal Dunia</option>
+                                        <option value="Lainnya">Lainnya</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">Penghasilan Bulanan</label>
+                                    <input type="number" step="0.01" name="wali[2][penghasilan_bulanan]" placeholder="0" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                </div>
+                            </div>
+
+                            <!-- Alamat Utama & RT/RW -->
+                            <div class="grid grid-cols-3 gap-4">
+                                <div class="md:col-span-2">
+                                    <label class="block font-semibold text-gray-600 mb-1">Alamat Lengkap Rumah Jalan/Kampung *</label>
+                                    <input type="text" name="wali[2][alamat_lengkap]" placeholder="Nama jalan, RT/RW, nomor rumah" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">RT</label>
+                                    <input type="text" name="wali[2][rt]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                </div>
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">RW</label>
+                                    <input type="text" name="wali[2][rw]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                </div>
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">Kode Pos</label>
+                                    <input type="text" name="wali[2][kode_pos]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                </div>
+                            </div>
+
+                            <!-- Dropdown Wilayah Wali -->
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">Provinsi</label>
+                                    <select id="wali_provinsi" name="wali[2][provinsi]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm focus:ring-indigo-500">
+                                        <option value="">-- Pilih Provinsi --</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">Kota / Kabupaten</label>
+                                    <select id="wali_kota" name="wali[2][kota]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm focus:ring-indigo-500">
+                                        <option value="">-- Pilih Kota/Kabupaten --</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">Kecamatan</label>
+                                    <select id="wali_kecamatan" name="wali[2][kecamatan]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm focus:ring-indigo-500">
+                                        <option value="">-- Pilih Kecamatan --</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">Kelurahan / Desa</label>
+                                    <select id="wali_kelurahan" name="wali[2][kelurahan_desa]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm focus:ring-indigo-500">
+                                        <option value="">-- Pilih Kelurahan/Desa --</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">Nomor Handphone / WA</label>
+                                    <input type="text" name="wali[2][nomor_hp]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                </div>
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">Email Aktif</label>
+                                    <input type="email" name="wali[2][email]" placeholder="contoh@gmail.com" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                </div>
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">No. HP Darurat</label>
+                                    <input type="text" name="wali[2][nomor_hp_darurat]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block font-semibold text-gray-600 mb-1">Catatan Khusus Mengenai Wali</label>
+                                <textarea name="wali[2][catatan]" rows="1" placeholder="Informasi tambahan jika diperlukan..." class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm"></textarea>
+                            </div>
+                        </div>
                     </div>
 
+                    <!-- Navigasi Tombol di bagian bawah -->
                     <div class="pt-4 border-t border-gray-100 flex justify-between bg-white">
                         <button type="button" x-show="currentStep > 1" @click="currentStep--" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold rounded-lg transition-colors cursor-pointer">
                             ⬅️ Kembali
@@ -370,102 +888,121 @@
     </div>
 
     <script>
-        const siswaProvSelect = document.getElementById('siswa_provinsi');
-        const siswaKotaSelect = document.getElementById('siswa_kota');
-        const siswaKecSelect  = document.getElementById('siswa_kecamatan');
-        const siswaKelSelect  = document.getElementById('siswa_kelurahan');
-
-        const sCurrentProv = siswaProvSelect.getAttribute('data-current');
-        const sCurrentKota = siswaKotaSelect.getAttribute('data-current');
-        const sCurrentKec  = siswaKecSelect.getAttribute('data-current');
-        const sCurrentKel  = siswaKelSelect.getAttribute('data-current');
-
-        async function sFetchJson(url) {
+        // =========================================================================
+        // LOGIKA UTAMA WILAYAH (Fungsi Generic untuk Semua Grup)
+        // =========================================================================
+        
+        async function fetchJsonRegion(url) {
             try {
                 let response = await fetch(url);
                 return await response.json();
             } catch (e) {
-                console.error("Gagal menarik data API wilayah kesiswaan: ", e);
+                console.error("Gagal menarik data API wilayah: ", e);
                 return [];
             }
         }
 
-        // 1. Memuat Data Provinsi Utama (Diarahkan ke prefix URL /kesiswaan/)
-        async function sLoadProvinsi() {
-            let data = await sFetchJson(`/kesiswaan/api/provinsi`);
-            siswaProvSelect.innerHTML = '<option value="">-- Pilih Provinsi --</option>';
-            data.forEach(p => {
-                let selected = (p.name === sCurrentProv) ? 'selected' : '';
-                siswaProvSelect.innerHTML += `<option value="${p.name}" data-id="${p.code}" ${selected}>${p.name}</option>`;
+        // Fungsi untuk menginisialisasi satu rumpun dropdown wilayah
+        function initRegionDropdowns(prefix) {
+            const provSelect = document.getElementById(`${prefix}_provinsi`);
+            const kotaSelect = document.getElementById(`${prefix}_kota`);
+            const kecSelect  = document.getElementById(`${prefix}_kecamatan`);
+            const kelSelect  = document.getElementById(`${prefix}_kelurahan`);
+
+            if (!provSelect) return; // Proteksi jika elemen tidak ada di halaman
+
+            // Ambil data default/current jika ada (untuk edit mode)
+            const currentProv = provSelect.getAttribute('data-current');
+            const currentKota = kotaSelect.getAttribute('data-current');
+            const currentKec  = kecSelect.getAttribute('data-current');
+            const currentKel  = kelSelect.getAttribute('data-current');
+
+            // 1. Memuat Data Provinsi
+            async function loadProvinsi() {
+                let data = await fetchJsonRegion(`/kesiswaan/api/provinsi`);
+                provSelect.innerHTML = '<option value="">-- Pilih Provinsi --</option>';
+                data.forEach(p => {
+                    let selected = (p.name === currentProv) ? 'selected' : '';
+                    provSelect.innerHTML += `<option value="${p.name}" data-id="${p.code}" ${selected}>${p.name}</option>`;
+                });
+
+                if (currentProv) {
+                    provSelect.dispatchEvent(new Event('change'));
+                }
+            }
+
+            // 2. Event: Provinsi Berubah -> Ambil Kota
+            provSelect.addEventListener('change', async function() {
+                kotaSelect.innerHTML = '<option value="">-- Memuat Kota... --</option>';
+                kecSelect.innerHTML  = '<option value="">-- Pilih Kecamatan --</option>';
+                kelSelect.innerHTML  = '<option value="">-- Pilih Kelurahan/Desa --</option>';
+                
+                let opt = this.options[this.selectedIndex];
+                let provId = opt ? opt.getAttribute('data-id') : null;
+                if(!provId) { kotaSelect.innerHTML = '<option value="">-- Pilih Kota/Kabupaten --</option>'; return; }
+
+                let data = await fetchJsonRegion(`/kesiswaan/api/kota/${provId}`);
+                kotaSelect.innerHTML = '<option value="">-- Pilih Kota/Kabupaten --</option>';
+                data.forEach(k => {
+                    let selected = (k.name === currentKota) ? 'selected' : '';
+                    kotaSelect.innerHTML += `<option value="${k.name}" data-id="${k.code}" ${selected}>${k.name}</option>`;
+                });
+
+                if (currentKota) {
+                    kotaSelect.dispatchEvent(new Event('change'));
+                }
             });
 
-            if (sCurrentProv) {
-                siswaProvSelect.dispatchEvent(new Event('change'));
-            }
+            // 3. Event: Kota Berubah -> Ambil Kecamatan
+            kotaSelect.addEventListener('change', async function() {
+                kecSelect.innerHTML = '<option value="">-- Memuat Kecamatan... --</option>';
+                kelSelect.innerHTML = '<option value="">-- Pilih Kelurahan/Desa --</option>';
+
+                let opt = this.options[this.selectedIndex];
+                let kotaId = opt ? opt.getAttribute('data-id') : null;
+                if(!kotaId) { kecSelect.innerHTML = '<option value="">-- Pilih Kecamatan --</option>'; return; }
+
+                let data = await fetchJsonRegion(`/kesiswaan/api/kecamatan/${kotaId}`);
+                kecSelect.innerHTML = '<option value="">-- Pilih Kecamatan --</option>';
+                data.forEach(kc => {
+                    let selected = (kc.name === currentKec) ? 'selected' : '';
+                    kecSelect.innerHTML += `<option value="${kc.name}" data-id="${kc.code}" ${selected}>${kc.name}</option>`;
+                });
+
+                if (currentKec) {
+                    kecSelect.dispatchEvent(new Event('change'));
+                }
+            });
+
+            // 4. Event: Kecamatan Berubah -> Ambil Desa/Kelurahan
+            kecSelect.addEventListener('change', async function() {
+                kelSelect.innerHTML = '<option value="">-- Memuat Kelurahan... --</option>';
+
+                let opt = this.options[this.selectedIndex];
+                let kecId = opt ? opt.getAttribute('data-id') : null;
+                if(!kecId) { kelSelect.innerHTML = '<option value="">-- Pilih Kelurahan/Desa --</option>'; return; }
+
+                let data = await fetchJsonRegion(`/kesiswaan/api/kelurahan/${kecId}`);
+                kelSelect.innerHTML = '<option value="">-- Pilih Kelurahan/Desa --</option>';
+                data.forEach(kl => {
+                    let selected = (kl.name === currentKel) ? 'selected' : '';
+                    kelSelect.innerHTML += `<option value="${kl.name}" ${selected}>${kl.name}</option>`;
+                });
+            });
+
+            // Jalankan trigger awal untuk memuat provinsi
+            loadProvinsi();
         }
 
-        // 2. Event: Provinsi Berubah -> Ambil Kota
-        siswaProvSelect.addEventListener('change', async function() {
-            siswaKotaSelect.innerHTML = '<option value="">-- Memuat Kota... --</option>';
-            siswaKecSelect.innerHTML  = '<option value="">-- Pilih Kecamatan --</option>';
-            siswaKelSelect.innerHTML  = '<option value="">-- Pilih Kelurahan/Desa --</option>';
-            
-            let opt = this.options[this.selectedIndex];
-            let provId = opt ? opt.getAttribute('data-id') : null;
-            if(!provId) { siswaKotaSelect.innerHTML = '<option value="">-- Pilih Kota/Kabupaten --</option>'; return; }
-
-            let data = await sFetchJson(`/kesiswaan/api/kota/${provId}`);
-            siswaKotaSelect.innerHTML = '<option value="">-- Pilih Kota/Kabupaten --</option>';
-            data.forEach(k => {
-                let selected = (k.name === sCurrentKota) ? 'selected' : '';
-                siswaKotaSelect.innerHTML += `<option value="${k.name}" data-id="${k.code}" ${selected}>${k.name}</option>`;
-            });
-
-            if (sCurrentKota) {
-                siswaKotaSelect.dispatchEvent(new Event('change'));
-            }
-        });
-
-        // 3. Event: Kota Berubah -> Ambil Kecamatan
-        siswaKotaSelect.addEventListener('change', async function() {
-            siswaKecSelect.innerHTML = '<option value="">-- Memuat Kecamatan... --</option>';
-            siswaKelSelect.innerHTML = '<option value="">-- Pilih Kelurahan/Desa --</option>';
-
-            let opt = this.options[this.selectedIndex];
-            let kotaId = opt ? opt.getAttribute('data-id') : null;
-            if(!kotaId) { siswaKecSelect.innerHTML = '<option value="">-- Pilih Kecamatan --</option>'; return; }
-
-            let data = await sFetchJson(`/kesiswaan/api/kecamatan/${kotaId}`);
-            siswaKecSelect.innerHTML = '<option value="">-- Pilih Kecamatan --</option>';
-            data.forEach(kc => {
-                let selected = (kc.name === sCurrentKec) ? 'selected' : '';
-                siswaKecSelect.innerHTML += `<option value="${kc.name}" data-id="${kc.code}" ${selected}>${kc.name}</option>`;
-            });
-
-            if (sCurrentKec) {
-                siswaKecSelect.dispatchEvent(new Event('change'));
-            }
-        });
-
-        // 4. Event: Kecamatan Berubah -> Ambil Desa/Kelurahan
-        siswaKecSelect.addEventListener('change', async function() {
-            siswaKelSelect.innerHTML = '<option value="">-- Memuat Kelurahan... --</option>';
-
-            let opt = this.options[this.selectedIndex];
-            let kecId = opt ? opt.getAttribute('data-id') : null;
-            if(!kecId) { siswaKelSelect.innerHTML = '<option value="">-- Pilih Kelurahan/Desa --</option>'; return; }
-
-            let data = await sFetchJson(`/kesiswaan/api/kelurahan/${kecId}`);
-            siswaKelSelect.innerHTML = '<option value="">-- Pilih Kelurahan/Desa --</option>';
-            data.forEach(kl => {
-                let selected = (kl.name === sCurrentKel) ? 'selected' : '';
-                siswaKelSelect.innerHTML += `<option value="${kl.name}" ${selected}>${kl.name}</option>`;
-            });
-        });
-
-        // Jalankan inisialisasi saat halaman selesai dimuat
+        // =========================================================================
+        // EKSEKUSI SAAT HALAMAN SELESAI DIMUAT
+        // =========================================================================
         document.addEventListener("DOMContentLoaded", function() {
-            sLoadProvinsi();
+            // Daftarkan semua prefix id rumpun wilayah kamu di sini
+            initRegionDropdowns('siswa');
+            initRegionDropdowns('ayah');
+            initRegionDropdowns('ibu');
+            initRegionDropdowns('wali');
         });
     </script>
 </x-app-layout>
