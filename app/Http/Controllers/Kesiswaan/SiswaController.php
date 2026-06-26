@@ -12,6 +12,10 @@ use Illuminate\Support\Facades\DB;
 use App\Imports\SiswaWaliImport;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\TemplateImportSiswaExport;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+use App\Models\Role;
 
 class SiswaController extends Controller
 {
@@ -381,5 +385,120 @@ class SiswaController extends Controller
     public function downloadTemplate()
     {
         return Excel::download(new TemplateImportSiswaExport, 'template_import_siswa_dan_wali.xlsx');
+    }
+
+    // 1. GENERATE INDIVIDU
+    public function generateAkunIndividu($id)
+    {
+        $siswa = Siswa::findOrFail($id);
+
+        if ($siswa->user_id) {
+            return redirect()->back()->with('error', 'Siswa ini sudah memiliki akun.');
+        }
+
+        // --- AMBIL NAMA SEKOLAH DARI DATABASE ---
+        $profil = DB::table('profil_sekolah')->first(); // Mengambil baris pertama tabel profil
+        
+        // Bersihkan nama sekolah: hilangkan spasi, ubah jadi huruf kecil
+        $namaSekolahBersih = $profil ? strtolower(str_replace(' ', '', $profil->nama_sekolah)) : 'sekolah';
+        
+        // Gabungkan menjadi domain email resmi sekolah
+        $domainSekolah = '@' . $namaSekolahBersih . '.sch.id'; 
+        // ----------------------------------------
+
+        $prefixEmail = $siswa->nipd ? trim($siswa->nipd) : strtolower(explode(' ', trim($siswa->nama_lengkap))[0]) . rand(10, 99);
+        $emailSiswa = strtolower($prefixEmail) . $domainSekolah;
+
+        if (User::where('email', $emailSiswa)->exists()) {
+            $emailSiswa = strtolower($prefixEmail) . rand(1, 9) . $domainSekolah;
+        }
+
+        // 🟢 PERBAIKAN MULTIROLE: Hapus 'role' dari array, ganti dengan attachRole/assignRole
+        $user = User::create([
+            'name' => $siswa->nama_lengkap,
+            'email' => $emailSiswa,
+            'password' => Hash::make('siswa123'),
+            'is_approved' => true,
+        ]);
+
+        // 🟢 CARA CUSTOM MULTIROLE:
+        // Cari data role 'siswa' di tabel roles Anda
+        $roleSiswa = Role::where('name', 'siswa')->first();
+        if ($roleSiswa) {
+            $user->roles()->attach($roleSiswa->id); // Masuk ke tabel user_role
+        }
+
+        $siswa->update(['user_id' => $user->id]);
+
+        return redirect()->back()->with('success', "Akun untuk {$siswa->nama_lengkap} berhasil dibuat! Email: {$emailSiswa}");
+    }
+
+    // 2. GENERATE MASSAL
+    public function generateAkunMassal()
+    {
+        // 1. Hilangkan batasan waktu 30 detik khusus untuk fungsi ini
+        set_time_limit(0);
+
+        // Ambil data siswa yang belum punya akun
+        $siswaBelumPunyaAkun = Siswa::whereNull('user_id')->get();
+
+        if ($siswaBelumPunyaAkun->isEmpty()) {
+            return redirect()->back()->with('info', 'Semua siswa sudah memiliki akun login.');
+        }
+
+        // Ambil profil sekolah untuk domain email
+        $profil = DB::table('profil_sekolah')->first();
+        $namaSekolahBersih = $profil ? strtolower(str_replace(' ', '', $profil->nama_sekolah)) : 'sekolah';
+        $domainSekolah = '@' . $namaSekolahBersih . '.sch.id';
+
+        $counter = 0;
+        $passwordHash = Hash::make('siswa123'); // Cukup hash 1 kali di luar loop agar hemat CPU!
+
+        // 🟢 AMBIL ROLE SISWA (Cukup cari 1 kali di luar foreach agar performa cepat)
+        $roleSiswa = Role::where('name', 'siswa')->first();
+
+        if (!$roleSiswa) {
+            return redirect()->back()->with('error', 'Role "siswa" tidak ditemukan di database. Pastikan tabel roles sudah terisi.');
+        }
+
+        // 2. Gunakan Database Transaction agar proses insert massal jauh lebih cepat
+        DB::beginTransaction();
+
+        try {
+            foreach ($siswaBelumPunyaAkun as $siswa) {
+                $prefixEmail = $siswa->nipd ? trim($siswa->nipd) : strtolower(explode(' ', trim($siswa->nama_lengkap))[0]) . rand(10, 99);
+                $emailSiswa = strtolower($prefixEmail) . $domainSekolah;
+
+                // Cek keunikan email
+                if (User::where('email', $emailSiswa)->exists()) {
+                    $emailSiswa = strtolower($prefixEmail) . rand(1, 9) . $domainSekolah;
+                }
+
+                // Buat User
+                $user = User::create([
+                    'name' => $siswa->nama_lengkap,
+                    'email' => $emailSiswa,
+                    'password' => $passwordHash, 
+                    'is_approved' => true, // Langsung aktif
+                ]);
+
+                // 🟢 PERBAIKAN CUSTOM MULTIROLE MASSAL (Mengisi tabel user_role Anda)
+                $user->roles()->attach($roleSiswa->id);
+
+                // Update Siswa
+                $siswa->update(['user_id' => $user->id]);
+                $counter++;
+            }
+
+            // Jika semua lancar, simpan ke database sekaligus
+            DB::commit();
+
+            return redirect()->back()->with('success', "Berhasil men-generate {$counter} akun siswa! Format Email: nisn{$domainSekolah}");
+
+        } catch (\Exception $e) {
+            // Jika ada error di tengah jalan, batalkan semua agar data tidak korup
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat generate massal: ' . $e->getMessage());
+        }
     }
 }

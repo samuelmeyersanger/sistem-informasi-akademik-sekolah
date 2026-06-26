@@ -13,21 +13,35 @@ class UserController extends Controller
 {
     public function index(Request $request)
     {
+        // 1. Ambil input search dan role dari request
+        $search = $request->input('search');
+        $roleFilter = $request->input('role');
+
         // Ambil user beserta data roles custom-nya
         $query = User::with('roles');
 
-        if ($request->has('search') && $request->search != '') {
-            $query->where(function($q) use ($request) {
-                $q->where('name', 'like', '%' . $request->search . '%')
-                  ->orWhere('email', 'like', '%' . $request->search . '%');
+        // 2. Filter berdasarkan Pencarian (Nama / Email)
+        if ($search && $search != '') {
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%')
+                ->orWhere('email', 'like', '%' . $search . '%');
             });
         }
 
-        $users = $query->orderBy('is_approved', 'asc')
-                       ->orderBy('created_at', 'desc')
-                       ->paginate(10);
+        // 3. 🟢 PERBAIKAN MULTIROLE: Filter berdasarkan Role Dropdown
+        if ($roleFilter && $roleFilter != '') {
+            $query->whereHas('roles', function($q) use ($roleFilter) {
+                $q->where('name', $roleFilter); // Mencari ke tabel perantara relasi
+            });
+        }
 
-        // Ambil semua daftar role untuk ditampilkan sebagai pilhan checkbox di modal
+        // Urutkan berdasarkan approval dan waktu pendaftaran
+        $users = $query->orderBy('is_approved', 'asc')
+                    ->orderBy('created_at', 'desc')
+                    ->paginate(10)
+                    ->withQueryString(); // 🟢 WAJIB: Agar saat pindah halaman pagination, filter pencarian & role tidak hilang
+
+        // Ambil semua daftar role untuk ditampilkan sebagai pilihan checkbox di modal
         $allRoles = Role::all(); 
 
         return view('master.user.index', compact('users', 'allRoles'));

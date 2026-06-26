@@ -59,6 +59,23 @@ class RoleAndPermissionSeeder extends Seeder
             ['name' => 'master.semester.update', 'modul' => 'akademik', 'description' => 'Mengubah status aktif semester'],
             ['name' => 'master.semester.destroy', 'modul' => 'akademik', 'description' => 'Menghapus data semester'],
 
+            // --- Modul Kesiswaan ---
+            ['name' => 'kesiswaan.siswa.index', 'modul' => 'kesiswaan', 'description' => 'Melihat data siswa'],
+            ['name' => 'kesiswaan.siswa.store', 'modul' => 'kesiswaan', 'description' => 'Menambah siswa baru'],
+            ['name' => 'kesiswaan.siswa.update', 'modul' => 'kesiswaan', 'description' => 'Mengubah detail siswa'],
+            ['name' => 'kesiswaan.siswa.destroy', 'modul' => 'kesiswaan', 'description' => 'Menghapus data siswa'],
+
+            ['name' => 'kesiswaan.kelas.index', 'modul' => 'kesiswaan', 'description' => 'Melihat data kelas'],
+            ['name' => 'kesiswaan.kelas.store', 'modul' => 'kesiswaan', 'description' => 'Menambah kelas baru'],
+            ['name' => 'kesiswaan.kelas.update', 'modul' => 'kesiswaan', 'description' => 'Mengubah detail kelas'],
+            ['name' => 'kesiswaan.kelas.destroy', 'modul' => 'kesiswaan', 'description' => 'Menghapus data kelas'],
+
+            // --- Modul Pegawai ---
+            ['name' => 'kepegawaian.pegawai.index', 'modul' => 'kepegawaian', 'description' => 'Melihat data pegawai'],
+            ['name' => 'kepegawaian.pegawai.store', 'modul' => 'kepegawaian', 'description' => 'Menambah pegawai baru'],
+            ['name' => 'kepegawaian.pegawai.update', 'modul' => 'kepegawaian', 'description' => 'Mengubah detail pegawai'],
+            ['name' => 'kepegawaian.pegawai.destroy', 'modul' => 'kepegawaian', 'description' => 'Menghapus data pegawai'],
+
             // --- Modul Portal Berita ---
             ['name' => 'master.kategori-blog.index', 'modul' => 'blog', 'description' => 'Melihat kategori blog'],
             ['name' => 'master.kategori-blog.store', 'modul' => 'blog', 'description' => 'Menambah kategori blog baru'],

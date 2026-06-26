@@ -73,13 +73,41 @@ class MenuSeeder extends Seeder
                 'permission_slug' => 'semester.index',
             ],
 
+            // 🟢 Kategori: Kesiswaan
+            [
+                'kategori' => 'Kesiswaan',
+                'nama_menu' => 'Data Siswa',
+                'url' => 'kesiswaan/siswa',
+                'icon' => 'fas fa-user-graduate',
+                'urutan' => 8,
+                'permission_slug' => 'siswa.index',
+            ],
+            [
+                'kategori' => 'Kesiswaan',
+                'nama_menu' => 'Kelas',
+                'url' => 'kesiswaan/kelas',
+                'icon' => 'fas fa-chalkboard-teacher',
+                'urutan' => 9,
+                'permission_slug' => 'kelas.index',
+            ],
+
+            // 🟢 Kategori: Kesiswaan
+            [
+                'kategori' => 'Kepegawaian',
+                'nama_menu' => 'Data Pegawai',
+                'url' => 'kepegawaian/pegawai',
+                'icon' => 'fas fa-user-tie',
+                'urutan' => 10,
+                'permission_slug' => 'pegawai.index',
+            ],
+
             // 🟢 Kategori: Portal Berita
             [
                 'kategori' => 'Portal Berita',
                 'nama_menu' => 'Kategori Blog',
                 'url' => 'master/kategori-blog',
                 'icon' => 'folder',
-                'urutan' => 8,
+                'urutan' => 11,
                 'permission_slug' => 'kategori-blog.index',
             ],
             [
@@ -87,7 +115,7 @@ class MenuSeeder extends Seeder
                 'nama_menu' => 'Artikel Blog',
                 'url' => 'master/blog',
                 'icon' => 'fa-solid fa-newspaper',
-                'urutan' => 9,
+                'urutan' => 12,
                 'permission_slug' => 'blog.index',
             ],
             [
@@ -95,7 +123,7 @@ class MenuSeeder extends Seeder
                 'nama_menu' => 'Komentar Blog',
                 'url' => 'master/komentar-blog',
                 'icon' => 'fa-solid fa-comments',
-                'urutan' => 10,
+                'urutan' => 13,
                 'permission_slug' => 'komentar-blog.index',
             ],
 
@@ -105,7 +133,7 @@ class MenuSeeder extends Seeder
                 'nama_menu' => 'Pengaturan Logo',
                 'url' => 'master/pengaturan-logo',
                 'icon' => 'fa-solid fa-palette',
-                'urutan' => 11,
+                'urutan' => 14,
                 'permission_slug' => 'pengaturan-logo.index',
             ],
             [
@@ -113,7 +141,7 @@ class MenuSeeder extends Seeder
                 'nama_menu' => 'Tentang Sekolah',
                 'url' => 'master/tentang',
                 'icon' => 'fa-solid fa-building-columns',
-                'urutan' => 12,
+                'urutan' => 15,
                 'permission_slug' => 'tentang.index',
             ],
             [
@@ -121,7 +149,7 @@ class MenuSeeder extends Seeder
                 'nama_menu' => 'Profil Sekolah',
                 'url' => 'master/profil-sekolah',
                 'icon' => 'fa-solid fa-school',
-                'urutan' => 13,
+                'urutan' => 16,
                 'permission_slug' => 'profil-sekolah.index',
             ],
             [
@@ -129,7 +157,7 @@ class MenuSeeder extends Seeder
                 'nama_menu' => 'Halaman Statis',
                 'url' => 'master/page',
                 'icon' => 'fa-solid fa-file',
-                'urutan' => 14,
+                'urutan' => 17,
                 'permission_slug' => 'page.index',
             ],
             [
@@ -137,7 +165,7 @@ class MenuSeeder extends Seeder
                 'nama_menu' => 'Tautan Kaki (Footer)',
                 'url' => 'master/footer-link',
                 'icon' => 'link',
-                'urutan' => 15,
+                'urutan' => 18,
                 'permission_slug' => 'footer-link.index',
             ],
             [
@@ -145,7 +173,7 @@ class MenuSeeder extends Seeder
                 'nama_menu' => 'Pesan Masuk Kontak',
                 'url' => 'master/kontak',
                 'icon' => 'fa-solid fa-comment',
-                'urutan' => 16,
+                'urutan' => 19,
                 'permission_slug' => 'kontak.index',
             ],
             [
@@ -153,7 +181,7 @@ class MenuSeeder extends Seeder
                 'nama_menu' => 'Info Kontak Sekolah',
                 'url' => 'master/setting-kontak',
                 'icon' => 'phone',
-                'urutan' => 17,
+                'urutan' => 20,
                 'permission_slug' => 'setting-kontak.index',
             ],
         ];

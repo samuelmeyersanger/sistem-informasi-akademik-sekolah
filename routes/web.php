@@ -29,6 +29,14 @@ use App\Http\Controllers\Master\MenuController;
 use App\Http\Controllers\Master\ActivityLogController;
 use App\Http\Controllers\Kesiswaan\SiswaController;
 use App\Http\Controllers\Kesiswaan\DokumenSiswaController;
+use App\Http\Controllers\Kesiswaan\KelasController;
+use App\Http\Controllers\Kesiswaan\AnggotaKelasController;
+use App\Http\Controllers\Kepegawaian\PegawaiController;
+use App\Http\Controllers\Kepegawaian\DokumenPegawaiController;
+use App\Http\Controllers\Kepegawaian\KenaikanGajiBerkalaController;
+use App\Http\Controllers\Kepegawaian\KenaikanPangkatController;
+use App\Http\Controllers\Sarpras\GedungController;
+use App\Http\Controllers\Sarpras\PeminjamanSarprasController;
 
 /*
 |--------------------------------------------------------------------------
@@ -184,6 +192,10 @@ Route::middleware(['auth', CheckApproval::class])->group(function () {
 
     Route::prefix('kesiswaan')->name('kesiswaan.')->middleware(['permission'])->group(function () {
         // Domain 1: Manajemen Data Siswa & Wali Murid
+        Route::post('kesiswaan/siswa/{id}/generate-akun', [SiswaController::class, 'generateAkunIndividu'])->name('siswa.generateAkun');
+
+        // Route untuk Generate Massal (Semua siswa yang belum punya akun)
+        Route::post('kesiswaan/siswa/generate-akun-massal', [SiswaController::class, 'generateAkunMassal'])->name('siswa.generateMassal');
         Route::get('siswa/download-template', [SiswaController::class, 'downloadTemplate'])->name('siswa.downloadTemplate');
         Route::post('siswa/import-lengkap', [SiswaController::class, 'importSiswaWali'])->name('siswa.importLengkap');
         Route::get('/siswa', [SiswaController::class, 'index'])->name('siswa');
@@ -201,18 +213,22 @@ Route::middleware(['auth', CheckApproval::class])->group(function () {
         Route::post('siswa/{siswa}/prestasi', [DokumenSiswaController::class, 'storePrestasi'])->name('prestasi.store');
         Route::delete('prestasi/{id}', [DokumenSiswaController::class, 'destroyPrestasi'])->name('prestasi.destroy');
 
-        // Domain 3: Master Ruang Kelas & Wali Kelas (Pegawai)
-        Route::get('/kelas', [KelasController::class, 'index'])->name('kelas');
+        // Domain 3: Master Ruang Kelas, Detail & Manajemen Anggota Kelas
+        Route::get('/kelas', [KelasController::class, 'index'])->name('kelas.index');
         Route::post('/kelas', [KelasController::class, 'store'])->name('kelas.store');
+        Route::get('/kelas/{id}', [KelasController::class, 'show'])->name('kelas.show'); // <-- Menampilkan Detail Anggota
         Route::put('/kelas/{id}', [KelasController::class, 'update'])->name('kelas.update');
         Route::delete('/kelas/{id}', [KelasController::class, 'destroy'])->name('kelas.destroy');
+        
+        // Download & Import Anggota Kelas Massal via CSV/Excel
+        Route::get('/kelas/{id}/download-template', [KelasController::class, 'downloadTemplateAnggota'])->name('kelas.anggota.downloadTemplate');
+        Route::post('/kelas/{id}/import', [KelasController::class, 'importAnggota'])->name('kelas.anggota.import');
 
-        // Domain 4: Penempatan, Kenaikan Kelas, & Kelulusan Massal
-        Route::get('/anggota-kelas', [AnggotaKelasController::class, 'index'])->name('anggota-kelas.index');
-        Route::post('/anggota-kelas/plot', [AnggotaKelasController::class, 'store'])->name('anggota-kelas.store');
-        Route::post('/anggota-kelas/naik-kelas', [AnggotaKelasController::class, 'prosesKenaikan'])->name('anggota-kelas.naik-kelas');
-        Route::post('/anggota-kelas/lulus', [AnggotaKelasController::class, 'prosesKelulusan'])->name('anggota-kelas.lulus');
-        Route::delete('/anggota-kelas/copot/{id}', [AnggotaKelasController::class, 'removeSiswa'])->name('anggota-kelas.remove');
+        // Sub-aksi Anggota Kelas internal di dalam KelasController
+        Route::post('/kelas/anggota/store', [KelasController::class, 'storeAnggota'])->name('kelas.anggota.store');
+        Route::post('/kelas/anggota/mutasi', [KelasController::class, 'prosesKenaikan'])->name('kelas.anggota.mutasi');
+        Route::post('/kelas/anggota/kelulusan', [KelasController::class, 'prosesKelulusan'])->name('kelas.anggota.kelulusan');
+        Route::delete('/kelas/anggota/{id}/remove', [KelasController::class, 'removeSiswa'])->name('kelas.anggota.remove');
         /*
         |--------------------------------------------------------------------------
         | 🔓 API Wilayah Lokal Sekaligus (Laravolt)
@@ -257,16 +273,71 @@ Route::middleware(['auth', CheckApproval::class])->group(function () {
     | Modul Manajemen Kepegawaian (SIAS Back-Office)
     |--------------------------------------------------------------------------
     | 🔐 Dikunci menggunakan middleware 'permission' secara tersinkronisasi.
-    | Prefix 'Kepegawaian.' akan melekat otomatis pada setiap komponen rute di dalam grup.
+    | Prefix 'kepegawaian.' akan melekat otomatis pada setiap komponen rute di dalam grup.
     |
     */
 
-    Route::prefix('kepegawaian')->name('kepegawain.')->middleware(['permission'])->group(function () {
-        Route::get('/pegawai', [PegawaiController::class, 'index'])->name('pegawai');
-        Route::post('/pegawai/store', [PegawaiController::class, 'store'])->name('pegawai.store');
-        Route::put('/pegawai/update/{id}', [PegawaiController::class, 'update'])->name('pegawai.update');
-        Route::delete('/pegawai/destroy/{id}', [PegawaiController::class, 'destroy'])->name('pegawai.destroy');
+    Route::prefix('kepegawaian')->name('kepegawaian.')->middleware(['permission'])->group(function () {
+        
+        Route::post('/kepegawaian/pegawai/generate-individu/{id}', [PegawaiController::class, 'generateAkunIndividu'])->name('pegawai.generateIndividu');
+        Route::post('/kepegawaian/pegawai/generate-massal', [PegawaiController::class, 'generateAkunMassal'])->name('pegawai.generateMassal');
+        // Master Pegawai (Otomatis menghasilkan: kepegawaian.pegawai.index, kepegawaian.pegawai.show, dll)
+        Route::resource('pegawai', PegawaiController::class);
+        
+        // Aksi Mutasi & Pensiun
+        Route::post('pegawai/{id}/mutasi', [PegawaiController::class, 'mutasi'])->name('pegawai.mutasi');
+        Route::post('pegawai/{id}/pensiun', [PegawaiController::class, 'pensiun'])->name('pegawai.pensiun');
+
+        // Berkas Dokumen Pegawai
+        Route::post('dokumen-pegawai', [DokumenPegawaiController::class, 'store'])->name('dokumen-pegawai.store');
+        Route::delete('dokumen-pegawai/{id}', [DokumenPegawaiController::class, 'destroy'])->name('dokumen-pegawai.destroy');
+
+        // Kenaikan Gaji Berkala (KGB)
+        Route::post('kgb', [KenaikanGajiBerkalaController::class, 'store'])->name('kgb.store');
+        Route::delete('kgb/{id}', [KenaikanGajiBerkalaController::class, 'destroy'])->name('kgb.destroy');
+
+        // Kenaikan Pangkat
+        Route::post('kenaikan-pangkat', [KenaikanPangkatController::class, 'store'])->name('kenaikan-pangkat.store');
+        Route::delete('kenaikan-pangkat/{id}', [KenaikanPangkatController::class, 'destroy'])->name('kenaikan-pangkat.destroy');
     });
+
+    /*
+    |--------------------------------------------------------------------------
+    | Modul Manajemen Sarpras (SIAS Back-Office)
+    |--------------------------------------------------------------------------
+    | 🔐 Dikunci menggunakan middleware 'permission' secara tersinkronisasi.
+    | Prefix 'Sarpras.' akan melekat otomatis pada setiap komponen rute di dalam grup.
+    |
+    */
+
+    Route::prefix('sarpras')->name('sarpras.')->middleware(['permission'])->group(function () {
+        
+        // --- FITUR MASTER DATA GEDUNG ---
+        Route::get('/gedung', [GedungController::class, 'index'])->name('gedung.index');
+        Route::post('/gedung', [GedungController::class, 'store'])->name('gedung.store');
+        Route::put('/gedung/{id}', [GedungController::class, 'update'])->name('gedung.update'); // <-- Baru
+        Route::get('/gedung/{id}', [GedungController::class, 'show'])->name('gedung.show');
+        Route::delete('/gedung/{id}', [GedungController::class, 'destroy'])->name('gedung.destroy');
+
+        // --- FITUR RUANGAN (Sub dari Gedung) ---
+        Route::post('/gedung/{gedung_id}/ruangan', [GedungController::class, 'storeRuangan'])->name('gedung.storeRuangan');
+        Route::put('/gedung/ruangan/{ruangan_id}', [GedungController::class, 'updateRuangan'])->name('gedung.updateRuangan'); // <-- Baru
+        Route::get('/gedung/ruangan/{ruangan_id}', [GedungController::class, 'showRuangan'])->name('gedung.showRuangan');
+        Route::delete('/gedung/ruangan/{ruangan_id}', [GedungController::class, 'destroyRuangan'])->name('gedung.destroyRuangan');
+
+        // --- FITUR INVENTARIS BARANG (Sub dari Ruangan) ---
+        Route::post('/gedung/ruangan/{ruangan_id}/inventaris', [GedungController::class, 'storeInventaris'])->name('gedung.storeInventaris');
+        Route::put('/gedung/inventaris/{inventaris_id}', [GedungController::class, 'updateInventaris'])->name('gedung.updateInventaris'); // <-- Baru
+        Route::delete('/gedung/inventaris/{inventaris_id}', [GedungController::class, 'destroyInventaris'])->name('gedung.destroyInventaris');
+
+        // Rute Peminjaman Sarpras Sesuai Struktur DB Terbaru
+        Route::get('/peminjaman', [PeminjamanSarprasController::class, 'index'])->name('peminjaman.index');
+        Route::post('/peminjaman', [PeminjamanSarprasController::class, 'store'])->name('peminjaman.store');
+        Route::put('/peminjaman/{id}', [PeminjamanSarprasController::class, 'update'])->name('peminjaman.update');
+        Route::patch('/peminjaman/{id}/kembalikan', [PeminjamanSarprasController::class, 'kembalikan'])->name('peminjaman.kembalikan');
+        Route::delete('/peminjaman/{id}', [PeminjamanSarprasController::class, 'destroy'])->name('peminjaman.destroy');
+    });
+
 });
 
 // 5. Rute Autentikasi Bawaan Laravel (Login, Register, Logout, dll)

@@ -8,6 +8,7 @@
     <div x-data="{
         openCreate: false,
         openDelete: false,
+        openGenerateMassal: false,
         currentStep: 1,
         deleteActionUrl: '',
         deleteTargetName: '',
@@ -113,12 +114,18 @@
                                             file:cursor-pointer cursor-pointer
                                             bg-white border border-gray-200 rounded-xl p-1 shadow-sm focus:outline-none" />
                             </div>
-                            <button type="submit" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl shadow-sm transition-all flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap">
+                            <button type="submit" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-black font-semibold rounded-xl shadow-sm transition-all flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap">
                                 📥 Mulai Import
                             </button>
                         </form>
                     </div>
 
+                    <div class="mb-4 flex justify-start">
+                        <button type="button" @click="openGenerateMassal = true" class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg shadow-sm transition-colors cursor-pointer">
+                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                            Generate Akun Massal
+                        </button>
+                    </div>
                 </div>
 
                 <div class="overflow-x-auto">
@@ -158,12 +165,30 @@
                                             <span class="px-2 py-0.5 bg-rose-50 border border-rose-200 text-rose-700 text-[10px] font-bold uppercase rounded">🔴 Keluar</span>
                                         @endif
                                     </td>
-                                    <td class="p-4 pr-6 text-center">
+                                    <td class="p-4 text-center">
                                         <div class="flex items-center justify-center gap-3">
-                                            <a href="{{ route('kesiswaan.siswa.show', $item->id) }}" class="p-1 text-indigo-600 hover:underline font-semibold flex items-center gap-0.5">
+                                            <a href="{{ route('kesiswaan.siswa.show', $item->id) }}" class="inline-flex items-center gap-1 text-xs text-indigo-600 hover:text-indigo-900 font-medium transition-colors">
                                                 👁️ Profil
                                             </a>
-                                            <button type="button" @click="initDelete('{{ route('kesiswaan.siswa.destroy', $item->id) }}', '{{ addslashes($item->nama_lengkap) }}')" class="p-1 text-rose-600 hover:underline font-medium cursor-pointer">
+
+                                            <span class="text-gray-200">|</span>
+
+                                            @if(!$item->user_id)
+                                                <form action="{{ route('kesiswaan.siswa.generateAkun', $item->id) }}" method="POST" class="inline">
+                                                    @csrf
+                                                    <button type="submit" class="inline-flex items-center gap-1 px-2 py-1 bg-amber-500 hover:bg-amber-600 text-black text-[11px] font-semibold rounded transition-colors cursor-pointer" title="Buat akun login siswa ini">
+                                                        🔑 Buat Akun
+                                                    </button>
+                                                </form>
+                                            @else
+                                                <span class="inline-flex items-center gap-1 px-2 py-1 bg-emerald-50 border border-emerald-200 text-emerald-700 text-[11px] font-medium rounded" title="Siswa sudah punya akun">
+                                                    ✅ Aktif
+                                                </span>
+                                            @endif
+
+                                            <span class="text-gray-200">|</span>
+
+                                            <button type="button" @click="initDelete('{{ route('kesiswaan.siswa.destroy', $item->id) }}', '{{ addslashes($item->nama_lengkap) }}')" class="inline-flex items-center gap-1 text-xs text-rose-600 hover:text-rose-900 font-medium transition-colors cursor-pointer">
                                                 🗑️ Hapus
                                             </button>
                                         </div>
@@ -881,6 +906,29 @@
                     @method('DELETE')
                     <button type="button" @click="openDelete = false" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 font-semibold rounded-lg text-xs cursor-pointer">Batal</button>
                     <button type="submit" class="px-4 py-2 !bg-rose-600 hover:!bg-rose-700 !text-white font-bold rounded-lg text-xs cursor-pointer shadow-sm">Ya, Hapus</button>
+                </form>
+            </div>
+        </div>
+
+        <div x-show="openGenerateMassal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm" style="display: none;" x-transition>
+            <div class="bg-white rounded-2xl shadow-xl border border-gray-200 max-w-sm w-full p-6 text-center space-y-4" @click.away="openGenerateMassal = false">
+                <div class="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center text-xl mx-auto border border-indigo-100 animate-pulse">
+                    ⚡
+                </div>
+                <div>
+                    <h4 class="text-sm font-bold text-gray-900">Generate Akun Massal?</h4>
+                    <p class="text-xs text-gray-500 mt-1">
+                        Apakah Anda yakin ingin men-generate akun untuk <span class="font-bold text-gray-800">SEMUA siswa</span> yang belum memiliki akun di dalam sistem?
+                    </p>
+                </div>
+                <form action="{{ route('kesiswaan.siswa.generateMassal') }}" method="POST" class="flex justify-center gap-2 pt-2 m-0">
+                    @csrf
+                    <button type="button" @click="openGenerateMassal = false" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 font-semibold rounded-lg text-xs cursor-pointer border border-transparent">
+                        Batal
+                    </button>
+                    <button type="submit" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg text-xs cursor-pointer shadow-sm border border-transparent">
+                        Ya, Proses
+                    </button>
                 </form>
             </div>
         </div>

@@ -2,16 +2,15 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Traits\Loggable;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Pegawai extends Model
 {
-    use HasFactory, SoftDeletes, Loggable;
+    use SoftDeletes;
 
-    // Nama tabel disesuaikan dengan migration Anda (plural/singular)
     protected $table = 'pegawai';
 
     protected $fillable = [
@@ -39,19 +38,33 @@ class Pegawai extends Model
         'tanggal_pensiun' => 'date',
     ];
 
-    /**
-     * Relasi ke model User (One to One / BelongsTo)
-     */
-    public function user()
+    // Berelasi ke User (jika pegawai punya akun login)
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(User::class);
     }
 
-    /**
-     * Relasi ke model Semester (BelongsTo)
-     */
-    public function semester()
+    // Berelasi ke Semester
+    public function semester(): BelongsTo
     {
-        return $this->belongsTo(Semester::class, 'semester_id');
+        return $this->belongsTo(Semester::class);
+    }
+
+    // Punya banyak Dokumen
+    public function dokumen(): HasMany
+    {
+        return $this->hasMany(DokumenPegawai::class, 'pegawai_id');
+    }
+
+    // Punya banyak Riwayat Kenaikan Gaji Berkala (KGB)
+    public function kgb(): HasMany
+    {
+        return $this->hasMany(KenaikanGajiBerkala::class, 'pegawai_id');
+    }
+
+    // Punya banyak Riwayat Kenaikan Pangkat
+    public function kenaikanPangkat(): HasMany
+    {
+        return $this->hasMany(KenaikanPangkat::class, 'pegawai_id');
     }
 }

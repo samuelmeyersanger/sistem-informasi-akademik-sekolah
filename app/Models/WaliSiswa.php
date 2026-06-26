@@ -6,10 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Traits\Loggable;
 
 class WaliSiswa extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, Loggable;
 
     protected $table = 'wali_siswa';
 
