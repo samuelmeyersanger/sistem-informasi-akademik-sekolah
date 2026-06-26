@@ -37,6 +37,9 @@ use App\Http\Controllers\Kepegawaian\KenaikanGajiBerkalaController;
 use App\Http\Controllers\Kepegawaian\KenaikanPangkatController;
 use App\Http\Controllers\Sarpras\GedungController;
 use App\Http\Controllers\Sarpras\PeminjamanSarprasController;
+use App\Http\Controllers\Akademik\MataPelajaranController;
+use App\Http\Controllers\Akademik\KodeGuruController;
+use App\Http\Controllers\Akademik\JadwalPelajaranController;
 
 /*
 |--------------------------------------------------------------------------
@@ -338,6 +341,40 @@ Route::middleware(['auth', CheckApproval::class])->group(function () {
         Route::delete('/peminjaman/{id}', [PeminjamanSarprasController::class, 'destroy'])->name('peminjaman.destroy');
     });
 
+    /*
+    |--------------------------------------------------------------------------
+    | Modul Manajemen Akademik (SIAS Back-Office)
+    |--------------------------------------------------------------------------
+    | 🔐 Dikunci menggunakan middleware 'permission' secara tersinkronisasi.
+    | Prefix 'Akademik.' akan melekat otomatis pada setiap komponen rute di dalam grup.
+    |
+    */
+
+    Route::prefix('akademik')->name('akademik.')->middleware(['permission'])->group(function () {
+        // --- MODUL MASTER MATA PELAJARAN ---
+        Route::get('/mata-pelajaran', [MataPelajaranController::class, 'index'])->name('mata-pelajaran.index');
+        Route::post('/mata-pelajaran', [MataPelajaranController::class, 'store'])->name('mata-pelajaran.store');
+        Route::put('/mata-pelajaran/{id}', [MataPelajaranController::class, 'update'])->name('mata-pelajaran.update');
+        Route::delete('/mata-pelajaran/{id}', [MataPelajaranController::class, 'destroy'])->name('mata-pelajaran.destroy');
+
+        // --- MODUL KODE GURU / PENUGASAN ---
+        Route::get('/kode-guru', [KodeGuruController::class, 'index'])->name('kode-guru.index');
+        Route::post('/kode-guru', [KodeGuruController::class, 'store'])->name('kode-guru.store');
+        Route::put('/kode-guru/{id}', [KodeGuruController::class, 'update'])->name('kode-guru.update');
+        Route::delete('/kode-guru/{id}', [KodeGuruController::class, 'destroy'])->name('kode-guru.destroy');
+
+        // --- MODUL KONFIGURASI WAKTU KBM ---
+        Route::get('/waktu-kbm', [WaktuKbmController::class, 'index'])->name('waktu-kbm.index');
+        Route::post('/waktu-kbm', [WaktuKbmController::class, 'store'])->name('waktu-kbm.store');
+        Route::put('/waktu-kbm/{id}', [WaktuKbmController::class, 'update'])->name('waktu-kbm.update');
+        Route::delete('/waktu-kbm/{id}', [WaktuKbmController::class, 'destroy'])->name('waktu-kbm.destroy');
+
+        // --- MODUL UTAMA: JADWAL PELAJARAN ---
+        Route::get('/jadwal-pelajaran', [JadwalPelajaranController::class, 'index'])->name('jadwal-pelajaran.index');
+        Route::post('/jadwal-pelajaran', [JadwalPelajaranController::class, 'store'])->name('jadwal-pelajaran.store');
+        Route::delete('/jadwal-pelajaran/{id}', [JadwalPelajaranController::class, 'destroy'])->name('jadwal-pelajaran.destroy');
+        
+    });
 });
 
 // 5. Rute Autentikasi Bawaan Laravel (Login, Register, Logout, dll)
