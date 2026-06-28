@@ -27,6 +27,7 @@ use App\Http\Controllers\Master\FooterLinkController;
 use App\Http\Controllers\Master\PengaturanLogoController;
 use App\Http\Controllers\Master\MenuController;
 use App\Http\Controllers\Master\ActivityLogController;
+use App\Http\Controllers\Master\BackupController;
 use App\Http\Controllers\Kesiswaan\SiswaController;
 use App\Http\Controllers\Kesiswaan\DokumenSiswaController;
 use App\Http\Controllers\Kesiswaan\KelasController;
@@ -39,10 +40,10 @@ use App\Http\Controllers\Sarpras\GedungController;
 use App\Http\Controllers\Sarpras\PeminjamanSarprasController;
 use App\Http\Controllers\Akademik\MataPelajaranController;
 use App\Http\Controllers\Akademik\KodeGuruController;
-use App\Http\Controllers\Akademik\JadwalPelajaranController;
 use App\Http\Controllers\Akademik\WaktuKbmController;
 use App\Http\Controllers\Piket\PetugasPiketController;
 use App\Http\Controllers\Piket\JurnalPiketController;
+use App\Http\Controllers\Ekskul\EkstrakurikulerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -148,6 +149,12 @@ Route::middleware(['auth', CheckApproval::class])->group(function () {
         Route::resource('kontak', KontakController::class)->only(['index', 'show', 'destroy'])->names('kontak');
         Route::get('setting-kontak', [SettingKontakController::class, 'index'])->name('setting-kontak.index');
         Route::post('setting-kontak', [SettingKontakController::class, 'storeOrUpdate'])->name('setting-kontak.save');
+
+        // 🟢 SEKARANG BENAR: URL tanpa 'master/', dan name() tanpa 'master.'
+        Route::get('backup', [BackupController::class, 'index'])->name('backup.index');
+        Route::post('backup/create', [BackupController::class, 'create'])->name('backup.create');
+        Route::get('backup/download/{fileName}', [BackupController::class, 'download'])->name('backup.download');
+        Route::post('backup/upload-restore', [BackupController::class, 'uploadRestore'])->name('backup.upload-restore');
 
         /*
         |--------------------------------------------------------------------------
@@ -374,11 +381,6 @@ Route::middleware(['auth', CheckApproval::class])->group(function () {
         Route::post('/waktu-kbm', [WaktuKbmController::class, 'store'])->name('waktu-kbm.store');
         Route::put('/waktu-kbm/{id}', [WaktuKbmController::class, 'update'])->name('waktu-kbm.update');
         Route::delete('/waktu-kbm/{id}', [WaktuKbmController::class, 'destroy'])->name('waktu-kbm.destroy');
-
-        // --- MODUL UTAMA: JADWAL PELAJARAN ---
-        Route::get('/jadwal-pelajaran', [JadwalPelajaranController::class, 'index'])->name('jadwal-pelajaran.index');
-        Route::post('/jadwal-pelajaran', [JadwalPelajaranController::class, 'store'])->name('jadwal-pelajaran.store');
-        Route::delete('/jadwal-pelajaran/{id}', [JadwalPelajaranController::class, 'destroy'])->name('jadwal-pelajaran.destroy');
     });
     /*
     |--------------------------------------------------------------------------
@@ -409,6 +411,27 @@ Route::middleware(['auth', CheckApproval::class])->group(function () {
         Route::post('absen-siswa', [JurnalPiketController::class, 'storeAbsenSiswa'])->name('absen-siswa.store');
         Route::post('absen-pegawai', [JurnalPiketController::class, 'storeAbsenPegawai'])->name('absen-pegawai.store');
     });
+
+    /*
+    |--------------------------------------------------------------------------
+    | Modul Manajemen Ekskul (SIAS Back-Office)
+    |--------------------------------------------------------------------------
+    | 🔐 Dikunci menggunakan middleware 'permission' secara tersinkronisasi.
+    | Prefix 'ekskul.' akan melekat otomatis pada setiap komponen rute di dalam grup.
+    |
+    */
+
+    Route::prefix('ekskul')->name('ekskul.')->middleware(['permission'])->group(function () {
+        // Pastikan rute ini ada
+        Route::resource('ekstrakurikuler', EkstrakurikulerController::class);
+        
+        // Rute tambahan untuk anggota dan prestasi tetap sama seperti kemarin
+        Route::post('ekstrakurikuler/{ekstrakurikuler}/anggota', [EkstrakurikulerController::class, 'storeAnggota'])->name('ekstrakurikuler.anggota.store');
+        Route::delete('ekstrakurikuler/{ekstrakurikuler}/anggota/{anggota}', [EkstrakurikulerController::class, 'destroyAnggota'])->name('ekstrakurikuler.anggota.destroy');
+        Route::post('ekstrakurikuler/{ekstrakurikuler}/prestasi', [EkstrakurikulerController::class, 'storePrestasi'])->name('ekstrakurikuler.prestasi.store');
+        Route::delete('ekstrakurikuler/{ekstrakurikuler}/prestasi/{prestasi}', [EkstrakurikulerController::class, 'destroyPrestasi'])->name('ekstrakurikuler.prestasi.destroy');
+    });
+
 });
 
 // 5. Rute Autentikasi Bawaan Laravel (Login, Register, Logout, dll)

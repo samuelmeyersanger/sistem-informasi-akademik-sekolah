@@ -67,4 +67,9 @@ class Pegawai extends Model
     {
         return $this->hasMany(KenaikanPangkat::class, 'pegawai_id');
     }
+
+    public function ekskulBinaan() 
+    {
+        return $this->hasMany(Ekstrakurikuler::class, 'pembina_id');
+    }
 }

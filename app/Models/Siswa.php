@@ -118,4 +118,9 @@ class Siswa extends Model
     {
         return $this->hasMany(PrestasiSiswa::class, 'siswa_id');
     }
+
+    public function ekskulYangDiikuti() 
+    {
+        return $this->hasMany(AnggotaEkstrakurikuler::class, 'siswa_id');
+    }
 }

@@ -90,7 +90,7 @@ class RoleAndPermissionSeeder extends Seeder
 
             // 📦 Sub-Modul: Manajemen Inventaris Barang (Akses via Detail Ruangan)
             ['name' => 'sarpras.inventaris.store', 'modul' => 'sarpras', 'description' => 'Mendaftarkan barang inventaris baru ke dalam ruangan'],
-            ['name' => 'sarpras.inventaris.update', 'modul' => 'sarpras', 'description' => 'Mengubah data dan kondisi barang inventaris'],
+            ['name' => 'sarpras.inventaris.update', 'modul' => 'sarpras', 'description' => 'Mengubah data and kondisi barang inventaris'],
             ['name' => 'sarpras.inventaris.destroy', 'modul' => 'sarpras', 'description' => 'Menghapus barang dari daftar inventaris ruangan'],
 
             // 📦 Sub-Modul: Sirkulasi Peminjaman Sarpras
@@ -119,6 +119,17 @@ class RoleAndPermissionSeeder extends Seeder
             ['name' => 'kepegawaian.pegawai.store', 'modul' => 'kepegawaian', 'description' => 'Menambah pegawai baru'],
             ['name' => 'kepegawaian.pegawai.update', 'modul' => 'kepegawaian', 'description' => 'Mengubah detail pegawai'],
             ['name' => 'kepegawaian.pegawai.destroy', 'modul' => 'kepegawaian', 'description' => 'Menghapus data pegawai'],
+
+            // --- 📌 Modul Manajemen Ekskul (Fitur Tambahan) ---
+            ['name' => 'ekskul.ekstrakurikuler.index', 'modul' => 'ekskul', 'description' => 'Melihat daftar ekstrakurikuler sekolah'],
+            ['name' => 'ekskul.ekstrakurikuler.store', 'modul' => 'ekskul', 'description' => 'Membuat/Menambah program ekstrakurikuler baru'],
+            ['name' => 'ekskul.ekstrakurikuler.show', 'modul' => 'ekskul', 'description' => 'Melihat detail data dan ruang kendali internal ekskul'],
+            ['name' => 'ekskul.ekstrakurikuler.update', 'modul' => 'ekskul', 'description' => 'Mengubah konfigurasi umum data ekstrakurikuler'],
+            ['name' => 'ekskul.ekstrakurikuler.destroy', 'modul' => 'ekskul', 'description' => 'Menghapus data program ekstrakurikuler'],
+            ['name' => 'ekskul.ekstrakurikuler.anggota.store', 'modul' => 'ekskul', 'description' => 'Mendaftarkan siswa ke dalam keanggotaan ekskul'],
+            ['name' => 'ekskul.ekstrakurikuler.anggota.destroy', 'modul' => 'ekskul', 'description' => 'Mengeluarkan siswa dari daftar keanggotaan ekskul'],
+            ['name' => 'ekskul.ekstrakurikuler.prestasi.store', 'modul' => 'ekskul', 'description' => 'Mencatat raihan lembar prestasi baru pada ekskul'],
+            ['name' => 'ekskul.ekstrakurikuler.prestasi.destroy', 'modul' => 'ekskul', 'description' => 'Menghapus data catatan prestasi ekskul siswa'],
 
             // --- 📌 Modul Guru Piket Sekolah (Fitur Baru) ---
             ['name' => 'piket.dashboard', 'modul' => 'piket', 'description' => 'Melihat pusat kendali operasional jurnal piket harian'],
@@ -179,6 +190,12 @@ class RoleAndPermissionSeeder extends Seeder
 
             ['name' => 'master.setting-kontak.index', 'modul' => 'pengaturan', 'description' => 'Melihat data kontak info sekolah'],
             ['name' => 'master.setting-kontak.save', 'modul' => 'pengaturan', 'description' => 'Mengubah nomor telepon/email sekolah'],
+
+            ['name' => 'master.backup.index', 'modul' => 'pengaturan', 'description' => 'Melihat daftar backup sistem'],
+            ['name' => 'master.backup.create', 'modul' => 'pengaturan', 'description' => 'Membuat backup baru sistem'],
+            ['name' => 'master.backup.restore', 'modul' => 'pengaturan', 'description' => 'Mengrestore backup sistem'],
+            ['name' => 'master.backup.download', 'modul' => 'pengaturan', 'description' => 'Mengunduh backup file'],
+            ['name' => 'master.backup.upload-restore', 'modul' => 'pengaturan', 'description' => 'Mengupload dan restore backup file'],
         ];
 
         // 3. Masukkan ke database dan pasangkan ke Role secara otomatis

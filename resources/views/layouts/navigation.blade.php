@@ -39,7 +39,6 @@
                     @foreach($daftarMenu as $menu)
                         @php
                             // Cek apakah halaman saat ini sesuai dengan rute database (Mendukung pola wildcard *)
-                            // Contoh: jika url 'admin/user', akan aktif juga di 'admin/user/create'
                             $isActive = request()->is($menu->url) || request()->is($menu->url . '/*');
                         @endphp
 
@@ -66,14 +65,15 @@
 
     </nav>
 
+    {{-- 🟢 BAGIAN YANG DIPERBAIKI (Diberi Jaring Pengaman ?-> dan ??) --}}
     <div class="p-4 bg-slate-950 border-t border-slate-800 flex items-center gap-3 shrink-0">
         <div class="w-8 h-8 rounded-full bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center font-bold text-indigo-400 uppercase text-xs shrink-0">
-            {{ substr(Auth::user()->name, 0, 2) }}
+            {{ substr(Auth::user()?->name ?? 'US', 0, 2) }}
         </div>
         <div class="flex-1 min-w-0">
-            <p class="text-xs font-bold text-white truncate">{{ Auth::user()->name }}</p>
+            <p class="text-xs font-bold text-white truncate">{{ Auth::user()?->name ?? 'User Sesi Lama' }}</p>
             <span class="text-[9px] uppercase font-bold px-1.5 py-0.5 bg-slate-800 text-slate-400 rounded border border-slate-700/50 inline-block mt-0.5">
-                {{ Auth::user()->role->nama_role ?? 'User' }}
+                {{ Auth::user()?->role?->nama_role ?? 'Guest' }}
             </span>
         </div>
     </div>
