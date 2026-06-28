@@ -48,7 +48,7 @@ class RoleAndPermissionSeeder extends Seeder
 
             ['name' => 'master.activity-logs', 'modul' => 'activity-logs', 'description' => 'Melihat log aktivitas sistem'],
 
-            // --- Modul Akademik ---
+            // --- Modul Akademik & Penjadwalan ---
             ['name' => 'master.tahun-ajaran.index', 'modul' => 'akademik', 'description' => 'Melihat data tahun ajaran'],
             ['name' => 'master.tahun-ajaran.store', 'modul' => 'akademik', 'description' => 'Menambah tahun ajaran baru'],
             ['name' => 'master.tahun-ajaran.update', 'modul' => 'akademik', 'description' => 'Mengubah konfigurasi tahun ajaran'],
@@ -74,6 +74,35 @@ class RoleAndPermissionSeeder extends Seeder
             ['name' => 'akademik.waktu-kbm.update', 'modul' => 'akademik', 'description' => 'Mengubah slot waktu KBM'],
             ['name' => 'akademik.waktu-kbm.destroy', 'modul' => 'akademik', 'description' => 'Menghapus data slot waktu KBM'],
 
+            // --- Modul Sarana & Prasarana (Sarpras) ---
+            // 🏢 Sub-Modul: Manajemen Gedung
+            ['name' => 'sarpras.gedung.index', 'modul' => 'sarpras', 'description' => 'Melihat daftar master gedung sekolah'],
+            ['name' => 'sarpras.gedung.store', 'modul' => 'sarpras', 'description' => 'Menambah data gedung baru'],
+            ['name' => 'sarpras.gedung.show', 'modul' => 'sarpras', 'description' => 'Melihat detail gedung dan ruangan di dalamnya'],
+            ['name' => 'sarpras.gedung.update', 'modul' => 'sarpras', 'description' => 'Mengubah informasi data master gedung'],
+            ['name' => 'sarpras.gedung.destroy', 'modul' => 'sarpras', 'description' => 'Menghapus data master gedung'],
+
+            // 🚪 Sub-Modul: Manajemen Ruangan (Akses via Detail Gedung)
+            ['name' => 'sarpras.ruangan.store', 'modul' => 'sarpras', 'description' => 'Menambah ruangan baru ke dalam gedung'],
+            ['name' => 'sarpras.ruangan.show', 'modul' => 'sarpras', 'description' => 'Melihat detail ruangan beserta daftar inventaris barang'],
+            ['name' => 'sarpras.ruangan.update', 'modul' => 'sarpras', 'description' => 'Mengubah informasi detail ruangan'],
+            ['name' => 'sarpras.ruangan.destroy', 'modul' => 'sarpras', 'description' => 'Menghapus data ruangan dari gedung'],
+
+            // 📦 Sub-Modul: Manajemen Inventaris Barang (Akses via Detail Ruangan)
+            ['name' => 'sarpras.inventaris.store', 'modul' => 'sarpras', 'description' => 'Mendaftarkan barang inventaris baru ke dalam ruangan'],
+            ['name' => 'sarpras.inventaris.update', 'modul' => 'sarpras', 'description' => 'Mengubah data dan kondisi barang inventaris'],
+            ['name' => 'sarpras.inventaris.destroy', 'modul' => 'sarpras', 'description' => 'Menghapus barang dari daftar inventaris ruangan'],
+
+            // 📦 Sub-Modul: Sirkulasi Peminjaman Sarpras
+            ['name' => 'sarpras.peminjaman.index', 'modul' => 'sarpras', 'description' => 'Melihat daftar riwayat log transaksi peminjaman sarpras'],
+            ['name' => 'sarpras.peminjaman.store', 'modul' => 'sarpras', 'description' => 'Mencatat transaksi peminjaman sarpras baru (Memotong stok)'],
+            ['name' => 'sarpras.peminjaman.update', 'modul' => 'sarpras', 'description' => 'Mengubah detail data peminjaman yang masih aktif'],
+            ['name' => 'sarpras.peminjaman.kembalikan', 'modul' => 'sarpras', 'description' => 'Memproses pengembalian sarpras (Mengembalikan stok & cek keterlambatan)'],
+            ['name' => 'sarpras.peminjaman.destroy', 'modul' => 'sarpras', 'description' => 'Menghapus data lembar log transaksi peminjaman'],
+            
+            // Rute tunggal global untuk melihat jadwal kelas (Hak Kepemilikan Data difilter di tingkat Controller belakangan)
+            ['name' => 'kesiswaan.kelas.jadwal', 'modul' => 'akademik', 'description' => 'Melihat jadwal pelajaran ruang kelas dinamis'],
+
             // --- Modul Kesiswaan ---
             ['name' => 'kesiswaan.siswa.index', 'modul' => 'kesiswaan', 'description' => 'Melihat data siswa'],
             ['name' => 'kesiswaan.siswa.store', 'modul' => 'kesiswaan', 'description' => 'Menambah siswa baru'],
@@ -85,11 +114,29 @@ class RoleAndPermissionSeeder extends Seeder
             ['name' => 'kesiswaan.kelas.update', 'modul' => 'kesiswaan', 'description' => 'Mengubah detail kelas'],
             ['name' => 'kesiswaan.kelas.destroy', 'modul' => 'kesiswaan', 'description' => 'Menghapus data kelas'],
 
-            // --- Modul Pegawai ---
+            // --- Modul Kepegawaian ---
             ['name' => 'kepegawaian.pegawai.index', 'modul' => 'kepegawaian', 'description' => 'Melihat data pegawai'],
             ['name' => 'kepegawaian.pegawai.store', 'modul' => 'kepegawaian', 'description' => 'Menambah pegawai baru'],
             ['name' => 'kepegawaian.pegawai.update', 'modul' => 'kepegawaian', 'description' => 'Mengubah detail pegawai'],
             ['name' => 'kepegawaian.pegawai.destroy', 'modul' => 'kepegawaian', 'description' => 'Menghapus data pegawai'],
+
+            // --- 📌 Modul Guru Piket Sekolah (Fitur Baru) ---
+            ['name' => 'piket.dashboard', 'modul' => 'piket', 'description' => 'Melihat pusat kendali operasional jurnal piket harian'],
+            ['name' => 'piket.catatan.store', 'modul' => 'piket', 'description' => 'Menyimpan berita acara kejadian penting harian'],
+            
+            ['name' => 'piket.petugas.index', 'modul' => 'piket', 'description' => 'Melihat matriks jadwal guru piket mingguan'],
+            ['name' => 'piket.petugas.store', 'modul' => 'piket', 'description' => 'Membuat plotting jadwal guru piket baru'],
+            ['name' => 'piket.petugas.update', 'modul' => 'piket', 'description' => 'Mengubah susunan regu/anggota tim piket'],
+            ['name' => 'piket.petugas.destroy', 'modul' => 'piket', 'description' => 'Menghapus jadwal regu piket kerja'],
+
+            ['name' => 'piket.izin-siswa.store', 'modul' => 'piket', 'description' => 'Mencatat surat izin keluar lingkungan sekolah bagi siswa'],
+            ['name' => 'piket.izin-siswa.kembali', 'modul' => 'piket', 'description' => 'Konfirmasi kepulangan/kedatangan siswa di meja piket'],
+            
+            ['name' => 'piket.izin-pegawai.store', 'modul' => 'piket', 'description' => 'Mencatat dispensasi izin keluar meninggalkan sekolah bagi pegawai'],
+            ['name' => 'piket.izin-pegawai.kembali', 'modul' => 'piket', 'description' => 'Konfirmasi kepulangan/kedatangan pegawai di meja piket'],
+
+            ['name' => 'piket.absen-siswa.store', 'modul' => 'piket', 'description' => 'Merekam ketidakhadiran (Sakit/Izin/Alpha) siswa'],
+            ['name' => 'piket.absen-pegawai.store', 'modul' => 'piket', 'description' => 'Merekam ketidakhadiran guru dan instruksi tindak lanjut kelas'],
 
             // --- Modul Portal Berita ---
             ['name' => 'master.kategori-blog.index', 'modul' => 'blog', 'description' => 'Melihat kategori blog'],

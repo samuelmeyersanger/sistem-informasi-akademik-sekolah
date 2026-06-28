@@ -20,7 +20,7 @@ class MenuSeeder extends Seeder
                 'url' => 'master/user',
                 'icon' => 'users', 
                 'urutan' => 1,
-                'permission_slug' => 'user.index',
+                'permission_slug' => 'master.user.index', // 🔍 Diperbaiki
             ],
             [
                 'kategori' => 'Sistem Pengguna',
@@ -28,7 +28,7 @@ class MenuSeeder extends Seeder
                 'url' => 'master/role',
                 'icon' => 'shield',
                 'urutan' => 2,
-                'permission_slug' => 'role.index',
+                'permission_slug' => 'master.role.index', // 🔍 Diperbaiki
             ],
             [
                 'kategori' => 'Sistem Pengguna',
@@ -36,7 +36,7 @@ class MenuSeeder extends Seeder
                 'url' => 'master/permission',
                 'icon' => 'key',
                 'urutan' => 3,
-                'permission_slug' => 'permission.index',
+                'permission_slug' => 'master.permission.index', // 🔍 Diperbaiki
             ],
             [
                 'kategori' => 'Sistem Pengguna',
@@ -44,7 +44,7 @@ class MenuSeeder extends Seeder
                 'url' => 'master/menu',
                 'icon' => 'list',
                 'urutan' => 4,
-                'permission_slug' => 'menu.index',
+                'permission_slug' => 'master.menu.index', // 🔍 Diperbaiki
             ],
             [
                 'kategori' => 'Sistem Pengguna',
@@ -52,7 +52,7 @@ class MenuSeeder extends Seeder
                 'url' => 'master/activity-logs',
                 'icon' => 'fas fa-history',
                 'urutan' => 5,
-                'permission_slug' => 'activity-logs',
+                'permission_slug' => 'master.activity-logs', // 🔍 Diperbaiki
             ],
 
             // 🟢 Kategori: Akademik
@@ -62,7 +62,7 @@ class MenuSeeder extends Seeder
                 'url' => 'master/tahun-ajaran',
                 'icon' => 'calendar',
                 'urutan' => 6,
-                'permission_slug' => 'tahun-ajaran.index',
+                'permission_slug' => 'master.tahun-ajaran.index', // 🔍 Diperbaiki
             ],
             [
                 'kategori' => 'Akademik',
@@ -70,7 +70,7 @@ class MenuSeeder extends Seeder
                 'url' => 'master/semester',
                 'icon' => 'fa-solid fa-calendar-days',
                 'urutan' => 7,
-                'permission_slug' => 'semester.index',
+                'permission_slug' => 'master.semester.index', // 🔍 Diperbaiki
             ],
             [
                 'kategori' => 'Akademik',
@@ -78,7 +78,7 @@ class MenuSeeder extends Seeder
                 'url' => 'akademik/mata-pelajaran',
                 'icon' => 'fas fa-book-open',
                 'urutan' => 8,
-                'permission_slug' => 'mata-pelajaran.index',
+                'permission_slug' => 'akademik.mata-pelajaran.index', // 🔍 Diperbaiki
             ],
             [
                 'kategori' => 'Akademik',
@@ -86,7 +86,7 @@ class MenuSeeder extends Seeder
                 'url' => 'akademik/kode-guru',
                 'icon' => 'fas fa-id-badge',
                 'urutan' => 9,
-                'permission_slug' => 'kode-guru.index',
+                'permission_slug' => 'akademik.kode-guru.index', // 🔍 Diperbaiki
             ],
             [
                 'kategori' => 'Akademik',
@@ -94,7 +94,7 @@ class MenuSeeder extends Seeder
                 'url' => 'akademik/waktu-kbm',
                 'icon' => 'fas fa-clock',
                 'urutan' => 10,
-                'permission_slug' => 'waktu-kbm.index',
+                'permission_slug' => 'akademik.waktu-kbm.index', // 🔍 Diperbaiki
             ],
 
             // 🟢 Kategori: Kesiswaan
@@ -103,26 +103,62 @@ class MenuSeeder extends Seeder
                 'nama_menu' => 'Data Siswa',
                 'url' => 'kesiswaan/siswa',
                 'icon' => 'fas fa-user-graduate',
-                'urutan' => 8,
-                'permission_slug' => 'siswa.index',
+                'urutan' => 11,
+                'permission_slug' => 'kesiswaan.siswa.index', // 🔍 Diperbaiki
             ],
             [
                 'kategori' => 'Kesiswaan',
-                'nama_menu' => 'Kelas, Anggota Kelas, dan Jadwal',
+                'nama_menu' => 'Kelas & Penjadwalan',
                 'url' => 'kesiswaan/kelas',
                 'icon' => 'fas fa-chalkboard-teacher',
-                'urutan' => 9,
-                'permission_slug' => 'kelas.index',
+                'urutan' => 12,
+                'permission_slug' => 'kesiswaan.kelas.index', // 🔍 Diperbaiki
             ],
 
-            // 🟢 Kategori: Kesiswaan
+            // 🟢 Kategori: Kepegawaian
             [
                 'kategori' => 'Kepegawaian',
                 'nama_menu' => 'Data Pegawai',
                 'url' => 'kepegawaian/pegawai',
                 'icon' => 'fas fa-user-tie',
-                'urutan' => 10,
-                'permission_slug' => 'pegawai.index',
+                'urutan' => 13,
+                'permission_slug' => 'kepegawaian.pegawai.index', // 🔍 Diperbaiki
+            ],
+
+            // 🟢 Kategori: Piket
+            [
+                'kategori' => 'Piket',
+                'nama_menu' => 'Dashboard Piket',
+                'url' => 'piket/dashboard',
+                'icon' => 'fas fa-dashboard',
+                'urutan' => 14,
+                'permission_slug' => 'piket.dashboard', // 🔍 Diperbaiki agar sinkron
+            ],
+            [
+                'kategori' => 'Piket',
+                'nama_menu' => 'Matriks Regu Piket',
+                'url' => 'piket/petugas',
+                'icon' => 'fas fa-users-cog',
+                'urutan' => 15,
+                'permission_slug' => 'piket.petugas.index', // 🔍 Diperbaiki agar sinkron
+            ],
+
+            // 🟢 Kategori: Sarpras
+            [
+                'kategori' => 'Sarana Prasarana',
+                'nama_menu' => 'Data Bangunan & Asset',
+                'url' => 'sarpras/gedung',
+                'icon' => 'fas fa-building',
+                'urutan' => 16,
+                'permission_slug' => 'sarpras.gedung.index', // 🔍 Diperbaiki
+            ],
+            [
+                'kategori' => 'Sarana Prasarana', // 🔍 Pembenahan typo Sarpas -> Sarana Prasarana
+                'nama_menu' => 'Log Peminjaman Barang',
+                'url' => 'sarpras/peminjaman',
+                'icon' => 'fas fa-exchange-alt',
+                'urutan' => 17,
+                'permission_slug' => 'sarpras.peminjaman.index', // 🔍 Diperbaiki
             ],
 
             // 🟢 Kategori: Portal Berita
@@ -131,24 +167,24 @@ class MenuSeeder extends Seeder
                 'nama_menu' => 'Kategori Blog',
                 'url' => 'master/kategori-blog',
                 'icon' => 'folder',
-                'urutan' => 11,
-                'permission_slug' => 'kategori-blog.index',
+                'urutan' => 18,
+                'permission_slug' => 'master.kategori-blog.index', // 🔍 Diperbaiki
             ],
             [
                 'kategori' => 'Portal Berita',
                 'nama_menu' => 'Artikel Blog',
                 'url' => 'master/blog',
                 'icon' => 'fa-solid fa-newspaper',
-                'urutan' => 12,
-                'permission_slug' => 'blog.index',
+                'urutan' => 19,
+                'permission_slug' => 'master.blog.index', // 🔍 Diperbaiki
             ],
             [
                 'kategori' => 'Portal Berita',
                 'nama_menu' => 'Komentar Blog',
                 'url' => 'master/komentar-blog',
                 'icon' => 'fa-solid fa-comments',
-                'urutan' => 13,
-                'permission_slug' => 'komentar-blog.index',
+                'urutan' => 20,
+                'permission_slug' => 'master.komentar-blog.index', // 🔍 Diperbaiki
             ],
 
             // 🟢 Kategori: Pengaturan Website
@@ -157,56 +193,56 @@ class MenuSeeder extends Seeder
                 'nama_menu' => 'Pengaturan Logo',
                 'url' => 'master/pengaturan-logo',
                 'icon' => 'fa-solid fa-palette',
-                'urutan' => 14,
-                'permission_slug' => 'pengaturan-logo.index',
+                'urutan' => 21,
+                'permission_slug' => 'master.pengaturan-logo.index', // 🔍 Diperbaiki
             ],
             [
                 'kategori' => 'Pengaturan Website',
                 'nama_menu' => 'Tentang Sekolah',
                 'url' => 'master/tentang',
                 'icon' => 'fa-solid fa-building-columns',
-                'urutan' => 15,
-                'permission_slug' => 'tentang.index',
+                'urutan' => 22,
+                'permission_slug' => 'master.tentang.index', // 🔍 Diperbaiki
             ],
             [
                 'kategori' => 'Pengaturan Website',
                 'nama_menu' => 'Profil Sekolah',
                 'url' => 'master/profil-sekolah',
                 'icon' => 'fa-solid fa-school',
-                'urutan' => 16,
-                'permission_slug' => 'profil-sekolah.index',
+                'urutan' => 23,
+                'permission_slug' => 'master.profil-sekolah.index', // 🔍 Diperbaiki
             ],
             [
                 'kategori' => 'Pengaturan Website',
                 'nama_menu' => 'Halaman Statis',
                 'url' => 'master/page',
                 'icon' => 'fa-solid fa-file',
-                'urutan' => 17,
-                'permission_slug' => 'page.index',
+                'urutan' => 24,
+                'permission_slug' => 'master.page.index', // 🔍 Diperbaiki
             ],
             [
                 'kategori' => 'Pengaturan Website',
                 'nama_menu' => 'Tautan Kaki (Footer)',
                 'url' => 'master/footer-link',
                 'icon' => 'link',
-                'urutan' => 18,
-                'permission_slug' => 'footer-link.index',
+                'urutan' => 25,
+                'permission_slug' => 'master.footer-link.index', // 🔍 Diperbaiki
             ],
             [
                 'kategori' => 'Pengaturan Website',
                 'nama_menu' => 'Pesan Masuk Kontak',
                 'url' => 'master/kontak',
                 'icon' => 'fa-solid fa-comment',
-                'urutan' => 19,
-                'permission_slug' => 'kontak.index',
+                'urutan' => 26,
+                'permission_slug' => 'master.kontak.index', // 🔍 Diperbaiki
             ],
             [
                 'kategori' => 'Pengaturan Website',
                 'nama_menu' => 'Info Kontak Sekolah',
                 'url' => 'master/setting-kontak',
                 'icon' => 'phone',
-                'urutan' => 20,
-                'permission_slug' => 'setting-kontak.index',
+                'urutan' => 27,
+                'permission_slug' => 'master.setting-kontak.index', // 🔍 Diperbaiki
             ],
         ];
 

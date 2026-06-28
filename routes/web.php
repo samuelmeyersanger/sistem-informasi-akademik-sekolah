@@ -41,6 +41,8 @@ use App\Http\Controllers\Akademik\MataPelajaranController;
 use App\Http\Controllers\Akademik\KodeGuruController;
 use App\Http\Controllers\Akademik\JadwalPelajaranController;
 use App\Http\Controllers\Akademik\WaktuKbmController;
+use App\Http\Controllers\Piket\PetugasPiketController;
+use App\Http\Controllers\Piket\JurnalPiketController;
 
 /*
 |--------------------------------------------------------------------------
@@ -83,6 +85,8 @@ Route::get('/dashboard', function () {
 
 // 4. Grup Kelompok Back-Office Admin (SIAS)
 Route::middleware(['auth', CheckApproval::class])->group(function () {
+    // Rute Penampung Fitur Belum Selesai
+    Route::view('/under-construction', 'utility.maintenance')->name('utility.maintenance');
     
     // Rute Profil Bawaan
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -375,7 +379,35 @@ Route::middleware(['auth', CheckApproval::class])->group(function () {
         Route::get('/jadwal-pelajaran', [JadwalPelajaranController::class, 'index'])->name('jadwal-pelajaran.index');
         Route::post('/jadwal-pelajaran', [JadwalPelajaranController::class, 'store'])->name('jadwal-pelajaran.store');
         Route::delete('/jadwal-pelajaran/{id}', [JadwalPelajaranController::class, 'destroy'])->name('jadwal-pelajaran.destroy');
-        
+    });
+    /*
+    |--------------------------------------------------------------------------
+    | Modul Manajemen Piket (SIAS Back-Office)
+    |--------------------------------------------------------------------------
+    | 🔐 Dikunci menggunakan middleware 'permission' secara tersinkronisasi.
+    | Prefix 'piket.' akan melekat otomatis pada setiap komponen rute di dalam grup.
+    |
+    */
+
+    Route::prefix('piket')->name('piket.')->middleware(['permission'])->group(function () {
+        // 1. Pengaturan Jadwal Petugas Piket (Mingguan)
+        Route::resource('petugas', PetugasPiketController::class);
+
+        // 2. Pusat Operasional Jurnal Piket Harian
+        Route::get('dashboard', [JurnalPiketController::class, 'index'])->name('dashboard');
+        Route::post('catatan-harian', [JurnalPiketController::class, 'storeCatatan'])->name('catatan.store');
+
+        // Alur Izin Keluar (Siswa)
+        Route::post('izin-siswa', [JurnalPiketController::class, 'storeIzinSiswa'])->name('izin-siswa.store');
+        Route::put('izin-siswa/{id}/kembali', [JurnalPiketController::class, 'kembaliSiswa'])->name('izin-siswa.kembali');
+
+        // Alur Izin Keluar (Pegawai)
+        Route::post('izin-pegawai', [JurnalPiketController::class, 'storeIzinPegawai'])->name('izin-pegawai.store');
+        Route::put('izin-pegawai/{id}/kembali', [JurnalPiketController::class, 'kembaliPegawai'])->name('izin-pegawai.kembali');
+
+        // Alur Ketidakhadiran (Absensi Manual Piket)
+        Route::post('absen-siswa', [JurnalPiketController::class, 'storeAbsenSiswa'])->name('absen-siswa.store');
+        Route::post('absen-pegawai', [JurnalPiketController::class, 'storeAbsenPegawai'])->name('absen-pegawai.store');
     });
 });
 
