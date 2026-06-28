@@ -50,7 +50,7 @@ class MenuSeeder extends Seeder
                 'kategori' => 'Sistem Pengguna',
                 'nama_menu' => 'Log Aktivitas',
                 'url' => 'master/activity-logs',
-                'icon' => 'clock',
+                'icon' => 'fas fa-history',
                 'urutan' => 5,
                 'permission_slug' => 'activity-logs',
             ],
@@ -72,6 +72,30 @@ class MenuSeeder extends Seeder
                 'urutan' => 7,
                 'permission_slug' => 'semester.index',
             ],
+            [
+                'kategori' => 'Akademik',
+                'nama_menu' => 'Mata Pelajaran',
+                'url' => 'akademik/mata-pelajaran',
+                'icon' => 'fas fa-book-open',
+                'urutan' => 8,
+                'permission_slug' => 'mata-pelajaran.index',
+            ],
+            [
+                'kategori' => 'Akademik',
+                'nama_menu' => 'Kode Guru',
+                'url' => 'akademik/kode-guru',
+                'icon' => 'fas fa-id-badge',
+                'urutan' => 9,
+                'permission_slug' => 'kode-guru.index',
+            ],
+            [
+                'kategori' => 'Akademik',
+                'nama_menu' => 'Slot Waktu KBM',
+                'url' => 'akademik/waktu-kbm',
+                'icon' => 'fas fa-clock',
+                'urutan' => 10,
+                'permission_slug' => 'waktu-kbm.index',
+            ],
 
             // 🟢 Kategori: Kesiswaan
             [
@@ -84,7 +108,7 @@ class MenuSeeder extends Seeder
             ],
             [
                 'kategori' => 'Kesiswaan',
-                'nama_menu' => 'Kelas',
+                'nama_menu' => 'Kelas, Anggota Kelas, dan Jadwal',
                 'url' => 'kesiswaan/kelas',
                 'icon' => 'fas fa-chalkboard-teacher',
                 'urutan' => 9,

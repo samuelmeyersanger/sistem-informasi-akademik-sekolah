@@ -59,6 +59,21 @@ class RoleAndPermissionSeeder extends Seeder
             ['name' => 'master.semester.update', 'modul' => 'akademik', 'description' => 'Mengubah status aktif semester'],
             ['name' => 'master.semester.destroy', 'modul' => 'akademik', 'description' => 'Menghapus data semester'],
 
+            ['name' => 'akademik.mata-pelajaran.index', 'modul' => 'akademik', 'description' => 'Melihat data mata pelajaran'],
+            ['name' => 'akademik.mata-pelajaran.store', 'modul' => 'akademik', 'description' => 'Menambah data mata pelajaran baru'],
+            ['name' => 'akademik.mata-pelajaran.update', 'modul' => 'akademik', 'description' => 'Mengubah mata pelajaran'],
+            ['name' => 'akademik.mata-pelajaran.destroy', 'modul' => 'akademik', 'description' => 'Menghapus data mata pelajaran'],
+
+            ['name' => 'akademik.kode-guru.index', 'modul' => 'akademik', 'description' => 'Melihat data kode guru'],
+            ['name' => 'akademik.kode-guru.store', 'modul' => 'akademik', 'description' => 'Menambah data kode guru baru'],
+            ['name' => 'akademik.kode-guru.update', 'modul' => 'akademik', 'description' => 'Mengubah kode guru'],
+            ['name' => 'akademik.kode-guru.destroy', 'modul' => 'akademik', 'description' => 'Menghapus data kode guru'],
+
+            ['name' => 'akademik.waktu-kbm.index', 'modul' => 'akademik', 'description' => 'Melihat data waktu KBM'],
+            ['name' => 'akademik.waktu-kbm.store', 'modul' => 'akademik', 'description' => 'Menambah data slot waktu KBM baru'],
+            ['name' => 'akademik.waktu-kbm.update', 'modul' => 'akademik', 'description' => 'Mengubah slot waktu KBM'],
+            ['name' => 'akademik.waktu-kbm.destroy', 'modul' => 'akademik', 'description' => 'Menghapus data slot waktu KBM'],
+
             // --- Modul Kesiswaan ---
             ['name' => 'kesiswaan.siswa.index', 'modul' => 'kesiswaan', 'description' => 'Melihat data siswa'],
             ['name' => 'kesiswaan.siswa.store', 'modul' => 'kesiswaan', 'description' => 'Menambah siswa baru'],

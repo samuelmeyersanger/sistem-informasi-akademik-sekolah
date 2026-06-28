@@ -58,7 +58,7 @@
                 <div class="p-6 border-b border-gray-100 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 bg-gray-50/50">
                     <div>
                         <h3 class="text-base font-bold text-gray-900">Daftar Ruang Kelas & Plotting Wali Kelas</h3>
-                        <p class="text-xs text-gray-500">Kelola master data ruang kelas, penentuan tingkat belajar, serta penugasan guru sebagai Wali Kelas utama.</p>
+                        <p class="text-xs text-gray-500">Kelola master data ruang kelas, penentuan tingkat belajar, penugasan Wali Kelas, serta manajemen jadwal KBM.</p>
                     </div>
                     
                     <div class="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-3">
@@ -90,7 +90,7 @@
                                 <th class="p-4 pl-6 text-center w-28">Tingkat</th>
                                 <th class="p-4">Nama Ruang Kelas</th>
                                 <th class="p-4">Wali Kelas Utama</th>
-                                <th class="p-4 pr-6 text-center w-52">Aksi</th>
+                                <th class="p-4 pr-6 text-center w-72">Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-100 text-gray-700 text-xs">
@@ -117,9 +117,15 @@
                                             <a href="{{ route('kesiswaan.kelas.show', $item->id) }}" class="p-1 text-teal-600 hover:underline font-semibold flex items-center gap-0.5">
                                                 🔍 Detail Kelas
                                             </a>
+                                            
+                                            <a href="{{ route('kesiswaan.kelas.jadwal', $item->id) }}" class="p-1 text-emerald-600 hover:underline font-semibold flex items-center gap-0.5">
+                                                📅 Lihat Jadwal
+                                            </a>
+
                                             <button type="button" @click="initEdit('{{ route('kesiswaan.kelas.update', $item->id) }}', '{{ $item->tingkat }}', '{{ $item->nama_kelas }}', '{{ $item->wali_kelas_id }}')" class="p-1 text-indigo-600 hover:underline font-semibold cursor-pointer">
                                                 ✏️ Edit
                                             </button>
+
                                             <button type="button" @click="initDelete('{{ route('kesiswaan.kelas.destroy', $item->id) }}', 'Kelas {{ addslashes($item->nama_kelas) }}')" class="p-1 text-rose-600 hover:underline font-medium cursor-pointer">
                                                 🗑️ Hapus
                                             </button>

@@ -74,4 +74,18 @@ class KodeGuru extends Model
     {
         return $this->hasMany(JadwalPelajaran::class, 'kode_guru_id');
     }
+
+    // Tambahkan properti mataPelajarans (Jamak/Plural)
+    public function mataPelajarans()
+    {
+        return $this->belongsToMany(MataPelajaran::class, 'kode_guru_mata_pelajaran', 'kode_guru_id', 'mata_pelajaran_id')
+                    ->withPivot('jam_mengajar_porsi')
+                    ->withTimestamps();
+    }
+
+    // Accessor kustom untuk menghitung akumulasi total jam otomatis dari semua mapel yang dipilih
+    public function getTotalJamMengajarAttribute()
+    {
+        return $this->mataPelajarans->sum('pivot.jam_mengajar_porsi');
+    }
 }

@@ -40,6 +40,7 @@ use App\Http\Controllers\Sarpras\PeminjamanSarprasController;
 use App\Http\Controllers\Akademik\MataPelajaranController;
 use App\Http\Controllers\Akademik\KodeGuruController;
 use App\Http\Controllers\Akademik\JadwalPelajaranController;
+use App\Http\Controllers\Akademik\WaktuKbmController;
 
 /*
 |--------------------------------------------------------------------------
@@ -232,6 +233,7 @@ Route::middleware(['auth', CheckApproval::class])->group(function () {
         Route::post('/kelas/anggota/mutasi', [KelasController::class, 'prosesKenaikan'])->name('kelas.anggota.mutasi');
         Route::post('/kelas/anggota/kelulusan', [KelasController::class, 'prosesKelulusan'])->name('kelas.anggota.kelulusan');
         Route::delete('/kelas/anggota/{id}/remove', [KelasController::class, 'removeSiswa'])->name('kelas.anggota.remove');
+        Route::get('kelas/{id}/jadwal', [KelasController::class, 'showJadwal'])->name('kelas.jadwal');
         /*
         |--------------------------------------------------------------------------
         | 🔓 API Wilayah Lokal Sekaligus (Laravolt)

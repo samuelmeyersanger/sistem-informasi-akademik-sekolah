@@ -37,7 +37,6 @@ class WaktuKbm extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'jam_ke' => 'integer',
         'deleted_at' => 'datetime',
     ];
 

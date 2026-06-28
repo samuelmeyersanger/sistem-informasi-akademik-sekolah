@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('waktu_kbm', function (Blueprint $table) {
             $table->id();
             $table->enum('hari', ['Senin', 'Selasa', 'Rabu', 'Kamis', "Jumat", 'Sabtu']);
-            $table->integer('jam_ke');
+            $table->string('jam_ke');
             $table->time('waktu_mulai');
             $table->time('waktu_selesai');
             $table->enum('kegiatan', ['Upacara', 'G7', 'Korikuler', 'MBG', 'KBM', 'Istirahat']);

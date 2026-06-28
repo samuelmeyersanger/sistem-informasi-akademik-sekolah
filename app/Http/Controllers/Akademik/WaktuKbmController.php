@@ -22,16 +22,20 @@ class WaktuKbmController extends Controller
     {
         $hariFilter = $request->get('hari');
 
-        // Query dasar diurutkan berdasarkan urutan hari kustom dan jam_ke
-        $query = WaktuKbm::orderByRaw("FIELD(hari, 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu')")
-                         ->orderBy('jam_ke', 'asc');
-
-        // Filter berdasarkan hari jika dipilih
-        if ($hariFilter) {
-            $query->where('hari', $hariFilter);
-        }
-
-        $waktuKbm = $query->paginate(20)->withQueryString();
+        $waktuKbm = WaktuKbm::latest() // atau query lainnya
+        ->orderByRaw("
+            CASE hari 
+                WHEN 'Senin' THEN 1
+                WHEN 'Selasa' THEN 2
+                WHEN 'Rabu' THEN 3
+                WHEN 'Kamis' THEN 4
+                WHEN 'Jumat' THEN 5
+                WHEN 'Sabtu' THEN 6
+                ELSE 7 
+            END
+        ")
+        ->orderBy('jam_ke', 'asc')
+        ->paginate(20); // sesuaikan jika Anda pakai paginate atau get()
 
         return view('akademik.waktu_kbm.index', compact('waktuKbm'));
     }
@@ -46,7 +50,7 @@ class WaktuKbmController extends Controller
     {
         $request->validate([
             'hari'          => ['required', Rule::in(['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'])],
-            'jam_ke'        => 'required|integer|min:0',
+            'jam_ke'        => 'required|string|min:0',
             'waktu_mulai'   => 'required|date_format:H:i',
             'waktu_selesai' => 'required|date_format:H:i|after:waktu_mulai',
             'kegiatan'      => ['required', Rule::in(['Upacara', 'G7', 'Korikuler', 'MBG', 'KBM', 'Istirahat'])],
@@ -77,7 +81,7 @@ class WaktuKbmController extends Controller
 
         $request->validate([
             'hari'          => ['required', Rule::in(['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'])],
-            'jam_ke'        => 'required|integer|min:0',
+            'jam_ke'        => 'required|string|min:0',
             'waktu_mulai'   => 'required|date_format:H:i',
             'waktu_selesai' => 'required|date_format:H:i|after:waktu_mulai',
             'kegiatan'      => ['required', Rule::in(['Upacara', 'G7', 'Korikuler', 'MBG', 'KBM', 'Istirahat'])],

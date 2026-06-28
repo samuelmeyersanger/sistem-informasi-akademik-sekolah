@@ -10,6 +10,8 @@ use App\Models\Siswa;
 use App\Models\AnggotaKelas;
 use App\Models\RiwayatKelasSiswa;
 use App\Models\RiwayatStatusSiswa;
+use App\Models\WaktuKbm;       // Untuk kebutuhan dropdown Waktu KBM di Jadwal
+use App\Models\KodeGuru;       // Untuk kebutuhan dropdown Kode Guru di Jadwal
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Exports\AnggotaKelasTemplateExport;
@@ -75,7 +77,7 @@ class KelasController extends Controller
     }
 
     /**
-     * 3. Menampilkan Ruang Kelas & Manajemen Anggota Kelas Internal (PENGGANTI /kelas/show)
+     * 3. Menampilkan Ruang Kelas & Manajemen Anggota Kelas (Detail Siswa)
      */
     public function show(Request $request, $id)
     {
@@ -109,7 +111,40 @@ class KelasController extends Controller
     }
 
     /**
-     * 4. Memperbarui Data Kelas & Wali Kelas
+     * 4. [FUNGSI BARU] Menampilkan dan Mengelola Jadwal Pelajaran per Kelas
+     */
+    public function showJadwal(Request $request, $id)
+    {
+        $kelas = Kelas::with('waliKelas')->findOrFail($id);
+        
+        // Ambil data master kode guru beserta relasi Many-to-Many mata pelajaran yang baru
+        $daftarKodeGuru = KodeGuru::with(['pegawai', 'mataPelajarans'])->get();
+
+        // Ambil data master waktu KBM dengan sorting CASE WHEN kustom (Kompatibel PostgreSQL & MySQL)
+        $daftarWaktu = WaktuKbm::orderByRaw("
+                            CASE hari 
+                                WHEN 'Senin' THEN 1
+                                WHEN 'Selasa' THEN 2
+                                WHEN 'Rabu' THEN 3
+                                WHEN 'Kamis' THEN 4
+                                WHEN 'Jumat' THEN 5
+                                WHEN 'Sabtu' THEN 6
+                                ELSE 7 
+                            END
+                        ")
+                        ->orderBy('jam_ke', 'asc')
+                        ->get();
+
+        // Ambil data master ruangan sekolah
+        $daftarRuangan = \App\Models\Ruangan::orderBy('nama_ruangan', 'asc')->get();
+
+        return view('kesiswaan.kelas.show_jadwal', compact(
+            'kelas', 'daftarKodeGuru', 'daftarWaktu', 'daftarRuangan'
+        ));
+    }
+
+    /**
+     * 5. Memperbarui Data Kelas & Wali Kelas
      */
     public function update(Request $request, $id)
     {
@@ -139,7 +174,7 @@ class KelasController extends Controller
     }
 
     /**
-     * 5. Menghapus Master Data Kelas
+     * 6. Menghapus Master Data Kelas
      */
     public function destroy($id)
     {
@@ -154,7 +189,7 @@ class KelasController extends Controller
     }
 
     /* =========================================================================
-       LOGIKA EXTRA: MANAJEMEN ANGGOTA KELAS (DIPINDAHKAN KE SINI)
+       LOGIKA EXTRA: MANAJEMEN ANGGOTA KELAS
        ========================================================================= */
 
     /**
@@ -294,6 +329,7 @@ class KelasController extends Controller
             return redirect()->back()->withErrors(['error' => 'Gagal: ' . $e->getMessage()]);
         }
     }
+
     /**
      * Download Template Anggota Kelas (.xlsx asli)
      */
