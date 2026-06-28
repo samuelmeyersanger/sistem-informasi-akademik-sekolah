@@ -1,4 +1,7 @@
 <x-app-layout>
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
+
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
             {{ __('Kelola Halaman Statis (Pages)') }}
@@ -15,11 +18,35 @@
         deleteTargetTitle: '',
         alertMessage: '',
         showAlert: false,
+        quillCreate: null,
+        quillEdit: null,
 
         initAlert(msg) {
             this.alertMessage = msg;
             this.showAlert = true;
             setTimeout(() => { this.showAlert = false; window.location.reload(); }, 1500);
+        },
+
+        // Inisialisasi Editor saat Modal Create dibuka
+        initQuillCreate() {
+            this.openCreate = true;
+            this.$nextTick(() => {
+                if (!this.quillCreate) {
+                    this.quillCreate = new Quill('#editor-create', {
+                        theme: 'snow',
+                        modules: {
+                            toolbar: [
+                                [{'header': [1, 2, 3, false]}],
+                                ['bold', 'italic', 'underline', 'strike'],
+                                [{'list': 'ordered'}, {'list': 'bullet'}],
+                                ['table'], // Menyisipkan Tabel
+                                ['clean']
+                            ]
+                        }
+                    });
+                }
+                this.quillCreate.root.innerHTML = ''; // Kosongkan editor baru
+            });
         },
 
         async loadEdit(pageId) {
@@ -31,19 +58,51 @@
                 this.id = data.id;
                 this.title = data.title;
                 this.slug = data.slug;
-                this.content = data.content;
+                this.content = data.content || '';
                 this.meta_description = data.meta_description || '';
                 this.sort_order = data.sort_order;
                 this.is_published = !!data.is_published;
                 this.openEdit = true;
+
+                // Set isi konten ke Quill Edit setelah modal muncul
+                this.$nextTick(() => {
+                    if (!this.quillEdit) {
+                        this.quillEdit = new Quill('#editor-edit', {
+                            theme: 'snow',
+                            modules: {
+                                toolbar: [
+                                    ['bold', 'italic', 'underline', 'strike'],
+                                    [{'list': 'ordered'}, {'list': 'bullet'}],
+                                    ['table'],
+                                    ['clean']
+                                ]
+                            }
+                        });
+                    }
+                    this.quillEdit.root.innerHTML = this.content;
+                });
+
             } catch (err) {
                 alert(err.message);
             }
         },
 
+        // Fungsi Auto-Slug saat mengetik judul di Form Create
+        updateSlug() {
+            this.slug = this.title.toLowerCase()
+                .replace(/[^a-z0-9 -]/g, '')
+                .replace(/\s+/g, '-')
+                .replace(/-+/g, '-');
+        },
+
         async submitCreate(e) {
             let formData = new FormData(e.target);
             formData.set('is_published', this.is_published ? '1' : '0');
+            
+            // Ambil konten HTML dari Quill Editor Create
+            if(this.quillCreate) {
+                formData.set('content', this.quillCreate.root.innerHTML);
+            }
 
             let response = await fetch('{{ route('master.page.store') }}', {
                 method: 'POST',
@@ -64,6 +123,11 @@
             let formData = new FormData(e.target);
             formData.append('_method', 'PUT');
             formData.set('is_published', this.is_published ? '1' : '0');
+            
+            // Ambil konten HTML dari Quill Editor Edit
+            if(this.quillEdit) {
+                formData.set('content', this.quillEdit.root.innerHTML);
+            }
 
             let response = await fetch(`/admin/page/${this.id}`, {
                 method: 'POST',
@@ -122,7 +186,7 @@
                             <button type="submit" class="px-2.5 py-2 bg-gray-800 hover:bg-gray-700 text-white text-xs font-medium rounded-lg cursor-pointer">Cari</button>
                         </form>
 
-                        <button @click="openCreate = true; title=''; slug=''; content=''; meta_description=''; sort_order=0; is_published=true;" class="px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-lg shadow-sm cursor-pointer whitespace-nowrap">
+                        <button @click="title=''; slug=''; content=''; meta_description=''; sort_order=0; is_published=true; initQuillCreate();" class="px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-lg shadow-sm cursor-pointer whitespace-nowrap">
                             ➕ Buat Halaman
                         </button>
                     </div>
@@ -180,22 +244,24 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label class="block font-semibold text-gray-700 mb-1">Judul Halaman <span class="text-rose-500">*</span></label>
-                            <input type="text" name="title" required placeholder="Contoh: Tentang Kami" class="w-full rounded-lg border-gray-200 text-xs shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                            <input type="text" name="title" x-model="title" @keyup="updateSlug()" required placeholder="Contoh: Tentang Kami" class="w-full rounded-lg border-gray-200 text-xs shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
                         </div>
                         <div>
-                            <label class="block font-semibold text-gray-700 mb-1">Kustom Slug (Opsional)</label>
-                            <input type="text" name="slug" placeholder="tentang-kami-kustom" class="w-full rounded-lg border-gray-200 text-xs shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                            <label class="block font-semibold text-gray-700 mb-1">Kustom Slug</label>
+                            <input type="text" name="slug" x-model="slug" required placeholder="tentang-kami" class="w-full rounded-lg border-gray-200 text-xs shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
                         </div>
                     </div>
 
                     <div>
                         <label class="block font-semibold text-gray-700 mb-1">Isi Konten Halaman <span class="text-rose-500">*</span></label>
-                        <textarea name="content" required rows="8" placeholder="Tulis konten HTML atau teks lengkap halaman disini..." class="w-full rounded-lg border-gray-200 text-xs shadow-sm focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+                        <div class="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm">
+                            <div id="editor-create" class="min-h-[200px] text-sm"></div>
+                        </div>
                     </div>
 
                     <div>
                         <label class="block font-semibold text-gray-700 mb-1">Meta Deskripsi (SEO)</label>
-                        <input type="text" name="meta_description" placeholder="Deskripsi ringkas untuk Google search..." class="w-full rounded-lg border-gray-200 text-xs shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        <input type="text" name="meta_description" x-model="meta_description" placeholder="Deskripsi ringkas untuk Google search..." class="w-full rounded-lg border-gray-200 text-xs shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
                     </div>
 
                     <div class="grid grid-cols-2 gap-4 items-center bg-gray-50 p-3 rounded-lg border border-gray-100">
@@ -237,7 +303,9 @@
 
                     <div>
                         <label class="block font-semibold text-gray-700 mb-1">Isi Konten Halaman <span class="text-rose-500">*</span></label>
-                        <textarea name="content" x-model="content" required rows="8" class="w-full rounded-lg border-gray-200 text-xs shadow-sm focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+                        <div class="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm">
+                            <div id="editor-edit" class="min-h-[200px] text-sm"></div>
+                        </div>
                     </div>
 
                     <div>
