@@ -62,7 +62,7 @@
                         <div class="flex-1">
                             <span class="block text-[10px] text-slate-500 font-bold uppercase tracking-wider">Telepon</span>
                             <span class="text-slate-300 font-medium">
-                                {{ $contactSettings['telepon_sekolah'] ?? ($schoolProfile->telepon ?? 'Belum diatur') }}
+                                 {{ $schoolProfile->telepon }}
                             </span>
                         </div>
                     </li>
