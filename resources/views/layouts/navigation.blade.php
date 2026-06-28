@@ -73,7 +73,7 @@
         <div class="flex-1 min-w-0">
             <p class="text-xs font-bold text-white truncate">{{ Auth::user()?->name ?? 'User Sesi Lama' }}</p>
             <span class="text-[9px] uppercase font-bold px-1.5 py-0.5 bg-slate-800 text-slate-400 rounded border border-slate-700/50 inline-block mt-0.5">
-                {{ Auth::user()?->role?->display_name ?? 'Guest' }}
+                {{ Auth::user()?->roles?->display_name ?? 'Guest' }}
             </span>
         </div>
     </div>
