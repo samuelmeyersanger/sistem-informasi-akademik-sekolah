@@ -7,6 +7,77 @@
 
     <div x-data="{
         openCreate: false,
+        openEdit: false,
+        editActionUrl: '',
+        
+        initEdit(actionUrl, itemData) {
+            this.editActionUrl = actionUrl;
+            this.currentStep = 1;
+            this.openEdit = true;
+            
+            // Mengisi otomatis data input di form edit berdasarkan data baris yang diklik
+            this.$nextTick(() => {
+                const form = document.getElementById('formEditSiswa'); // Pastikan <form> edit Anda punya ID ini
+                if (!form) return;
+                
+                // 1. Perulangan Standar untuk Input Biasa (Tanpa tanda kutip internal)
+                for (const key in itemData) {
+                    const input = form.querySelector('[name=' + key + ']');
+                    if (input && input.type !== 'file') {
+                        if (input.type === 'date' && itemData[key]) {
+                            // Menggunakan IF biasa untuk memotong tanggal ISO agar tidak merah di editor
+                            if (itemData[key].indexOf('T') !== -1) {
+                                input.value = itemData[key].split('T')[0];
+                            } else {
+                                input.value = itemData[key];
+                            }
+                        } else {
+                            input.value = itemData[key];
+                        }
+                    }
+                }
+
+                // 2. KODE TAMBAHAN KHUSUS: Mapping Manual untuk Input Array Wali [0] sampai [2]
+                // Kita cari berdasarkan semua elemen input terlebih dahulu, lalu filter namanya agar editor tidak merah
+                const semuaInputForm = form.getElementsByTagName('input');
+                let waliNamaInput, waliHubunganInput, waliTelpInput;
+
+                for (let i = 0; i < semuaInputForm.length; i++) {
+                    if (semuaInputForm[i].name === 'wali[0]') waliNamaInput = semuaInputForm[i];
+                    if (semuaInputForm[i].name === 'wali[1]') waliHubunganInput = semuaInputForm[i];
+                    if (semuaInputForm[i].name === 'wali[2]') waliTelpInput = semuaInputForm[i];
+                }
+
+                if (waliNamaInput) waliNamaInput.value = itemData.nama_wali || itemData.wali_nama || '';
+                if (waliHubunganInput) waliHubunganInput.value = itemData.hubungan_wali || itemData.wali_hubungan || '';
+                if (waliTelpInput) waliTelpInput.value = itemData.nomor_hp_wali || itemData.wali_telepon || itemData.telp_wali || '';
+
+                // 3. Trigger manual nilai wilayah untuk mode Edit (Konstruksi string digabung memakai tanda +)
+                const prefixes = ['edit_siswa', 'edit_ayah', 'edit_ibu', 'edit_wali'];
+                prefixes.forEach(prefix => {
+                    const dbPrefix = prefix.replace('edit_', '');
+                    const prov = document.getElementById(prefix + '_provinsi');
+                    const kota = document.getElementById(prefix + '_kota');
+                    const kec  = document.getElementById(prefix + '_kecamatan');
+                    const kel  = document.getElementById(prefix + '_kelurahan');
+
+                    // Ditambahkan fallback itemData.provinsi dkk jika nama kolom di DB tidak pakai prefix siswa_
+                    if(prov) prov.setAttribute('data-current', itemData[dbPrefix + '_provinsi'] || itemData.provinsi || '');
+                    if(kota) kota.setAttribute('data-current', itemData[dbPrefix + '_kota'] || itemData.kota || '');
+                    if(kec)  kec.setAttribute('data-current', itemData[dbPrefix + '_kecamatan'] || itemData.kecamatan || '');
+                    if(kel)  kel.setAttribute('data-current', itemData[dbPrefix + '_kelurahan_desa'] || itemData.kelurahan_desa || itemData.kelurahan || '');
+                });
+
+                // 4. Panggil fungsi inisialisasi script wilayah agar dropdown otomatis memuat data lama
+                if (typeof initRegionDropdowns === 'function') {
+                    initRegionDropdowns('edit_siswa');
+                    initRegionDropdowns('edit_ayah');
+                    initRegionDropdowns('edit_ibu');
+                    initRegionDropdowns('edit_wali');
+                }
+            });
+        }, 
+
         openDelete: false,
         openGenerateMassal: false,
         currentStep: 1,
@@ -21,6 +92,7 @@
 
         resetWizard() {
             this.openCreate = false;
+            this.openEdit = false;
             this.currentStep = 1;
         }
     }" class="py-12 bg-slate-900/10 min-h-screen font-sans">
@@ -33,12 +105,17 @@
                 </div>
             @endif
 
-            @if($errors->any())
-                <div class="p-4 bg-amber-50 border border-amber-200 text-amber-800 text-sm rounded-xl shadow-sm">
-                    <p class="font-bold mb-1 flex items-center gap-1">⚠️ Gagal menyimpan/memproses data:</p>
-                    <ul class="list-disc list-inside text-xs space-y-1 pl-1">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
+            @if ($errors->any())
+                <div class="p-4 mb-4 text-sm text-red-700 bg-red-100 border border-red-300 rounded-xl">
+                    <span class="font-bold block mb-2">❌ DETEKTIF ERROR (KOLOM YANG KOSONG):</span>
+                    <ul class="list-disc list-inside space-y-1 bg-white p-3 rounded-lg border border-red-200 font-mono text-xs text-red-600">
+                        @foreach ($errors->getMessages() as $namaInput => $pesan)
+                            <li>
+                                <strong>Nama Input di HTML:</strong> 
+                                <span class="bg-yellow-100 px-1.5 py-0.5 rounded text-yellow-800 font-bold border border-yellow-300">
+                                    {{ $namaInput }}
+                                </span>
+                            </li>
                         @endforeach
                     </ul>
                 </div>
@@ -170,6 +247,14 @@
                                             <a href="{{ route('kesiswaan.siswa.show', $item->id) }}" class="inline-flex items-center gap-1 text-xs text-indigo-600 hover:text-indigo-900 font-medium transition-colors">
                                                 👁️ Profil
                                             </a>
+
+                                            <span class="text-gray-200">|</span>
+
+                                            <button type="button" 
+                                                    @click="initEdit('{{ route('kesiswaan.siswa.update', $item->id) }}', {{ json_encode($item) }})" 
+                                                    class="inline-flex items-center gap-1 text-xs text-amber-600 hover:text-amber-900 font-medium transition-colors cursor-pointer">
+                                                ✏️ Edit
+                                            </button>
 
                                             <span class="text-gray-200">|</span>
 
@@ -887,6 +972,683 @@
                         <button type="submit" x-show="currentStep === 3" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-lg shadow-sm transition-colors cursor-pointer">
                             💾 Daftarkan Siswa
                         </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div x-show="openEdit" class="fixed inset-0 z-50 overflow-y-auto bg-gray-900/60 backdrop-blur-sm flex items-center justify-center p-4" style="display: none;" x-transition>
+            <div class="bg-white rounded-2xl max-w-4xl w-full shadow-2xl border border-gray-100 flex flex-col max-h-[90vh]" @click.away="resetWizard()">
+                
+                <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                    <div>
+                        <h3 class="text-sm font-bold text-gray-900 uppercase">Form Pendaftaran Akun Siswa</h3>
+                        <p class="text-[11px] text-gray-400">Harap isi form data diri, domisili, dan silsilah keluarga di bawah.</p>
+                    </div>
+                    <button type="button" @click="resetWizard()" class="text-gray-400 hover:text-gray-600 text-lg font-bold cursor-pointer">&times;</button>
+                </div>
+
+                <div class="px-6 py-2.5 bg-indigo-50/40 border-b border-gray-100 grid grid-cols-3 text-center text-xs font-bold text-gray-400">
+                    <div class="pb-1 border-b-2" :class="currentStep === 1 ? 'text-indigo-600 border-indigo-600' : 'border-transparent'">1. Data Personal</div>
+                    <div class="pb-1 border-b-2" :class="currentStep === 2 ? 'text-indigo-600 border-indigo-600' : 'border-transparent'">2. Domisili & Academic</div>
+                    <div class="pb-1 border-b-2" :class="currentStep === 3 ? 'text-indigo-600 border-indigo-600' : 'border-transparent'">3. Data Orang Tua</div>
+                </div>
+
+                <form :action="editActionUrl" method="POST" id="formEditSiswa" class="flex-1 overflow-y-auto p-6 text-xs space-y-4 text-gray-700">
+                    @csrf
+
+                    <div x-show="currentStep === 1" class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block font-semibold text-gray-600 mb-1">Nama Lengkap Sesuai Dokumen Resmi *</label>
+                                <input type="text" name="nama_lengkap" required class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 shadow-sm">
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-gray-600 mb-1">NIK (Nomor Induk Kependudukan) *</label>
+                                <input type="text" name="nik" required maxlength="16" class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 shadow-sm">
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-gray-600 mb-1">Anak Ke *</label>
+                                <input type="text" name="anak_ke" required maxlength="2" class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 shadow-sm">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block font-semibold text-gray-600 mb-1">NIPD *</label>
+                                <input type="text" name="nipd" required class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 shadow-sm">
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-gray-600 mb-1">NISN (Opsional)</label>
+                                <input type="text" name="nisn" class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 shadow-sm">
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-gray-600 mb-1">Jenis Kelamin *</label>
+                                <select name="jenis_kelamin" required class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 shadow-sm">
+                                    <option value="Laki-laki">Laki-laki</option>
+                                    <option value="Perempuan">Perempuan</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block font-semibold text-gray-600 mb-1">Tempat Lahir *</label>
+                                <input type="text" name="tempat_lahir" required class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 shadow-sm">
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-gray-600 mb-1">Tanggal Lahir *</label>
+                                <input type="date" name="tanggal_lahir" required class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 shadow-sm">
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-gray-600 mb-1">Agama *</label>
+                                <select name="agama" required class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 shadow-sm">
+                                    <option value="Islam">Islam</option>
+                                    <option value="Kristen">Kristen</option>
+                                    <option value="Katholik">Katholik</option>
+                                    <option value="Hindu">Hindu</option>
+                                    <option value="Budha">Budha</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block font-semibold text-gray-600 mb-1">Nomor Handphone / WhatsApp *</label>
+                                <input type="text" name="nomor_hp" required class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 shadow-sm">
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-gray-600 mb-1">Asal Sekolah Dasar (SD/MI) *</label>
+                                <input type="text" name="asal_sekolah" required class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm">
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-gray-600 mb-1">No Peserta UN *</label>
+                                <input type="text" name="no_peserta_un" required class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div x-show="currentStep === 2" class="space-y-4" x-cloak>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block font-semibold text-gray-600 mb-1">Provinsi *</label>
+                                <select id="edit_siswa_provinsi" name="provinsi" data-current="{{ old('provinsi') }}" class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 shadow-sm">
+                                    <option value="">-- Pilih Provinsi --</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-gray-600 mb-1">Kabupaten / Kota *</label>
+                                <select id="edit_siswa_kota" name="kota" data-current="{{ old('kota') }}" class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 shadow-sm">
+                                    <option value="">-- Pilih Kota/Kabupaten --</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block font-semibold text-gray-600 mb-1">Kecamatan *</label>
+                                <select id="edit_siswa_kecamatan" name="kecamatan" data-current="{{ old('kecamatan') }}" class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 shadow-sm">
+                                    <option value="">-- Pilih Kecamatan --</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-gray-600 mb-1">Kelurahan / Desa *</label>
+                                <select id="edit_siswa_kelurahan" name="kelurahan_desa" data-current="{{ old('kelurahan_desa') }}" class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 shadow-sm">
+                                    <option value="">-- Pilih Kelurahan/Desa --</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 gap-4">
+                            <div>
+                                <label class="block font-semibold text-gray-600 mb-1">Alamat Jalan / Blok / Kampung *</label>
+                                <input type="text" name="alamat_lengkap" required placeholder="Nama jalan, RT/RW, nomor rumah..." class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 shadow-sm">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block font-semibold text-gray-600 mb-1">RT *</label>
+                                <input type="text" name="rt" required class="w-full text-xs rounded-lg border-gray-300 shadow-sm">
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-gray-600 mb-1">RW *</label>
+                                <input type="text" name="rw" required class="w-full text-xs rounded-lg border-gray-300 shadow-sm">
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-gray-600 mb-1">Kode Pos *</label>
+                                <input type="text" name="kode_pos" required class="w-full text-xs rounded-lg border-gray-300 shadow-sm">
+                            </div>
+                        </div>
+
+                        <hr class="border-gray-100 my-2">
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block font-semibold text-gray-600 mb-1">Tingkat Kelas Masuk *</label>
+                                <select name="tingkat" class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 shadow-sm">
+                                    <option value="7">Tingkat 7</option>
+                                    <option value="8">Tingkat 8</option>
+                                    <option value="9">Tingkat 9</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-gray-600 mb-1">Daftar Semester Masuk *</label>
+                                <select name="semester_id" class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 shadow-sm">
+                                    @foreach($semester_list as $sem)
+                                        <option value="{{ $sem->id }}">{{ $sem->nama_semester }} ({{ $sem->tahunAjaran->nama_tahun_ajaran ?? '' }})</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-gray-600 mb-1">Tanggal Diterima Masuk *</label>
+                                <input type="date" name="diterima_pada_tanggal" value="{{ date('Y-m-d') }}" required class="w-full text-xs rounded-lg border-gray-300 shadow-sm">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div x-show="currentStep === 3" class="space-y-6 max-h-[60vh] overflow-y-auto pr-2" x-cloak>
+                        
+                       @php
+                            // 1. Cek apakah $siswa adalah objek paginator (banyak data) atau data tunggal
+                            if ($siswa instanceof \Illuminate\Pagination\LengthAwarePaginator) {
+                                // Jika paginator, ambil data siswa pertama dari koleksi halaman aktif
+                                $siswaTunggal = $siswa->first();
+                            } else {
+                                // Jika memang sudah data tunggal murni
+                                $siswaTunggal = $siswa;
+                            }
+
+                            // 2. Ambil relasi wali dari siswa tunggal tersebut secara aman
+                            $ayah = null;
+                            if ($siswaTunggal && isset($siswaTunggal->wali)) {
+                                $ayah = $siswaTunggal->wali->first(function($w) {
+                                    return $w->pivot->hubungan === 'Ayah';
+                                });
+                            }
+                        @endphp
+
+                        <div class="p-5 bg-blue-50/40 border border-blue-100 rounded-2xl space-y-4">
+                            <div class="font-bold text-xs uppercase tracking-wider text-blue-700 border-b border-blue-200/60 pb-2 flex items-center gap-1.5">
+                                👨 DATA REKAM IDENTITAS AYAH KANDUNG
+                                <input type="hidden" name="wali[0][hubungan]" value="Ayah">
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">Nama Lengkap Ayah *</label>
+                                    <input type="text" name="wali[0][nama_lengkap]" value="{{ old('wali.0.nama_lengkap', $ayah->nama_lengkap ?? '') }}" required class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                </div>
+                                
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">NIK Ayah</label>
+                                    <input type="text" name="wali[0][nik]" value="{{ old('wali.0.nik', $ayah->nik ?? '') }}" maxlength="16" placeholder="16 Digit NIK" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                </div>
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">Jenis Kelamin</label>
+                                    <select name="wali[0][jenis_kelamin]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                        <option value="Laki-laki" {{ old('wali.0.jenis_kelamin', $ayah->jenis_kelamin ?? '') == 'Laki-laki' ? 'selected' : '' }}>Laki-laki</option>
+                                        <option value="Perempuan" {{ old('wali.0.jenis_kelamin', $ayah->jenis_kelamin ?? '') == 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">Tempat Lahir</label>
+                                    <input type="text" name="wali[0][tempat_lahir]" value="{{ old('wali.0.tempat_lahir', $ayah->tempat_lahir ?? '') }}" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                </div>
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">Tanggal Lahir</label>
+                                    <input type="date" name="wali[0][tanggal_lahir]" value="{{ old('wali.0.tanggal_lahir', $ayah->tanggal_lahir ?? '') }}" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                </div>
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">Agama</label>
+                                    <select name="wali[0][agama]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                        <option value="">-- Pilih Agama --</option>
+                                        @foreach(['Islam', 'Kristen', 'Katholik', 'Hindu', 'Budha'] as $agama)
+                                            <option value="{{ $agama }}" {{ old('wali.0.agama', $ayah->agama ?? '') == $agama ? 'selected' : '' }}>{{ $agama }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">Pendidikan Terakhir</label>
+                                    <select name="wali[0][pendidikan_terakhir]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                        <option value="">-- Pilih Pendidikan --</option>
+                                        @foreach(['Tidak Sekolah', 'Putus SD', 'SD / Sederajat', 'SMP / Sederajat', 'SMA / Sederajat', 'D1 (Diploma 1)', 'D2 (Diploma 2)', 'D3 (Diploma 3)', 'D4 / S1 (Sarjana)', 'S2 (Magister)', 'S3 (Doktor)'] as $edu)
+                                            <option value="{{ $edu }}" {{ old('wali.0.pendidikan_terakhir', $ayah->pendidikan_terakhir ?? '') == $edu ? 'selected' : '' }}>{{ $edu }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">Pekerjaan</label>
+                                    <select name="wali[0][pekerjaan]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                        <option value="">-- Pilih Pekerjaan --</option>
+                                        @foreach(['Tidak Bekerja', 'Nelayan', 'Petani', 'Peternak', 'PNS/TNI/Polri', 'Karyawan Swasta', 'Pedagang Kecil', 'Pedagang Besar', 'Wiraswasta', 'Buruh', 'Pensiunan', 'Tenaga Kerja Indonesia (TKI)', 'Sudah Meninggal Dunia', 'Lainnya'] as $kerja)
+                                            <option value="{{ $kerja }}" {{ old('wali.0.pekerjaan', $ayah->pekerjaan ?? '') == $kerja ? 'selected' : '' }}>{{ $kerja }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">Penghasilan Bulanan</label>
+                                    <input type="number" step="0.01" name="wali[0][penghasilan_bulanan]" value="{{ old('wali.0.penghasilan_bulanan', $ayah->penghasilan_bulanan ?? '') }}" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1">
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">Alamat Lengkap Rumah Jalan/Kampung *</label>
+                                    <input type="text" name="wali[0][alamat_lengkap]" value="{{ old('wali.0.alamat_lengkap', $ayah->alamat_lengkap ?? '') }}" required class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">RT</label>
+                                    <input type="text" name="wali[0][rt]" value="{{ old('wali.0.rt', $ayah->rt ?? '') }}" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                </div>
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">RW</label>
+                                    <input type="text" name="wali[0][rw]" value="{{ old('wali.0.rw', $ayah->rw ?? '') }}" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                </div>
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">Kode Pos</label>
+                                    <input type="text" name="wali[0][kode_pos]" value="{{ old('wali.0.kode_pos', $ayah->kode_pos ?? '') }}" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">Provinsi</label>
+                                    <select id="ayah_provinsi" name="wali[0][provinsi]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                        <option value="{{ old('wali.0.provinsi', $ayah->provinsi ?? '') }}">{{ old('wali.0.provinsi', $ayah->provinsi ?? '-- Pilih Provinsi --') }}</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">Kota / Kabupaten</label>
+                                    <select id="ayah_kota" name="wali[0][kota]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                        <option value="{{ old('wali.0.kota', $ayah->kota ?? '') }}">{{ old('wali.0.kota', $ayah->kota ?? '-- Pilih Kota/Kabupaten --') }}</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">Kecamatan</label>
+                                    <select id="ayah_kecamatan" name="wali[0][kecamatan]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                        <option value="{{ old('wali.0.kecamatan', $ayah->kecamatan ?? '') }}">{{ old('wali.0.kecamatan', $ayah->kecamatan ?? '-- Pilih Kecamatan --') }}</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">Kelurahan / Desa</label>
+                                    <select id="ayah_kelurahan" name="wali[0][kelurahan_desa]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                        <option value="{{ old('wali.0.kelurahan_desa', $ayah->kelurahan_desa ?? '') }}">{{ old('wali.0.kelurahan_desa', $ayah->kelurahan_desa ?? '-- Pilih Kelurahan/Desa --') }}</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">Nomor Handphone / WA</label>
+                                    <input type="text" name="wali[0][nomor_hp]" value="{{ old('wali.0.nomor_hp', $ayah->nomor_hp ?? '') }}" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                </div>
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">Email Aktif</label>
+                                    <input type="email" name="wali[0][email]" value="{{ old('wali.0.email', $ayah->email ?? '') }}" placeholder="contoh@gmail.com" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                </div>
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">No. HP Darurat</label>
+                                    <input type="text" name="wali[0][nomor_hp_darurat]" value="{{ old('wali.0.nomor_hp_darurat', $ayah->nomor_hp_darurat ?? '') }}" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block font-semibold text-gray-600 mb-1">Catatan Khusus Mengenai Ayah</label>
+                                <textarea name="wali[0][catatan]" rows="1" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">{{ old('wali.0.catatan', $ayah->catatan ?? '') }}</textarea>
+                            </div>
+
+                            @php
+                                // 1. Ambil data siswa tunggal dari paginator atau objek murni (Sama seperti ayah)
+                                if ($siswa instanceof \Illuminate\Pagination\LengthAwarePaginator) {
+                                    $siswaTunggal = $siswa->first();
+                                } else {
+                                    $siswaTunggal = $siswa;
+                                }
+
+                                // 2. Kuncinya di sini: Ganti filter pencariannya menjadi 'Ibu'
+                                $ibu = null;
+                                if ($siswaTunggal && isset($siswaTunggal->wali)) {
+                                    $ibu = $siswaTunggal->wali->first(function($w) {
+                                        return $w->pivot->hubungan === 'Ibu';
+                                    });
+                                }
+                            @endphp
+
+                            <div class="p-5 bg-rose-50/40 border border-rose-100 rounded-2xl space-y-4">
+                                <div class="font-bold text-xs uppercase tracking-wider text-rose-700 border-b border-rose-200/60 pb-2 flex items-center gap-1.5">
+                                    👩 DATA REKAM IDENTITAS IBU KANDUNG
+                                    <input type="hidden" name="wali[1][hubungan]" value="Ibu">
+                                </div>
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div>
+                                        <label class="block font-semibold text-gray-600 mb-1">Nama Lengkap Ibu *</label>
+                                        <input type="text" name="wali[1][nama_lengkap]" value="{{ old('wali.1.nama_lengkap', $ibu->nama_lengkap ?? '') }}" required class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    </div>
+                                    <div>
+                                        <label class="block font-semibold text-gray-600 mb-1">NIK Ibu</label>
+                                        <input type="text" name="wali[1][nik]" value="{{ old('wali.1.nik', $ibu->nik ?? '') }}" maxlength="16" placeholder="16 Digit NIK" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    </div>
+                                    <div>
+                                        <label class="block font-semibold text-gray-600 mb-1">Jenis Kelamin</label>
+                                        <select name="wali[1][jenis_kelamin]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                            <option value="Laki-laki" {{ old('wali.1.jenis_kelamin', $ibu->jenis_kelamin ?? '') == 'Laki-laki' ? 'selected' : '' }}>Laki-laki</option>
+                                            <option value="Perempuan" {{ old('wali.1.jenis_kelamin', $ibu->jenis_kelamin ?? 'Perempuan') == 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div>
+                                        <label class="block font-semibold text-gray-600 mb-1">Tempat Lahir</label>
+                                        <input type="text" name="wali[1][tempat_lahir]" value="{{ old('wali.1.tempat_lahir', $ibu->tempat_lahir ?? '') }}" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    </div>
+                                    <div>
+                                        <label class="block font-semibold text-gray-600 mb-1">Tanggal Lahir</label>
+                                        <input type="date" name="wali[1][tanggal_lahir]" value="{{ old('wali.1.tanggal_lahir', $ibu->tanggal_lahir ?? '') }}" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    </div>
+                                    <div>
+                                        <label class="block font-semibold text-gray-600 mb-1">Agama</label>
+                                        <select name="wali[1][agama]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                            <option value="">-- Pilih Agama --</option>
+                                            @foreach(['Islam', 'Kristen', 'Katholik', 'Hindu', 'Budha'] as $agama)
+                                                <option value="{{ $agama }}" {{ old('wali.1.agama', $ibu->agama ?? '') == $agama ? 'selected' : '' }}>{{ $agama }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div>
+                                        <label class="block font-semibold text-gray-600 mb-1">Pendidikan Terakhir</label>
+                                        <select name="wali[1][pendidikan_terakhir]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                            <option value="">-- Pilih Pendidikan --</option>
+                                            @foreach(['Tidak Sekolah', 'Putus SD', 'SD / Sederajat', 'SMP / Sederajat', 'SMA / Sederajat', 'D1 (Diploma 1)', 'D2 (Diploma 2)', 'D3 (Diploma 3)', 'D4 / S1 (Sarjana)', 'S2 (Magister)', 'S3 (Doktor)'] as $edu)
+                                                <option value="{{ $edu }}" {{ old('wali.1.pendidikan_terakhir', $ibu->pendidikan_terakhir ?? '') == $edu ? 'selected' : '' }}>{{ $edu }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block font-semibold text-gray-600 mb-1">Pekerjaan</label>
+                                        <select name="wali[1][pekerjaan]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                            <option value="">-- Pilih Pekerjaan --</option>
+                                            @foreach(['Tidak Bekerja', 'Nelayan', 'Petani', 'Peternak', 'PNS/TNI/Polri', 'Karyawan Swasta', 'Pedagang Kecil', 'Pedagang Besar', 'Wiraswasta', 'Buruh', 'Pensiunan', 'Tenaga Kerja Indonesia (TKI)', 'Sudah Meninggal Dunia', 'Lainnya'] as $kerja)
+                                                <option value="{{ $kerja }}" {{ old('wali.1.pekerjaan', $ibu->pekerjaan ?? '') == $kerja ? 'selected' : '' }}>{{ $kerja }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block font-semibold text-gray-600 mb-1">Penghasilan Bulanan</label>
+                                        <input type="number" step="0.01" name="wali[1][penghasilan_bulanan]" value="{{ old('wali.1.penghasilan_bulanan', $ibu->penghasilan_bulanan ?? '') }}" placeholder="0" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 gap-4">
+                                    <div class="md:col-span-3">
+                                        <label class="block font-semibold text-gray-600 mb-1">Alamat Lengkap Rumah Jalan/Kampung *</label>
+                                        <input type="text" name="wali[1][alamat_lengkap]" value="{{ old('wali.1.alamat_lengkap', $ibu->alamat_lengkap ?? '') }}" required placeholder="Nama jalan, RT/RW, nomor rumah" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div>
+                                        <label class="block font-semibold text-gray-600 mb-1">RT</label>
+                                        <input type="text" name="wali[1][rt]" value="{{ old('wali.1.rt', $ibu->rt ?? '') }}" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    </div>
+                                    <div>
+                                        <label class="block font-semibold text-gray-600 mb-1">RW</label>
+                                        <input type="text" name="wali[1][rw]" value="{{ old('wali.1.rw', $ibu->rw ?? '') }}" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    </div>
+                                    <div>
+                                        <label class="block font-semibold text-gray-600 mb-1">Kode Pos</label>
+                                        <input type="text" name="wali[1][kode_pos]" value="{{ old('wali.1.kode_pos', $ibu->kode_pos ?? '') }}" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                    <div>
+                                        <label class="block font-semibold text-gray-600 mb-1">Provinsi</label>
+                                        <select id="ibu_provinsi" name="wali[1][provinsi]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm focus:ring-indigo-500">
+                                            <option value="{{ old('wali.1.provinsi', $ibu->provinsi ?? '') }}">{{ old('wali.1.provinsi', $ibu->provinsi ?? '-- Pilih Provinsi --') }}</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block font-semibold text-gray-600 mb-1">Kota / Kabupaten</label>
+                                        <select id="ibu_kota" name="wali[1][kota]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm focus:ring-indigo-500">
+                                            <option value="{{ old('wali.1.kota', $ibu->kota ?? '') }}">{{ old('wali.1.kota', $ibu->kota ?? '-- Pilih Kota/Kabupaten --') }}</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block font-semibold text-gray-600 mb-1">Kecamatan</label>
+                                        <select id="ibu_kecamatan" name="wali[1][kecamatan]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm focus:ring-indigo-500">
+                                            <option value="{{ old('wali.1.kecamatan', $ibu->kecamatan ?? '') }}">{{ old('wali.1.kecamatan', $ibu->kecamatan ?? '-- Pilih Kecamatan --') }}</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block font-semibold text-gray-600 mb-1">Kelurahan / Desa</label>
+                                        <select id="ibu_kelurahan" name="wali[1][kelurahan_desa]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm focus:ring-indigo-500">
+                                            <option value="{{ old('wali.1.kelurahan_desa', $ibu->kelurahan_desa ?? '') }}">{{ old('wali.1.kelurahan_desa', $ibu->kelurahan_desa ?? '-- Pilih Kelurahan/Desa --') }}</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div>
+                                        <label class="block font-semibold text-gray-600 mb-1">Nomor Handphone / WA</label>
+                                        <input type="text" name="wali[1][nomor_hp]" value="{{ old('wali.1.nomor_hp', $ibu->nomor_hp ?? '') }}" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    </div>
+                                    <div>
+                                        <label class="block font-semibold text-gray-600 mb-1">Email Aktif</label>
+                                        <input type="email" name="wali[1][email]" value="{{ old('wali.1.email', $ibu->email ?? '') }}" placeholder="contoh@gmail.com" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    </div>
+                                    <div>
+                                        <label class="block font-semibold text-gray-600 mb-1">No. HP Darurat</label>
+                                        <input type="text" name="wali[1][nomor_hp_darurat]" value="{{ old('wali.1.nomor_hp_darurat', $ibu->nomor_hp_darurat ?? '') }}" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">Catatan Khusus Mengenai Ibu</label>
+                                    <textarea name="wali[1][catatan]" rows="1" placeholder="Informasi tambahan jika diperlukan..." class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">{{ old('wali.1.catatan', $ibu->catatan ?? '') }}</textarea>
+                                </div>
+                            </div>
+
+                            @php
+                                // 1. Ambil data siswa tunggal dari paginator atau objek murni
+                                if ($siswa instanceof \Illuminate\Pagination\LengthAwarePaginator) {
+                                    $siswaTunggal = $siswa->first();
+                                } else {
+                                    $siswaTunggal = $siswa;
+                                }
+
+                                // 2. Filter pencarian pivot khusus untuk hubungan 'Wali'
+                                $dataWali = null;
+                                if ($siswaTunggal && isset($siswaTunggal->wali)) {
+                                    $dataWali = $siswaTunggal->wali->first(function($w) {
+                                        return $w->pivot->hubungan === 'Wali';
+                                    });
+                                }
+                            @endphp
+
+                            <div class="p-5 bg-slate-100 border border-slate-200 rounded-2xl space-y-4">
+                                <div class="font-bold text-xs uppercase tracking-wider text-slate-700 border-b border-slate-300 pb-2 flex items-center justify-between">
+                                    <span>👤 DATA REKAM IDENTITAS WALI (OPSIONAL)</span>
+                                    <input type="hidden" name="wali[2][hubungan]" value="Wali">
+                                    <span class="text-[10px] text-gray-400 normal-case font-normal">Kosongkan jika siswa terikat langsung dengan Orang Tua Kandung</span>
+                                </div>
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div>
+                                        <label class="block font-semibold text-gray-600 mb-1">Nama Lengkap Wali</label>
+                                        <input type="text" name="wali[2][nama_lengkap]" value="{{ old('wali.2.nama_lengkap', $dataWali->nama_lengkap ?? '') }}" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    </div>
+                                    <div>
+                                        <label class="block font-semibold text-gray-600 mb-1">NIK Wali</label>
+                                        <input type="text" name="wali[2][nik]" value="{{ old('wali.2.nik', $dataWali->nik ?? '') }}" maxlength="16" placeholder="16 Digit NIK" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    </div>
+                                    <div>
+                                        <label class="block font-semibold text-gray-600 mb-1">Jenis Kelamin</label>
+                                        <select name="wali[2][jenis_kelamin]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                            <option value="">-- Pilih Jenis Kelamin --</option>
+                                            <option value="Laki-laki" {{ old('wali.2.jenis_kelamin', $dataWali->jenis_kelamin ?? '') == 'Laki-laki' ? 'selected' : '' }}>Laki-laki</option>
+                                            <option value="Perempuan" {{ old('wali.2.jenis_kelamin', $dataWali->jenis_kelamin ?? '') == 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div>
+                                        <label class="block font-semibold text-gray-600 mb-1">Tempat Lahir</label>
+                                        <input type="text" name="wali[2][tempat_lahir]" value="{{ old('wali.2.tempat_lahir', $dataWali->tempat_lahir ?? '') }}" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    </div>
+                                    <div>
+                                        <label class="block font-semibold text-gray-600 mb-1">Tanggal Lahir</label>
+                                        <input type="date" name="wali[2][tanggal_lahir]" value="{{ old('wali.2.tanggal_lahir', $dataWali->tanggal_lahir ?? '') }}" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    </div>
+                                    <div>
+                                        <label class="block font-semibold text-gray-600 mb-1">Agama</label>
+                                        <select name="wali[2][agama]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                            <option value="">-- Pilih Agama --</option>
+                                            @foreach(['Islam', 'Kristen', 'Katholik', 'Hindu', 'Budha'] as $agama)
+                                                <option value="{{ $agama }}" {{ old('wali.2.agama', $dataWali->agama ?? '') == $agama ? 'selected' : '' }}>{{ $agama }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div>
+                                        <label class="block font-semibold text-gray-600 mb-1">Pendidikan Terakhir</label>
+                                        <select name="wali[2][pendidikan_terakhir]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                            <option value="">-- Pilih Pendidikan --</option>
+                                            @foreach(['Tidak Sekolah', 'Putus SD', 'SD / Sederajat', 'SMP / Sederajat', 'SMA / Sederajat', 'D1 (Diploma 1)', 'D2 (Diploma 2)', 'D3 (Diploma 3)', 'D4 / S1 (Sarjana)', 'S2 (Magister)', 'S3 (Doktor)'] as $edu)
+                                                <option value="{{ $edu }}" {{ old('wali.2.pendidikan_terakhir', $dataWali->pendidikan_terakhir ?? '') == $edu ? 'selected' : '' }}>{{ $edu }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block font-semibold text-gray-600 mb-1">Pekerjaan</label>
+                                        <select name="wali[2][pekerjaan]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                            <option value="">-- Pilih Pekerjaan --</option>
+                                            @foreach(['Tidak Bekerja', 'Nelayan', 'Petani', 'Peternak', 'PNS/TNI/Polri', 'Karyawan Swasta', 'Pedagang Kecil', 'Pedagang Besar', 'Wiraswasta', 'Buruh', 'Pensiunan', 'Tenaga Kerja Indonesia (TKI)', 'Sudah Meninggal Dunia', 'Lainnya'] as $kerja)
+                                                <option value="{{ $kerja }}" {{ old('wali.2.pekerjaan', $dataWali->pekerjaan ?? '') == $kerja ? 'selected' : '' }}>{{ $kerja }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block font-semibold text-gray-600 mb-1">Penghasilan Bulanan</label>
+                                        <input type="number" step="0.01" name="wali[2][penghasilan_bulanan]" value="{{ old('wali.2.penghasilan_bulanan', $dataWali->penghasilan_bulanan ?? '') }}" placeholder="0" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div class="md:col-span-3">
+                                        <label class="block font-semibold text-gray-600 mb-1">Alamat Lengkap Rumah Jalan/Kampung *</label>
+                                        <input type="text" name="wali[2][alamat_lengkap]" value="{{ old('wali.2.alamat_lengkap', $dataWali->alamat_lengkap ?? '') }}" placeholder="Nama jalan, RT/RW, nomor rumah" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div>
+                                        <label class="block font-semibold text-gray-600 mb-1">RT</label>
+                                        <input type="text" name="wali[2][rt]" value="{{ old('wali.2.rt', $dataWali->rt ?? '') }}" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    </div>
+                                    <div>
+                                        <label class="block font-semibold text-gray-600 mb-1">RW</label>
+                                        <input type="text" name="wali[2][rw]" value="{{ old('wali.2.rw', $dataWali->rw ?? '') }}" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    </div>
+                                    <div>
+                                        <label class="block font-semibold text-gray-600 mb-1">Kode Pos</label>
+                                        <input type="text" name="wali[2][kode_pos]" value="{{ old('wali.2.kode_pos', $dataWali->kode_pos ?? '') }}" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                    <div>
+                                        <label class="block font-semibold text-gray-600 mb-1">Provinsi</label>
+                                        <select id="wali_provinsi" name="wali[2][provinsi]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm focus:ring-indigo-500">
+                                            <option value="{{ old('wali.2.provinsi', $dataWali->provinsi ?? '') }}">{{ old('wali.2.provinsi', $dataWali->provinsi ?? '-- Pilih Provinsi --') }}</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block font-semibold text-gray-600 mb-1">Kota / Kabupaten</label>
+                                        <select id="wali_kota" name="wali[2][kota]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm focus:ring-indigo-500">
+                                            <option value="{{ old('wali.2.kota', $dataWali->kota ?? '') }}">{{ old('wali.2.kota', $dataWali->kota ?? '-- Pilih Kota/Kabupaten --') }}</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block font-semibold text-gray-600 mb-1">Kecamatan</label>
+                                        <select id="wali_kecamatan" name="wali[2][kecamatan]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm focus:ring-indigo-500">
+                                            <option value="{{ old('wali.2.kecamatan', $dataWali->kecamatan ?? '') }}">{{ old('wali.2.kecamatan', $dataWali->kecamatan ?? '-- Pilih Kecamatan --') }}</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block font-semibold text-gray-600 mb-1">Kelurahan / Desa</label>
+                                        <select id="wali_kelurahan" name="wali[2][kelurahan_desa]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm focus:ring-indigo-500">
+                                            <option value="{{ old('wali.2.kelurahan_desa', $dataWali->kelurahan_desa ?? '') }}">{{ old('wali.2.kelurahan_desa', $dataWali->kelurahan_desa ?? '-- Pilih Kelurahan/Desa --') }}</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div>
+                                        <label class="block font-semibold text-gray-600 mb-1">Nomor Handphone / WA</label>
+                                        <input type="text" name="wali[2][nomor_hp]" value="{{ old('wali.2.nomor_hp', $dataWali->nomor_hp ?? '') }}" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    </div>
+                                    <div>
+                                        <label class="block font-semibold text-gray-600 mb-1">Email Aktif</label>
+                                        <input type="email" name="wali[2][email]" value="{{ old('wali.2.email', $dataWali->email ?? '') }}" placeholder="contoh@gmail.com" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    </div>
+                                    <div>
+                                        <label class="block font-semibold text-gray-600 mb-1">No. HP Darurat</label>
+                                        <input type="text" name="wali[2][nomor_hp_darurat]" value="{{ old('wali.2.nomor_hp_darurat', $dataWali->nomor_hp_darurat ?? '') }}" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="block font-semibold text-gray-600 mb-1">Catatan Khusus Mengenai Wali</label>
+                                    <textarea name="wali[2][catatan]" rows="1" placeholder="Informasi tambahan jika diperlukan..." class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">{{ old('wali.2.catatan', $dataWali->catatan ?? '') }}</textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-6 mt-4 border-t border-gray-100 flex justify-between items-center bg-white">
+    
+                        <div>
+                            <button type="button" 
+                                    x-show="currentStep > 1" 
+                                    @click="currentStep--" 
+                                    class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold rounded-lg transition-colors cursor-pointer">
+                                ⬅️ Kembali
+                            </button>
+                        </div>
+                        
+                        <div>
+                            <button type="button" 
+                                    x-show="currentStep < 3" 
+                                    @click="currentStep++" 
+                                    class="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white text-xs font-semibold rounded-lg shadow-sm transition-colors cursor-pointer">
+                                Lanjut ➡️
+                            </button>
+                            
+                            <form action="{{ url('kesiswaan/siswa/' . $siswaTunggal->id) }}" method="POST" novalidate>
+                                @csrf
+                                @method('PUT') 
+                                <button type="submit" x-show="currentStep === 3" class="...">
+                                    💾 Simpan & Daftarkan Siswa
+                                </button>
+                            </form>
+                        </div>
+                        
                     </div>
                 </form>
             </div>

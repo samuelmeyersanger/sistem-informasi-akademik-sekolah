@@ -142,7 +142,7 @@ Route::middleware(['auth', CheckApproval::class])->group(function () {
         Route::post('profil-sekolah', [ProfilSekolahController::class, 'storeOrUpdate'])->name('profil-sekolah.save');
 
         // Page Dinamis & Tautan Kaki (Footer Link)
-        Route::resource('page', AdminPageController::class)->names('page');
+        Route::resource('page', App\Http\Controllers\Master\PageController::class);
         Route::resource('footer-link', FooterLinkController::class)->except(['create', 'show', 'edit'])->names('footer-link');
 
         // Kontak Masuk & Setting Kontak
@@ -297,6 +297,11 @@ Route::middleware(['auth', CheckApproval::class])->group(function () {
         
         Route::post('/kepegawaian/pegawai/generate-individu/{id}', [PegawaiController::class, 'generateAkunIndividu'])->name('pegawai.generateIndividu');
         Route::post('/kepegawaian/pegawai/generate-massal', [PegawaiController::class, 'generateAkunMassal'])->name('pegawai.generateMassal');
+        // Route untuk download template Excel
+        Route::get('/pegawai/download-template', [PegawaiController::class, 'downloadTemplate'])->name('pegawai.downloadTemplate');
+
+        // Route untuk memproses aksi upload / import file Excel
+        Route::post('/pegawai/import-excel', [PegawaiController::class, 'importExcel'])->name('pegawai.importExcel');
         // Master Pegawai (Otomatis menghasilkan: kepegawaian.pegawai.index, kepegawaian.pegawai.show, dll)
         Route::resource('pegawai', PegawaiController::class);
         

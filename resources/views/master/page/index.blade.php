@@ -8,6 +8,27 @@
         </h2>
     </x-slot>
 
+    <style>
+        .ql-editor {
+            font-size: 13px !important;
+            line-height: 1.5 !important;
+            color: #1e293b !important;
+        }
+        .ql-editor p {
+            margin-bottom: 6px !important;
+        }
+        .ql-container.ql-snow {
+            height: 220px !important; /* Tinggi kotak editor dikunci agar stabil */
+            background-color: #ffffff;
+        }
+        /* Pembatas tinggi konten di dalam modal agar tombol aksi tetap terlihat di layar */
+        .modal-scroll-area {
+            max-height: calc(100vh - 280px);
+            overflow-y: auto;
+            padding: 24px;
+        }
+    </style>
+
     <div x-data="{
         openCreate: false,
         openEdit: false,
@@ -39,33 +60,33 @@
                                 [{'header': [1, 2, 3, false]}],
                                 ['bold', 'italic', 'underline', 'strike'],
                                 [{'list': 'ordered'}, {'list': 'bullet'}],
-                                ['table'], // Menyisipkan Tabel
+                                ['table'], 
                                 ['clean']
                             ]
                         }
                     });
                 }
-                this.quillCreate.root.innerHTML = ''; // Kosongkan editor baru
+                this.quillCreate.root.innerHTML = ''; 
             });
         },
 
         async loadEdit(pageId) {
             try {
-                let response = await fetch(`/page/${pageId}/edit`);
+                let response = await fetch(`/master/page/${pageId}/edit`);
                 if (!response.ok) throw new Error('Gagal mengambil data halaman.');
                 let data = await response.json();
                 
                 this.id = data.id;
                 this.title = data.title;
                 this.slug = data.slug;
-                this.content = data.content || '';
                 this.meta_description = data.meta_description || '';
                 this.sort_order = data.sort_order;
                 this.is_published = !!data.is_published;
+                
+                this.content = data.content || ''; 
                 this.openEdit = true;
 
-                // Set isi konten ke Quill Edit setelah modal muncul
-                this.$nextTick(() => {
+                setTimeout(() => {
                     if (!this.quillEdit) {
                         this.quillEdit = new Quill('#editor-edit', {
                             theme: 'snow',
@@ -80,14 +101,13 @@
                         });
                     }
                     this.quillEdit.root.innerHTML = this.content;
-                });
+                }, 100);
 
             } catch (err) {
                 alert(err.message);
             }
         },
 
-        // Fungsi Auto-Slug saat mengetik judul di Form Create
         updateSlug() {
             this.slug = this.title.toLowerCase()
                 .replace(/[^a-z0-9 -]/g, '')
@@ -99,12 +119,11 @@
             let formData = new FormData(e.target);
             formData.set('is_published', this.is_published ? '1' : '0');
             
-            // Ambil konten HTML dari Quill Editor Create
             if(this.quillCreate) {
                 formData.set('content', this.quillCreate.root.innerHTML);
             }
 
-            let response = await fetch('{{ route('page.store') }}', {
+            let response = await fetch('{{ route('master.page.store') }}', {
                 method: 'POST',
                 body: formData,
                 headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' }
@@ -124,12 +143,11 @@
             formData.append('_method', 'PUT');
             formData.set('is_published', this.is_published ? '1' : '0');
             
-            // Ambil konten HTML dari Quill Editor Edit
             if(this.quillEdit) {
                 formData.set('content', this.quillEdit.root.innerHTML);
             }
 
-            let response = await fetch(`/page/${this.id}`, {
+            let response = await fetch(`/master/page/${this.id}`, {
                 method: 'POST',
                 body: formData,
                 headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' }
@@ -152,7 +170,7 @@
 
         async executeDelete() {
             this.openDelete = false;
-            let response = await fetch(`/page/${this.id}`, {
+            let response = await fetch(`/master/page/${this.id}`, {
                 method: 'DELETE',
                 headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' }
             });
@@ -181,7 +199,7 @@
                     </div>
 
                     <div class="flex items-center gap-2">
-                        <form action="{{ route('page.index') }}" method="GET" class="flex items-center gap-1">
+                        <form action="{{ route('master.page.index') }}" method="GET" class="flex items-center gap-1">
                             <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari halaman..." class="text-xs rounded-lg border-gray-200 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm w-40">
                             <button type="submit" class="px-2.5 py-2 bg-gray-800 hover:bg-gray-700 text-white text-xs font-medium rounded-lg cursor-pointer">Cari</button>
                         </form>
@@ -234,99 +252,105 @@
             </div>
         </div>
 
-        <div x-show="openCreate" class="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm" style="display: none;" x-transition>
-            <div class="bg-white rounded-xl shadow-xl border border-gray-200 max-w-2xl w-full overflow-hidden" @click.away="openCreate = false">
+        <div x-show="openCreate" class="fixed inset-0 z-50 overflow-hidden flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm" style="display: none;" x-transition>
+            <div class="bg-white rounded-xl shadow-xl border border-gray-200 max-w-2xl w-full flex flex-col overflow-hidden" @click.away="openCreate = false">
                 <div class="p-5 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
                     <h3 class="text-sm font-bold text-gray-900">Buat Halaman Baru</h3>
                     <button type="button" @click="openCreate = false" class="text-gray-400 hover:text-gray-600 font-bold text-lg cursor-pointer">&times;</button>
                 </div>
-                <form @submit.prevent="submitCreate" class="p-6 space-y-4 text-xs max-h-[85vh] overflow-y-auto">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                
+                <form @submit.prevent="submitCreate" class="flex flex-col overflow-hidden m-0">
+                    <div class="modal-scroll-area space-y-4 text-xs">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block font-semibold text-gray-700 mb-1">Judul Halaman <span class="text-rose-500">*</span></label>
+                                <input type="text" name="title" x-model="title" @keyup="updateSlug()" required placeholder="Contoh: Tentang Kami" class="w-full rounded-lg border-gray-200 text-xs shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-gray-700 mb-1">Kustom Slug</label>
+                                <input type="text" name="slug" x-model="slug" required placeholder="tentang-kami" class="w-full rounded-lg border-gray-200 text-xs shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                            </div>
+                        </div>
+
                         <div>
-                            <label class="block font-semibold text-gray-700 mb-1">Judul Halaman <span class="text-rose-500">*</span></label>
-                            <input type="text" name="title" x-model="title" @keyup="updateSlug()" required placeholder="Contoh: Tentang Kami" class="w-full rounded-lg border-gray-200 text-xs shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                            <label class="block font-semibold text-gray-700 mb-1">Isi Konten Halaman <span class="text-rose-500">*</span></label>
+                            <div class="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm">
+                                <div id="editor-create" class="text-sm"></div>
+                            </div>
                         </div>
+
                         <div>
-                            <label class="block font-semibold text-gray-700 mb-1">Kustom Slug</label>
-                            <input type="text" name="slug" x-model="slug" required placeholder="tentang-kami" class="w-full rounded-lg border-gray-200 text-xs shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                            <label class="block font-semibold text-gray-700 mb-1">Meta Deskripsi (SEO)</label>
+                            <input type="text" name="meta_description" x-model="meta_description" placeholder="Deskripsi ringkas untuk Google search..." class="w-full rounded-lg border-gray-200 text-xs shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4 items-center bg-gray-50 p-3 rounded-lg border border-gray-100">
+                            <div>
+                                <label class="block font-semibold text-gray-700 mb-1">Nomor Urutan Urut Menu</label>
+                                <input type="number" name="sort_order" x-model="sort_order" min="0" required class="w-32 rounded-lg border-gray-200 text-xs shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                            </div>
+                            <div class="flex items-center gap-2 pt-4">
+                                <input type="checkbox" id="create_pub" x-model="is_published" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                                <label for="create_pub" class="font-semibold text-gray-700 cursor-pointer">Publikasikan Langsung</label>
+                            </div>
                         </div>
                     </div>
 
-                    <div>
-                        <label class="block font-semibold text-gray-700 mb-1">Isi Konten Halaman <span class="text-rose-500">*</span></label>
-                        <div class="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm">
-                            <div id="editor-create" class="min-h-[200px] text-sm"></div>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block font-semibold text-gray-700 mb-1">Meta Deskripsi (SEO)</label>
-                        <input type="text" name="meta_description" x-model="meta_description" placeholder="Deskripsi ringkas untuk Google search..." class="w-full rounded-lg border-gray-200 text-xs shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4 items-center bg-gray-50 p-3 rounded-lg border border-gray-100">
-                        <div>
-                            <label class="block font-semibold text-gray-700 mb-1">Nomor Urutan Urut Menu</label>
-                            <input type="number" name="sort_order" x-model="sort_order" min="0" required class="w-32 rounded-lg border-gray-200 text-xs shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-                        </div>
-                        <div class="flex items-center gap-2 pt-4">
-                            <input type="checkbox" id="create_pub" x-model="is_published" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
-                            <label for="create_pub" class="font-semibold text-gray-700 cursor-pointer">Publikasikan Langsung</label>
-                        </div>
-                    </div>
-
-                    <div class="flex justify-end gap-2 pt-4 border-t border-gray-100">
-                        <button type="button" @click="openCreate = false" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 font-semibold rounded-lg">Batal</button>
-                        <button type="submit" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg">Simpan Halaman</button>
+                    <div class="p-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-2">
+                        <button type="button" @click="openCreate = false" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 font-semibold rounded-lg text-xs cursor-pointer">Batal</button>
+                        <button type="submit" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg text-xs cursor-pointer">Simpan Halaman</button>
                     </div>
                 </form>
             </div>
         </div>
 
-        <div x-show="openEdit" class="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm" style="display: none;" x-transition>
-            <div class="bg-white rounded-xl shadow-xl border border-gray-200 max-w-2xl w-full overflow-hidden" @click.away="openEdit = false">
+        <div x-show="openEdit" class="fixed inset-0 z-50 overflow-hidden flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm" style="display: none;" x-transition>
+            <div class="bg-white rounded-xl shadow-xl border border-gray-200 max-w-2xl w-full flex flex-col overflow-hidden" @click.away="openEdit = false">
                 <div class="p-5 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
                     <h3 class="text-sm font-bold text-gray-900">Perbarui Data Halaman</h3>
                     <button type="button" @click="openEdit = false" class="text-gray-400 hover:text-gray-600 font-bold text-lg cursor-pointer">&times;</button>
                 </div>
-                <form @submit.prevent="submitUpdate" class="p-6 space-y-4 text-xs max-h-[85vh] overflow-y-auto">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                
+                <form @submit.prevent="submitUpdate" class="flex flex-col overflow-hidden m-0">
+                    <div class="modal-scroll-area space-y-4 text-xs">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block font-semibold text-gray-700 mb-1">Judul Halaman <span class="text-rose-500">*</span></label>
+                                <input type="text" name="title" x-model="title" required class="w-full rounded-lg border-gray-200 text-xs shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-gray-700 mb-1">Slug URL Path <span class="text-rose-500">*</span></label>
+                                <input type="text" name="slug" x-model="slug" required class="w-full rounded-lg border-gray-200 text-xs shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                            </div>
+                        </div>
+
                         <div>
-                            <label class="block font-semibold text-gray-700 mb-1">Judul Halaman <span class="text-rose-500">*</span></label>
-                            <input type="text" name="title" x-model="title" required class="w-full rounded-lg border-gray-200 text-xs shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                            <label class="block font-semibold text-gray-700 mb-1">Isi Konten Halaman <span class="text-rose-500">*</span></label>
+                            <div class="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm">
+                                <div id="editor-edit" class="text-sm"></div>
+                            </div>
                         </div>
+
                         <div>
-                            <label class="block font-semibold text-gray-700 mb-1">Slug URL Path <span class="text-rose-500">*</span></label>
-                            <input type="text" name="slug" x-model="slug" required class="w-full rounded-lg border-gray-200 text-xs shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                            <label class="block font-semibold text-gray-700 mb-1">Meta Deskripsi (SEO)</label>
+                            <input type="text" name="meta_description" x-model="meta_description" class="w-full rounded-lg border-gray-200 text-xs shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4 items-center bg-gray-50 p-3 rounded-lg border border-gray-100">
+                            <div>
+                                <label class="block font-semibold text-gray-700 mb-1">Nomor Urutan Urut Menu</label>
+                                <input type="number" name="sort_order" x-model="sort_order" min="0" required class="w-32 rounded-lg border-gray-200 text-xs shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                            </div>
+                            <div class="flex items-center gap-2 pt-4">
+                                <input type="checkbox" id="edit_pub" x-model="is_published" :checked="is_published" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                                <label for="edit_pub" class="font-semibold text-gray-700 cursor-pointer">Halaman Aktif (Publish)</label>
+                            </div>
                         </div>
                     </div>
 
-                    <div>
-                        <label class="block font-semibold text-gray-700 mb-1">Isi Konten Halaman <span class="text-rose-500">*</span></label>
-                        <div class="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm">
-                            <div id="editor-edit" class="min-h-[200px] text-sm"></div>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block font-semibold text-gray-700 mb-1">Meta Deskripsi (SEO)</label>
-                        <input type="text" name="meta_description" x-model="meta_description" class="w-full rounded-lg border-gray-200 text-xs shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4 items-center bg-gray-50 p-3 rounded-lg border border-gray-100">
-                        <div>
-                            <label class="block font-semibold text-gray-700 mb-1">Nomor Urutan Urut Menu</label>
-                            <input type="number" name="sort_order" x-model="sort_order" min="0" required class="w-32 rounded-lg border-gray-200 text-xs shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-                        </div>
-                        <div class="flex items-center gap-2 pt-4">
-                            <input type="checkbox" id="edit_pub" x-model="is_published" :checked="is_published" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
-                            <label for="edit_pub" class="font-semibold text-gray-700 cursor-pointer">Halaman Aktif (Publish)</label>
-                        </div>
-                    </div>
-
-                    <div class="flex justify-end gap-2 pt-4 border-t border-gray-100">
-                        <button type="button" @click="openEdit = false" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 font-semibold rounded-lg">Batal</button>
-                        <button type="submit" class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-lg">Perbarui Halaman</button>
+                    <div class="p-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-2">
+                        <button type="button" @click="openEdit = false" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 font-semibold rounded-lg text-xs cursor-pointer">Batal</button>
+                        <button type="submit" class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-black font-bold rounded-lg text-xs cursor-pointer">Perbarui Halaman</button>
                     </div>
                 </form>
             </div>

@@ -8,7 +8,8 @@
     <div x-data="{
         openCreate: false,
         openDelete: false,
-        openGeneratePegawai: false, // 🟢 State baru untuk modal massal
+        openGeneratePegawai: false, 
+        openImport: false, // 🟢 State baru untuk membuka modal import Excel
 
         // Delete Modal Form States
         deleteActionUrl: '',
@@ -74,6 +75,14 @@
                                 🔍 Cari
                             </button>
                         </form>
+
+                        <a href="{{ route('kepegawaian.pegawai.downloadTemplate') }}" class="px-3 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-semibold rounded-lg shadow-sm border border-emerald-200 transition-all flex items-center justify-center gap-1 cursor-pointer">
+                            📥 Template Excel
+                        </a>
+
+                        <button @click="openImport = true" class="px-3 py-2 bg-teal-600 hover:bg-teal-700 text-black text-xs font-semibold rounded-lg shadow-sm transition-all flex items-center justify-center gap-1 cursor-pointer">
+                            📤 Import Excel
+                        </button>
 
                         <button @click="openGeneratePegawai = true" class="px-4 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-semibold rounded-lg shadow-sm transition-all flex items-center justify-center gap-1 cursor-pointer border border-indigo-200">
                             ⚡ Generate Akun Massal
@@ -282,6 +291,41 @@
                     <button type="submit" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg text-xs cursor-pointer shadow-sm">
                         Ya, Jalankan
                     </button>
+                </form>
+            </div>
+        </div>
+
+        <div x-show="openImport" class="fixed inset-0 z-50 overflow-y-auto bg-gray-900/60 backdrop-blur-sm flex items-center justify-center p-4" style="display: none;" x-transition>
+            <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl border border-gray-100 p-6 space-y-4" @click.away="openImport = false">
+                <div class="flex justify-between items-center border-b border-gray-100 pb-3">
+                    <div>
+                        <h3 class="text-sm font-bold text-gray-900 uppercase">Import Data Pegawai Massal</h3>
+                        <p class="text-[10px] text-gray-500 mt-0.5">Unggah file format .xlsx atau .xls sesuai dengan template.</p>
+                    </div>
+                    <button type="button" @click="openImport = false" class="text-gray-400 hover:text-gray-600 text-lg font-bold cursor-pointer">&times;</button>
+                </div>
+                
+                <form action="{{ route('kepegawaian.pegawai.importExcel') }}" method="POST" enctype="multipart/form-data" class="space-y-4 text-left">
+                    @csrf
+                    
+                    <div class="p-4 bg-indigo-50/50 border border-indigo-100 rounded-xl space-y-2">
+                        <span class="text-xs font-bold text-indigo-900 block">💡 Petunjuk Singkat:</span>
+                        <ul class="list-disc list-inside text-[11px] text-indigo-700/90 space-y-1">
+                            <li>Gunakan tombol <span class="font-semibold">"Template Excel"</span> untuk mengunduh format yang benar.</li>
+                            <li>Gunakan dropdown otomatis yang tersedia di Excel untuk kolom <span class="italic">Jenis Kelamin, Status Pegawai</span>, dan <span class="italic">Jenis PTK</span>.</li>
+                            <li>Sistem akan meng-update otomatis data jika NIP yang diunggah sudah ada di database.</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">Pilih Dokumen Excel *</label>
+                        <input type="file" name="file_excel" required class="w-full text-xs text-gray-500 bg-gray-50 rounded-lg border border-gray-300 cursor-pointer focus:outline-none p-2 file:mr-4 file:py-1 file:px-2 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-gray-200 file:text-gray-700 hover:file:bg-gray-300">
+                    </div>
+
+                    <div class="pt-3 border-t border-gray-100 flex justify-end gap-2">
+                        <button type="button" @click="openImport = false" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-medium rounded-lg transition-colors cursor-pointer">Batal</button>
+                        <button type="submit" class="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-black text-xs font-semibold rounded-lg shadow-sm transition-colors cursor-pointer">Mulai Unggah & Proses</button>
+                    </div>
                 </form>
             </div>
         </div>

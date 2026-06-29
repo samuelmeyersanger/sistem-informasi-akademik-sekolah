@@ -213,51 +213,87 @@ class SiswaController extends Controller
     {
         $siswa = Siswa::findOrFail($id);
 
+        // 1. Validasi Data Siswa dan Data Wali secara Lengkap
         $request->validate([
-            'nama_lengkap' => 'required|string|max:255',
-            'nipd' => 'required|string|unique:siswa,nipd,' . $siswa->id,
-            'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
-            'nisn' => 'nullable|string|max:20',
-            'tempat_lahir' => 'required|string|max:100',
-            'tanggal_lahir' => 'required|date',
-            'nik' => 'required|string|size:16|unique:siswa,nik,' . $siswa->id,
-            'agama' => 'required|in:Islam,Kristen,Katholik,Hindu,Budha',
-            'provinsi' => 'required|string|max:100',
-            'kota' => 'required|string|max:100',
-            'kecamatan' => 'required|string|max:100',
-            'kelurahan_desa' => 'required|string|max:100',
-            'alamat_lengkap' => 'required|string',
-            'rt' => 'required|string|max:5',
-            'rw' => 'required|string|max:5',
-            'kode_pos' => 'required|string|max:10',
-            'nomor_hp' => 'required|string|max:20',
-            'no_peserta_un' => 'nullable|string|max:50',
-            'asal_sekolah' => 'required|string|max:150',
-            'anak_ke' => 'required|integer|min:1',
-            'tingkat' => 'required|in:7,8,9',
+            // Identitas Core Siswa
+            'nama_lengkap'          => 'required|string|max:255',
+            'nipd'                  => 'required|string|unique:siswa,nipd,' . $siswa->id,
+            'jenis_kelamin'         => 'required|in:Laki-laki,Perempuan',
+            'nisn'                  => 'nullable|string|max:20',
+            'tempat_lahir'          => 'required|string|max:100',
+            'tanggal_lahir'         => 'required|date',
+            'nik'                   => 'required|string|size:16|unique:siswa,nik,' . $siswa->id,
+            'agama'                 => 'required|in:Islam,Kristen,Katholik,Hindu,Budha',
+            'provinsi'              => 'required|string|max:100',
+            'kota'                  => 'required|string|max:100',
+            'kecamatan'             => 'required|string|max:100',
+            'kelurahan_desa'        => 'required|string|max:100',
+            'alamat_lengkap'        => 'required|string',
+            'rt'                    => 'required|string|max:5',
+            'rw'                    => 'required|string|max:5',
+            'kode_pos'              => 'required|string|max:10',
+            'nomor_hp'              => 'required|string|max:20',
+            'no_peserta_un'         => 'nullable|string|max:50',
+            'asal_sekolah'          => 'required|string|max:150',
+            'anak_ke'               => 'required|integer|min:1',
+            'tingkat'               => 'required|in:7,8,9',
             'diterima_pada_tanggal' => 'required|date',
 
-            'wali' => 'nullable|array',
-            'wali.*.nama_lengkap' => 'nullable|string|max:255',
-            'wali.*.nik' => 'required_with:wali.*.nama_lengkap|nullable|string|size:16',
-            'wali.*.nomor_hp' => 'nullable|string|max:20',
-            'wali.*.hubungan' => 'required_with:wali.*.nama_lengkap|nullable|in:Ayah,Ibu,Wali',
+            // Validasi Array Array Wali (Ayah, Ibu, Wali)
+            'wali'                      => 'nullable|array',
+            'wali.*.nama_lengkap'       => 'nullable|string|max:255',
+            'wali.*.nik'                => 'required_with:wali.*.nama_lengkap|nullable|string|size:16',
+            'wali.*.hubungan'           => 'required_with:wali.*.nama_lengkap|nullable|in:Ayah,Ibu,Wali',
+            'wali.*.jenis_kelamin'      => 'nullable|in:Laki-laki,Perempuan',
+            'wali.*.tempat_lahir'       => 'nullable|string|max:100',
+            'wali.*.tanggal_lahir'      => 'nullable|date',
+            'wali.*.agama'              => 'nullable|string|max:50',
+            'wali.*.pendidikan_terakhir'=> 'nullable|string|max:50',
+            'wali.*.pekerjaan'          => 'nullable|string|max:100',
+            'wali.*.penghasilan_bulanan'=> 'nullable|numeric|min:0',
+            'wali.*.alamat_lengkap'     => 'nullable|string',
+            'wali.*.rt'                 => 'nullable|string|max:5',
+            'wali.*.rw'                 => 'nullable|string|max:5',
+            'wali.*.kode_pos'           => 'nullable|string|max:10',
+            'wali.*.provinsi'           => 'nullable|string|max:100',
+            'wali.*.kota'               => 'nullable|string|max:100',
+            'wali.*.kecamatan'          => 'nullable|string|max:100',
+            'wali.*.kelurahan_desa'     => 'nullable|string|max:100',
+            'wali.*.nomor_hp'           => 'nullable|string|max:20',
+            'wali.*.email'              => 'nullable|email|max:100',
+            'wali.*.nomor_hp_darurat'   => 'nullable|string|max:20',
+            'wali.*.catatan'            => 'nullable|string',
         ]);
 
         DB::beginTransaction();
         try {
-            // Update identitas core siswa (Abaikan status_siswa dan kelas_id di sini karena diurus menu khusus)
+            // 2. Update identitas core siswa (Abaikan status_siswa dan kelas_id)
             $siswa->update($request->except(['wali', 'status_siswa', 'kelas_id']));
 
+            // 3. Proses Sinkronisasi Data Wali
             if ($request->has('wali')) {
                 $syncData = [];
+
                 foreach ($request->wali as $rowWali) {
+                    // Hanya proses jika Nama Lengkap Wali diisi
                     if (!empty($rowWali['nama_lengkap'])) {
                         
-                        // Gunakan NIK atau kriteria unik untuk update/create data wali
+                        // Menentukan pencarian unik data wali (berdasarkan NIK)
+                        // Jika NIK kosong, cari berdasarkan nama dan hubungan untuk menghindari duplikasi kasat mata
+                        $matchAttributes = [];
+                        if (!empty($rowWali['nik'])) {
+                            $matchAttributes = ['nik' => $rowWali['nik']];
+                        } else {
+                            $matchAttributes = [
+                                'nama_lengkap' => $rowWali['nama_lengkap'],
+                                'tempat_lahir' => $rowWali['tempat_lahir'] ?? null
+                            ];
+                        }
+
                         $wali = WaliSiswa::updateOrCreate(
-                            ['nik' => $rowWali['nik']],
+                            $matchAttributes,
                             [
+                                'nik'                 => $rowWali['nik'] ?? null,
                                 'nama_lengkap'        => $rowWali['nama_lengkap'],
                                 'jenis_kelamin'       => $rowWali['jenis_kelamin'] ?? ($rowWali['hubungan'] == 'Ibu' ? 'Perempuan' : 'Laki-laki'),
                                 'tempat_lahir'        => $rowWali['tempat_lahir'] ?? null,
@@ -281,7 +317,7 @@ class SiswaController extends Controller
                             ]
                         );
                         
-                        // Siapkan data sync ke tabel pivot siswa_wali
+                        // Siapkan data mapping untuk tabel pivot (siswa_wali)
                         $syncData[$wali->id] = [
                             'hubungan'   => $rowWali['hubungan'],
                             'updated_at' => now()
@@ -289,17 +325,30 @@ class SiswaController extends Controller
                     }
                 }
                 
-                // Sinkronisasi data di tabel pivot siswa_wali (memutuskan yang dihapus, memperbarui yang ada)
+                // Eksekusi Sinkronisasi Tabel Pivot Many-to-Many
                 $siswa->wali()->sync($syncData);
             }
 
             DB::commit();
-            return redirect()->route('kesiswaan.siswa.show', $siswa->id)->with('success', 'Profil personal siswa berhasil diperbarui.');
+            return redirect()->route('kesiswaan.siswa.show', $siswa->id)->with('success', 'Profil personal siswa dan data wali berhasil diperbarui.');
 
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()->withInput()->withErrors(['error' => 'Gagal mengubah data: ' . $e->getMessage()]);
         }
+    }
+
+    /**
+     * Tampilkan Halaman Form Edit Data Siswa & Wali
+     */
+    public function edit($id)
+    {
+        // Ambil SATU data siswa murni berdasarkan ID beserta relasi walinya
+        $siswa = Siswa::with('wali')->findOrFail($id);
+
+        // Kirim data siswa ke file view edit Anda
+        // Sesuaikan 'kesiswaan.siswa.edit' dengan folder letak file blade edit Anda
+        return view('kesiswaan.siswa.edit', compact('siswa'));
     }
 
     /**
