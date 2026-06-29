@@ -51,7 +51,7 @@
 
         async loadEdit(pageId) {
             try {
-                let response = await fetch(`/admin/page/${pageId}/edit`);
+                let response = await fetch(`/page/${pageId}/edit`);
                 if (!response.ok) throw new Error('Gagal mengambil data halaman.');
                 let data = await response.json();
                 
@@ -104,7 +104,7 @@
                 formData.set('content', this.quillCreate.root.innerHTML);
             }
 
-            let response = await fetch('{{ route('master.page.store') }}', {
+            let response = await fetch('{{ route('page.store') }}', {
                 method: 'POST',
                 body: formData,
                 headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' }
@@ -129,7 +129,7 @@
                 formData.set('content', this.quillEdit.root.innerHTML);
             }
 
-            let response = await fetch(`/admin/page/${this.id}`, {
+            let response = await fetch(`/page/${this.id}`, {
                 method: 'POST',
                 body: formData,
                 headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' }
@@ -152,7 +152,7 @@
 
         async executeDelete() {
             this.openDelete = false;
-            let response = await fetch(`/admin/page/${this.id}`, {
+            let response = await fetch(`/page/${this.id}`, {
                 method: 'DELETE',
                 headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' }
             });
@@ -181,7 +181,7 @@
                     </div>
 
                     <div class="flex items-center gap-2">
-                        <form action="{{ route('master.page.index') }}" method="GET" class="flex items-center gap-1">
+                        <form action="{{ route('page.index') }}" method="GET" class="flex items-center gap-1">
                             <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari halaman..." class="text-xs rounded-lg border-gray-200 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm w-40">
                             <button type="submit" class="px-2.5 py-2 bg-gray-800 hover:bg-gray-700 text-white text-xs font-medium rounded-lg cursor-pointer">Cari</button>
                         </form>

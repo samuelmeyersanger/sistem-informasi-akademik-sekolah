@@ -31,9 +31,16 @@ class PageController extends Controller
 
     /**
      * Mengambil data mentah untuk dilempar ke form Edit di Popup AJAX
+     * 🟢 Diubah mencari berdasarkan ID mentah agar terhindar dari konflik Route Model Binding
      */
-    public function edit(Page $page)
+    public function edit($id)
     {
+        $page = Page::find($id);
+
+        if (!$page) {
+            return response()->json(['message' => 'Data halaman tidak ditemukan.'], 404);
+        }
+
         return response()->json($page);
     }
 
@@ -55,7 +62,8 @@ class PageController extends Controller
             'slug' => $request->slug ? Str::slug($request->slug) : Str::slug($request->title),
             'content' => $request->content,
             'meta_description' => $request->meta_description,
-            'is_published' => $request->has('is_published') || $request->is_published == 1,
+            // 🟢 Diperbaiki penentuan boolean agar Alpine.js membaca '1' atau '0' secara konsisten
+            'is_published' => $request->input('is_published') == '1',
             'sort_order' => $request->sort_order,
         ]);
 
@@ -64,9 +72,12 @@ class PageController extends Controller
 
     /**
      * Memperbarui halaman via AJAX
+     * 🟢 Menggunakan pencarian ID manual agar sinkron sempurna dengan request submitUpdate JavaScript
      */
-    public function update(Request $request, Page $page)
+    public function update(Request $request, $id)
     {
+        $page = Page::findOrFail($id);
+
         $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'slug' => ['nullable', 'string', 'max:255', "unique:pages,slug,{$page->id}"],
@@ -80,7 +91,8 @@ class PageController extends Controller
             'slug' => $request->slug ? Str::slug($request->slug) : Str::slug($request->title),
             'content' => $request->content,
             'meta_description' => $request->meta_description,
-            'is_published' => $request->has('is_published') || $request->is_published == 1,
+            // 🟢 Diperbaiki penentuan boolean agar status draf/publish tersimpan akurat
+            'is_published' => $request->input('is_published') == '1',
             'sort_order' => $request->sort_order,
         ]);
 
@@ -90,9 +102,11 @@ class PageController extends Controller
     /**
      * Menghapus halaman via AJAX
      */
-    public function destroy(Page $page)
+    public function destroy($id)
     {
+        $page = Page::findOrFail($id);
         $page->delete();
+        
         return response()->json(['success' => 'Halaman berhasil dihapus!']);
     }
 }
