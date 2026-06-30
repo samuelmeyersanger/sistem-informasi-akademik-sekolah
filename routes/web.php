@@ -48,6 +48,9 @@ use App\Http\Controllers\Ekskul\EkstrakurikulerController;
 use App\Http\Controllers\BK\JurnalBkController;
 use App\Http\Controllers\BK\KedisiplinanSiswaController;
 use App\Http\Controllers\BK\PenangananKasusController;
+use App\Http\Controllers\Surat\JenisSuratController;
+use App\Http\Controllers\Surat\SuratMasukController;
+use App\Http\Controllers\Surat\SuratKeluarController;
 
 /*
 |--------------------------------------------------------------------------
@@ -482,7 +485,50 @@ Route::middleware(['auth', CheckApproval::class])->group(function () {
         Route::post('penanganan/alih', [PenangananKasusController::class, 'storeAlihKasus'])->name('penanganan.storeAlih');
         Route::delete('penanganan/panggilan/{panggilan}', [PenangananKasusController::class, 'destroyPanggilan'])->name('penanganan.destroyPanggilan');
         Route::delete('penanganan/alih/{alih}', [PenangananKasusController::class, 'destroyAlih'])->name('penanganan.destroyAlih');
+    });
 
+    /*
+    |--------------------------------------------------------------------------
+    | Modul Manajemen surat (SIAS Back-Office)
+    |--------------------------------------------------------------------------
+    | 🔐 Dikunci menggunakan middleware 'permission' secara tersinkronisasi.
+    | Prefix 'bk.' akan melekat otomatis pada setiap komponen rute di dalam grup.
+    |
+    */
+
+    Route::prefix('surat')->name('surat.')->middleware(['permission'])->group(function () {
+        // Pastikan di bagian ini namanya CUKUP 'jenis.download-template' (tanpa kata 'surat' di depannya)
+        Route::get('/jenis/download-template', [JenisSuratController::class, 'downloadTemplate'])->name('jenis.download-template');
+        Route::post('/jenis/import', [JenisSuratController::class, 'import'])->name('jenis.import');
+        
+        // Route CRUD bawaan kemarin
+        Route::get('/jenis', [JenisSuratController::class, 'index'])->name('jenis.index');
+        Route::post('/jenis', [JenisSuratController::class, 'store'])->name('jenis.store');
+        Route::put('/jenis/{id}', [JenisSuratController::class, 'update'])->name('jenis.update');
+        Route::delete('/jenis/{id}', [JenisSuratController::class, 'destroy'])->name('jenis.destroy');
+
+        // ─── ROUTE BARU: SURAT MASUK & DISPOSISI ───
+        Route::get('/masuk', [SuratMasukController::class, 'index'])->name('masuk.index');
+        Route::get('/masuk/create', [SuratMasukController::class, 'create'])->name('masuk.create');
+        Route::put('/masuk/{id}', [SuratMasukController::class, 'update'])->name('masuk.update');
+        Route::post('/masuk', [SuratMasukController::class, 'store'])->name('masuk.store');
+        Route::get('/masuk/{id}', [SuratMasukController::class, 'show'])->name('masuk.show');
+        Route::delete('/masuk/{id}', [SuratMasukController::class, 'destroy'])->name('masuk.destroy');
+        
+        // Alur Proses Disposisi oleh Kepala Sekolah
+        Route::post('/masuk/{id}/disposisi', [SuratMasukController::class, 'storeDisposisi'])->name('masuk.disposisi');
+
+        // ─── ROUTE SURAT KELUAR ───
+        Route::get('/keluar', [SuratKeluarController::class, 'index'])->name('keluar.index');
+        Route::post('/keluar', [SuratKeluarController::class, 'store'])->name('keluar.store');
+        Route::put('/keluar/{id}', [SuratKeluarController::class, 'update'])->name('keluar.update');
+        Route::delete('/keluar/{id}', [SuratKeluarController::class, 'destroy'])->name('keluar.destroy');
+        
+        // Alur Persetujuan & Penomoran Otomatis oleh Kepsek
+        Route::post('/keluar/{id}/setujui', [SuratKeluarController::class, 'setujui'])->name('keluar.setujui');
+        Route::post('/keluar/{id}/tolak', [SuratKeluarController::class, 'tolak'])->name('keluar.tolak');
+
+        Route::get('/keluar/{id}/cetak', [SuratKeluarController::class, 'cetakPdf'])->name('keluar.cetak');
     });
 });
 

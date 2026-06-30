@@ -42,4 +42,12 @@ return [
     'total_storage_used' => 'Total penyimpanan yang digunakan',
     'newest_backup_date' => 'Ukuran cadangan terbaru',
     'oldest_backup_date' => 'Ukuran cadangan tertua',
+    'Hello!' =>"Halo!",
+    'You are receiving this email because we received a password reset request for your account.' => "Anda menerima email ini karena kami menerima permintaan atur ulang kata sandi untuk akun Anda.",
+    'Reset Password' => "Atur Ulang Kata Sandi",
+    'This password reset link will expire in :count minutes.' => "Tautan atur ulang kata sandi ini akan kedaluwarsa dalam waktu :count menit.",
+    'If you did not request a password reset, no further action is required.' => "Jika Anda tidak meminta atur ulang kata sandi, Anda tidak perlu melakukan tindakan apa pun.",
+    'Regards' => "Salam hangat,",
+    'If you’re having trouble clicking the \"Reset Password\" button, copy and paste the URL below into your web browser:' => "Jika Anda mengalami kendala saat mengklik tombol \"Atur Ulang Kata Sandi\", salin dan tempel URL di bawah ini ke browser web Anda:",
+    'throttled' => 'Mohon tunggu sebentar sebelum mencoba kembali mengirim tautan.',
 ];

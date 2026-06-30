@@ -2,15 +2,17 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\View;
+use App\Models\Menu;
+use App\Models\FooterLink;
+use App\Models\Permission;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\Auth; 
-use Illuminate\Support\Facades\Gate; 
-use App\Models\FooterLink; 
-use App\Models\Menu; 
-use App\Models\Permission; 
+use Illuminate\Support\ServiceProvider;
+use Illuminate\Auth\Notifications\ResetPassword;
+use Illuminate\Notifications\Messages\MailMessage;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -106,5 +108,26 @@ class AppServiceProvider extends ServiceProvider
                 });
             }
         }
+
+        // =========================================================================
+        // 8. KUSTOMISASI TOTAL EMAIL RESET PASSWORD (SOLUSI TERBAIK & FIX TEXT)
+        // =========================================================================
+        ResetPassword::toMailUsing(function (object $notifiable, string $token) {
+            $sekolah = \Illuminate\Support\Facades\DB::table('profil_sekolah')->first();
+            $namaSekolah = $sekolah->nama_sekolah ?? 'SMP NEGERI 4 CIBITUNG';
+            $resetUrl = url(route('password.reset', ['token' => $token, 'email' => $notifiable->getEmailForPasswordReset()], false));
+
+            return (new MailMessage)
+                ->subject('SIAS - Permintaan Atur Ulang Kata Sandi')
+                ->greeting('Halo!')
+                ->line('Anda menerima email ini karena kami menerima permintaan untuk mengatur ulang kata sandi (reset password) akun Anda di Sistem Informasi Aktivitas Sekolah (SIAS).')
+                ->action('Atur Ulang Kata Sandi', $resetUrl)
+                ->line('Tautan (link) pemulihan kata sandi ini hanya akan berlaku selama ' . config('auth.passwords.'.config('auth.defaults.passwords').'.expire') . ' menit.')
+                ->line('Jika Anda tidak merasa meminta pengaturan ulang kata sandi, Anda dapat mengabaikan email ini dengan aman.')
+                // Teks Link Alternatif dimasukkan langsung di sini agar rapi
+                ->line('Jika Anda mengalami kendala saat mengklik tombol "Atur Ulang Kata Sandi", silakan salin dan tempel URL di bawah ini ke browser web Anda:')
+                ->line($resetUrl)
+                ->salutation("Salam hangat,\n" . $namaSekolah);
+        });
     }
 }

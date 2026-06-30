@@ -1,43 +1,121 @@
 <x-guest-layout>
-    <div class="mb-6 text-center">
-        <h2 class="text-2xl font-bold text-gray-800">SIAS (Sistem Informasi Sekolah)</h2>
-        <p class="text-sm text-gray-600">Silahkan login untuk mengakses eRapor, Antrian, dan Data Akademik</p>
-    </div>
+    <div class="min-h-[85vh] flex flex-col justify-center items-center px-4 w-full max-w-md mx-auto">
+        
+        <div class="w-full bg-white p-6 md:p-8 rounded-2xl border border-gray-100 shadow-xl shadow-gray-100/70">
+            
+            <div class="mb-6 text-center">
+                
+                <div class="flex items-center justify-center gap-4 mb-4">
+                    @if(!empty($logoSetting->logo_pemda))
+                        <img src="{{ asset('storage/' . $logoSetting->logo_pemda) }}" 
+                             class="w-14 h-14 object-contain" 
+                             alt="Logo Pemda">
+                    @endif
 
-    <x-auth-session-status class="mb-4" :status="session('status')" />
+                    <a href="/" class="transition-transform hover:scale-105 inline-block">
+                        <img src="{{ !empty($logoSetting->logo_sekolah) ? asset('storage/' . $logoSetting->logo_sekolah) : asset('images/default-logo.png') }}" 
+                             class="w-16 h-16 object-contain" 
+                             alt="Logo Sekolah">
+                    </a>
+                </div>
+                
+                <h2 class="text-2xl font-extrabold text-gray-900 tracking-tight">
+                    SIAS
+                </h2>
+                <p class="text-[10px] font-bold text-indigo-600 uppercase tracking-widest mt-0.5">
+                    Sistem Informasi Aktivitas Sekolah
+                </p>
+                <p class="text-xs text-gray-500 mt-2 max-w-xs mx-auto leading-relaxed">
+                    Silakan masuk untuk mengakses e-Rapor, Antrian, dan Data Akademik.
+                </p>
+            </div>
 
-    <form method="POST" action="{{ route('login') }}">
-        @csrf
+            <x-auth-session-status class="mb-4 p-2.5 rounded-xl text-xs font-medium" :status="session('status')" />
 
-        <div>
-            <x-input-label for="email" value="Alamat Email Resmi" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
+            <form method="POST" action="{{ route('login') }}" x-data="{ showPassword: false }" class="space-y-4">
+                @csrf
 
-        <div class="mt-4">
-            <x-input-label for="password" value="Kata Sandi / Password" />
-            <x-text-input id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="current-password" />
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
+                <div>
+                    <label for="email" class="block text-[11px] font-bold text-gray-700 uppercase tracking-wider mb-1">
+                        Alamat Email Resmi
+                    </label>
+                    <div class="relative rounded-xl shadow-sm">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400 text-xs">
+                            📧
+                        </div>
+                        <input id="email" 
+                               type="email" 
+                               name="email" 
+                               value="{{ old('email') }}" 
+                               required 
+                               autofocus 
+                               autocomplete="username"
+                               placeholder="nama@sekolah.sch.id"
+                               class="block w-full pl-9 pr-4 py-2 text-sm rounded-xl border border-gray-200 text-gray-900 placeholder-gray-400 bg-gray-50/50 focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-150" />
+                    </div>
+                    <x-input-error :messages="$errors->get('email')" class="mt-1 text-xs font-medium text-rose-600" />
+                </div>
 
-        <div class="flex items-center justify-between mt-4">
-            <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
-                <span class="ms-2 text-sm text-gray-600">Ingat Saya</span>
-            </label>
+                <div>
+                    <label for="password" class="block text-[11px] font-bold text-gray-700 uppercase tracking-wider mb-1">
+                        Kata Sandi / Password
+                    </label>
+                    <div class="relative rounded-xl shadow-sm">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400 text-xs">
+                            🔑
+                        </div>
+                        <input id="password" 
+                               :type="showPassword ? 'text' : 'password'" 
+                               name="password" 
+                               required 
+                               autocomplete="current-password"
+                               placeholder="••••••••"
+                               class="block w-full pl-9 pr-10 py-2 text-sm rounded-xl border border-gray-200 text-gray-900 placeholder-gray-400 bg-gray-50/50 focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-150" />
+                        
+                        <button type="button" 
+                                @click="showPassword = !showPassword"
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-xs text-gray-400 hover:text-indigo-600 focus:outline-none transition-colors"
+                                title="Lihat Kata Sandi">
+                            <span x-show="!showPassword">👁️</span>
+                            <span x-show="showPassword" style="display: none;">🔒</span>
+                        </button>
+                    </div>
+                    <x-input-error :messages="$errors->get('password')" class="mt-1 text-xs font-medium text-rose-600" />
+                </div>
 
-            @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
-                    Lupa Password?
+                <div class="flex items-center justify-between pt-0.5">
+                    <label for="remember_me" class="inline-flex items-center cursor-pointer select-none group">
+                        <input id="remember_me" 
+                               type="checkbox" 
+                               name="remember"
+                               class="w-3.5 h-3.5 rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500 focus:ring-offset-1 cursor-pointer transition-colors" />
+                        <span class="ms-1.5 text-xs font-medium text-gray-500 group-hover:text-gray-800 transition-colors">
+                            Ingat Sesi Saya
+                        </span>
+                    </label>
+
+                    @if (Route::has('password.request'))
+                        <a class="text-xs font-semibold text-indigo-600 hover:text-indigo-500 transition-all" 
+                           href="{{ route('password.request') }}">
+                            Lupa Password?
+                        </a>
+                    @endif
+                </div>
+
+                <div class="pt-2">
+                    <button type="submit" 
+                            class="w-full inline-flex justify-center items-center px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm rounded-xl shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-150 transform active:scale-[0.99] cursor-pointer">
+                        Masuk ke Sistem ➔
+                    </button>
+                </div>
+            </form>
+
+            <div class="mt-6 pt-4 border-t border-gray-100 text-center">
+                <a href="/" class="text-xs font-medium text-gray-400 hover:text-indigo-600 transition-colors inline-flex items-center gap-1">
+                    ⬅ Kembali ke Beranda
                 </a>
-            @endif
-        </div>
+            </div>
 
-        <div class="mt-6">
-            <x-primary-button class="w-full justify-center">
-                Masuk ke Sistem
-            </x-primary-button>
         </div>
-    </form>
+    </div>
 </x-guest-layout>

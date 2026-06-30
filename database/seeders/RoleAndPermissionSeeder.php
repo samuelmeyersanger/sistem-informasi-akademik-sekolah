@@ -100,7 +100,7 @@ class RoleAndPermissionSeeder extends Seeder
             ['name' => 'sarpras.peminjaman.kembalikan', 'modul' => 'sarpras', 'description' => 'Memproses pengembalian sarpras (Mengembalikan stok & cek keterlambatan)'],
             ['name' => 'sarpras.peminjaman.destroy', 'modul' => 'sarpras', 'description' => 'Menghapus data lembar log transaksi peminjaman'],
             
-            // Rute tunggal global untuk melihat jadwal kelas (Hak Kepemilikan Data difilter di tingkat Controller belakangan)
+            // Rute tunggal global untuk melihat jadwal kelas
             ['name' => 'kesiswaan.kelas.jadwal', 'modul' => 'akademik', 'description' => 'Melihat jadwal pelajaran ruang kelas dinamis'],
 
             // --- Modul Kesiswaan ---
@@ -120,7 +120,7 @@ class RoleAndPermissionSeeder extends Seeder
             ['name' => 'kepegawaian.pegawai.update', 'modul' => 'kepegawaian', 'description' => 'Mengubah detail pegawai'],
             ['name' => 'kepegawaian.pegawai.destroy', 'modul' => 'kepegawaian', 'description' => 'Menghapus data pegawai'],
 
-            // --- 📌 Modul Manajemen Ekskul (Fitur Tambahan) ---
+            // --- 📌 Modul Manajemen Ekskul ---
             ['name' => 'ekskul.ekstrakurikuler.index', 'modul' => 'ekskul', 'description' => 'Melihat daftar ekstrakurikuler sekolah'],
             ['name' => 'ekskul.ekstrakurikuler.store', 'modul' => 'ekskul', 'description' => 'Membuat/Menambah program ekstrakurikuler baru'],
             ['name' => 'ekskul.ekstrakurikuler.show', 'modul' => 'ekskul', 'description' => 'Melihat detail data dan ruang kendali internal ekskul'],
@@ -131,7 +131,7 @@ class RoleAndPermissionSeeder extends Seeder
             ['name' => 'ekskul.ekstrakurikuler.prestasi.store', 'modul' => 'ekskul', 'description' => 'Mencatat raihan lembar prestasi baru pada ekskul'],
             ['name' => 'ekskul.ekstrakurikuler.prestasi.destroy', 'modul' => 'ekskul', 'description' => 'Menghapus data catatan prestasi ekskul siswa'],
 
-            // --- 📌 Modul Guru Piket Sekolah (Fitur Baru) ---
+            // --- 📌 Modul Guru Piket Sekolah ---
             ['name' => 'piket.dashboard', 'modul' => 'piket', 'description' => 'Melihat pusat kendali operasional jurnal piket harian'],
             ['name' => 'piket.catatan.store', 'modul' => 'piket', 'description' => 'Menyimpan berita acara kejadian penting harian'],
             
@@ -197,28 +197,50 @@ class RoleAndPermissionSeeder extends Seeder
             ['name' => 'master.backup.download', 'modul' => 'pengaturan', 'description' => 'Mengunduh backup file'],
             ['name' => 'master.backup.upload-restore', 'modul' => 'pengaturan', 'description' => 'Mengupload dan restore backup file'],
 
-            // --- 📌 Modul Bimbingan Konseling (BK) ---
-            // 📝 Sub-Modul: Jurnal Harian BK
+            // --- Modul Bimbingan Konseling (BK) ---
             ['name' => 'bk.jurnal.index', 'modul' => 'bk', 'description' => 'Melihat daftar arsip jurnal harian guru BK'],
             ['name' => 'bk.jurnal.store', 'modul' => 'bk', 'description' => 'Mencatat log jurnal aktivitas BK baru'],
             ['name' => 'bk.jurnal.update', 'modul' => 'bk', 'description' => 'Memperbarui lembar catatan data jurnal harian BK'],
             ['name' => 'bk.jurnal.destroy', 'modul' => 'bk', 'description' => 'Menghapus catatan log jurnal harian BK'],
 
-            // 📂 Sub-Modul: Penanganan Kasus / Alih Tangan Kasus
             ['name' => 'bk.penanganan.index', 'modul' => 'bk', 'description' => 'Melihat modul penanganan dan berkas alih tangan kasus'],
             ['name' => 'bk.penanganan.storeAlih', 'modul' => 'bk', 'description' => 'Menerbitkan dokumen cetak alih tangan kasus (Referral) baru'],
             ['name' => 'bk.penanganan.destroyAlih', 'modul' => 'bk', 'description' => 'Menghapus dokumen cetak alih tangan kasus (Referral)'],
             ['name' => 'bk.penanganan.storePanggilan', 'modul' => 'bk', 'description' => 'Menerbitkan Pemanggilan Orang Tua'],
             ['name' => 'bk.penanganan.destroyPanggilan', 'modul' => 'bk', 'description' => 'Menghapus Pemanggilan Orang Tua'],
 
-            // 📂 Sub-Modul: Kedisiplinan
             ['name' => 'bk.kedisiplinan.index', 'modul' => 'bk', 'description' => 'Melihat modul kedisiplinan'],
             ['name' => 'bk.kedisiplinan.storePelanggaran', 'modul' => 'bk', 'description' => 'Menerbitkan Pelanggaran Siswa'],
             ['name' => 'bk.kedisiplinan.storeTerlambat', 'modul' => 'bk', 'description' => 'Menerbitkan Siswa Yang terlambat'],
             ['name' => 'bk.kedisiplinan.destroyPelanggaran', 'modul' => 'bk', 'description' => 'Menghapus Pelanggaran Siswa'],
             ['name' => 'bk.kedisiplinan.destroyTerlambat', 'modul' => 'bk', 'description' => 'Menghapus Siswa Yang terlambat'],
 
+            // ─── 📌 MODUL TATA USAHA & PERSURATAN (BARU) ───
+            
+            // 📝 1. Hak Akses Kelola Klasifikasi (JenisSuratController.php)
+            ['name' => 'master.jenis-surat.index', 'modul' => 'persuratan', 'description' => 'Melihat daftar format dan master klasifikasi nomor surat'],
+            ['name' => 'master.jenis-surat.store', 'modul' => 'persuratan', 'description' => 'Membuat/Menambah format kode klasifikasi surat baru'],
+            ['name' => 'master.jenis-surat.update', 'modul' => 'persuratan', 'description' => 'Mengubah struktur format penomoran kode surat'],
+            ['name' => 'master.jenis-surat.destroy', 'modul' => 'persuratan', 'description' => 'Menghapus format data kode klasifikasi surat'],
 
+            // 📤 2. Hak Akses Kelola Agenda Surat Keluar (SuratKeluarController.php)
+            ['name' => 'master.surat-keluar.index', 'modul' => 'persuratan', 'description' => 'Melihat daftar agenda draf dan surat keluar resmi'],
+            ['name' => 'master.surat-keluar.store', 'modul' => 'persuratan', 'description' => 'Membuat usulan draf agenda surat keluar baru'],
+            ['name' => 'master.surat-keluar.update', 'modul' => 'persuratan', 'description' => 'Mengubah/Mengedit isi draf surat keluar sebelum disetujui'],
+            ['name' => 'master.surat-keluar.destroy', 'modul' => 'persuratan', 'description' => 'Menghapus berkas draf agenda surat keluar'],
+            
+            // 🖨️ Fitur Spesifik Surat Keluar (Validasi & Dokumen Dinamis)
+            ['name' => 'master.surat-keluar.setujui', 'modul' => 'persuratan', 'description' => 'Otoritas menyetujui surat (Generasi nomor urut resmi otomatis & TTD digital)'],
+            ['name' => 'master.surat-keluar.tolak', 'modul' => 'persuratan', 'description' => 'Menolak draf usulan surat keluar pimpinan'],
+            ['name' => 'master.surat-keluar.cetak', 'modul' => 'persuratan', 'description' => 'Mencetak dokumen resmi ke format PDF (Kop, TTD, & Lampiran dinamis)'],
+            ['name' => 'master.surat-keluar.upload-lampiran', 'modul' => 'persuratan', 'description' => 'Mengunggah lampiran tabel data panjang universal via file Excel'],
+
+            // 📥 3. Hak Akses Kelola Berkas Surat Masuk (SuratMasukController.php)
+            ['name' => 'master.surat-masuk.index', 'modul' => 'persuratan', 'description' => 'Melihat log lembar agenda dokumen surat masuk'],
+            ['name' => 'master.surat-masuk.store', 'modul' => 'persuratan', 'description' => 'Mencatat/Registrasi dokumen surat masuk baru dari luar'],
+            ['name' => 'master.surat-masuk.update', 'modul' => 'persuratan', 'description' => 'Mengubah informasi lembar catatan agenda surat masuk'],
+            ['name' => 'master.surat-masuk.destroy', 'modul' => 'persuratan', 'description' => 'Menghapus data lembar berkas arsip surat masuk'],
+            ['name' => 'master.surat-masuk.disposisi', 'modul' => 'persuratan', 'description' => 'Mengisi instruksi lembar disposisi pimpinan untuk ditindaklanjuti bawahan'],
         ];
 
         // 3. Masukkan ke database dan pasangkan ke Role secara otomatis
