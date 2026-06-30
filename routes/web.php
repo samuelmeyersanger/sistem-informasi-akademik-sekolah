@@ -6,6 +6,7 @@ use App\Http\Middleware\CheckPermission; // 🆕 PASTIKAN INI DIIMPORT
 use App\Models\Tentang;
 use App\Models\Blog;
 use App\Models\Page;
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Publik\BlogController;
 use App\Http\Controllers\Publik\PageController;
@@ -44,6 +45,9 @@ use App\Http\Controllers\Akademik\WaktuKbmController;
 use App\Http\Controllers\Piket\PetugasPiketController;
 use App\Http\Controllers\Piket\JurnalPiketController;
 use App\Http\Controllers\Ekskul\EkstrakurikulerController;
+use App\Http\Controllers\BK\JurnalBkController;
+use App\Http\Controllers\BK\KedisiplinanSiswaController;
+use App\Http\Controllers\BK\PenangananKasusController;
 
 /*
 |--------------------------------------------------------------------------
@@ -93,6 +97,21 @@ Route::middleware(['auth', CheckApproval::class])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // 1. Halaman Utama Chat (Menampilkan daftar obrolan dan ruang chat)
+    Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
+    
+    // 2. Inisialisasi / Mulai Chat Pribadi Baru dari Modal Kontak
+    Route::get('/chat/initiate/{targetUserId}', [ChatController::class, 'initiatePrivateChat'])->name('chat.initiate');
+    
+    // 3. API endpoint untuk mengambil semua pesan di dalam satu room (Ditembak oleh Polling Alpine.js)
+    Route::get('/chat/room/{roomId}/messages', [ChatController::class, 'getMessages'])->name('chat.messages');
+    
+    // 4. API endpoint untuk mengirim pesan baru di dalam room (Ditembak oleh Axios POST)
+    Route::post('/chat/room/{roomId}/send', [ChatController::class, 'sendMessage'])->name('chat.send');
+
+    // Jalur untuk memproses pembuatan grup baru
+    Route::post('/chat/group/create', [ChatController::class, 'createGroupChat'])->name('chat.group.create');
 
     /*
     |--------------------------------------------------------------------------
@@ -437,6 +456,34 @@ Route::middleware(['auth', CheckApproval::class])->group(function () {
         Route::delete('ekstrakurikuler/{ekstrakurikuler}/prestasi/{prestasi}', [EkstrakurikulerController::class, 'destroyPrestasi'])->name('ekstrakurikuler.prestasi.destroy');
     });
 
+    /*
+    |--------------------------------------------------------------------------
+    | Modul Manajemen bk (SIAS Back-Office)
+    |--------------------------------------------------------------------------
+    | 🔐 Dikunci menggunakan middleware 'permission' secara tersinkronisasi.
+    | Prefix 'bk.' akan melekat otomatis pada setiap komponen rute di dalam grup.
+    |
+    */
+
+    Route::prefix('bk')->name('bk.')->middleware(['permission'])->group(function () {
+        // 1. Route Jurnal Harian
+        Route::resource('jurnal', JurnalBkController::class)->except(['create', 'edit']);
+
+        // 2. Route Kedisiplinan (Pelanggaran & Terlambat)
+        Route::get('kedisiplinan', [KedisiplinanSiswaController::class, 'index'])->name('kedisiplinan.index');
+        Route::post('kedisiplinan/pelanggaran', [KedisiplinanSiswaController::class, 'storePelanggaran'])->name('kedisiplinan.storePelanggaran');
+        Route::post('kedisiplinan/terlambat', [KedisiplinanSiswaController::class, 'storeTerlambat'])->name('kedisiplinan.storeTerlambat');
+        Route::delete('kedisiplinan/pelanggaran/{pelanggaran}', [KedisiplinanSiswaController::class, 'destroyPelanggaran'])->name('kedisiplinan.destroyPelanggaran');
+        Route::delete('kedisiplinan/terlambat/{terlambat}', [KedisiplinanSiswaController::class, 'destroyTerlambat'])->name('kedisiplinan.destroyTerlambat');
+
+        // 3. Route Penanganan Kasus (Panggilan & Alih Kasus)
+        Route::get('penanganan', [PenangananKasusController::class, 'index'])->name('penanganan.index');
+        Route::post('penanganan/panggilan', [PenangananKasusController::class, 'storePanggilan'])->name('penanganan.storePanggilan');
+        Route::post('penanganan/alih', [PenangananKasusController::class, 'storeAlihKasus'])->name('penanganan.storeAlih');
+        Route::delete('penanganan/panggilan/{panggilan}', [PenangananKasusController::class, 'destroyPanggilan'])->name('penanganan.destroyPanggilan');
+        Route::delete('penanganan/alih/{alih}', [PenangananKasusController::class, 'destroyAlih'])->name('penanganan.destroyAlih');
+
+    });
 });
 
 // 5. Rute Autentikasi Bawaan Laravel (Login, Register, Logout, dll)

@@ -14,8 +14,15 @@
        class="fixed inset-y-0 left-0 z-50 flex flex-col w-64 bg-slate-900 border-r border-slate-800 text-slate-300 transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 shrink-0">
     
     <div class="flex items-center justify-between h-16 px-6 bg-slate-950 border-b border-slate-800 shrink-0">
+        @php
+            $logoSetting = \DB::table('pengaturan_logo')->first(); 
+        @endphp
+
         <a href="{{ route('dashboard') }}" class="flex items-center gap-2.5 font-bold text-white tracking-wider text-sm uppercase">
-            <x-application-logo class="w-7 h-7 fill-current text-indigo-400" />
+            <img src="{{ !empty($logoSetting?->logo_sekolah) ? asset('storage/' . $logoSetting->logo_sekolah) : asset('images/default-logo.png') }}" 
+                 class="w-7 h-7 object-contain rounded-md shrink-0" 
+                 alt="Logo">
+            
             <span>{{ config('app.name', 'SIAS AKADEMIK') }}</span>
         </a>
         <button @click="sidebarOpen = false" class="lg:hidden text-slate-400 hover:text-white text-xl font-bold cursor-pointer">&times;</button>
@@ -65,7 +72,7 @@
 
     </nav>
 
-    {{-- 🟢 BAGIAN YANG DIPERBAIKI (Diberi Jaring Pengaman ?-> dan ??) --}}
+    {{-- BAGIAN USER PROFILE BOTTOM SIDEBAR --}}
     <div class="p-4 bg-slate-950 border-t border-slate-800 flex items-center gap-3 shrink-0">
         <div class="w-8 h-8 rounded-full bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center font-bold text-indigo-400 uppercase text-xs shrink-0">
             {{ substr(Auth::user()?->name ?? 'US', 0, 2) }}

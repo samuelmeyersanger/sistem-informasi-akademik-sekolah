@@ -238,7 +238,7 @@ class PegawaiController extends Controller
         $user = User::create([
             'name' => $pegawai->nama_lengkap,
             'email' => $emailPegawai,
-            'password' => Hash::make('pegawai123'),
+            'password' => Hash::make('@Sekolah4#'),
             'is_approved' => true,
         ]);
 
@@ -278,7 +278,7 @@ class PegawaiController extends Controller
         $domainSekolah = '@' . $namaSekolahBersih . '.sch.id';
 
         $counter = 0;
-        $passwordHash = Hash::make('pegawai123');
+        $passwordHash = Hash::make('@Sekolah4#');
         $rolesMap = Role::pluck('id', 'name')->toArray();
 
         DB::beginTransaction();

@@ -171,13 +171,39 @@ class MenuSeeder extends Seeder
                 'permission_slug' => 'sarpras.peminjaman.index',
             ],
 
+            // 🟢 Kategori: Bimbingan Konseling (BK) (Data Baru 📌)
+            [
+                'kategori' => 'Bimbingan Konseling (BK)',
+                'nama_menu' => 'Jurnal Harian BK',
+                'url' => 'bk/jurnal',
+                'icon' => 'fas fa-book',
+                'urutan' => 19,
+                'permission_slug' => 'bk.jurnal.index',
+            ],
+            [
+                'kategori' => 'Bimbingan Konseling (BK)',
+                'nama_menu' => 'Alih Tangan Kasus',
+                'url' => 'bk/penanganan',
+                'icon' => 'fas fa-folder-open',
+                'urutan' => 20,
+                'permission_slug' => 'bk.penanganan.index',
+            ],
+            [
+                'kategori' => 'Bimbingan Konseling (BK)',
+                'nama_menu' => 'Kedisiplinan',
+                'url' => 'bk/kedisiplinan',
+                'icon' => 'fas fa-gavel',
+                'urutan' => 21,
+                'permission_slug' => 'bk.kedisiplinan.index',
+            ],
+
             // 🟢 Kategori: Portal Berita (Urutan digeser +1)
             [
                 'kategori' => 'Portal Berita',
                 'nama_menu' => 'Kategori Blog',
                 'url' => 'master/kategori-blog',
                 'icon' => 'folder',
-                'urutan' => 19,
+                'urutan' => 22,
                 'permission_slug' => 'master.kategori-blog.index',
             ],
             [
@@ -185,7 +211,7 @@ class MenuSeeder extends Seeder
                 'nama_menu' => 'Artikel Blog',
                 'url' => 'master/blog',
                 'icon' => 'fa-solid fa-newspaper',
-                'urutan' => 20,
+                'urutan' => 23,
                 'permission_slug' => 'master.blog.index',
             ],
             [
@@ -193,7 +219,7 @@ class MenuSeeder extends Seeder
                 'nama_menu' => 'Komentar Blog',
                 'url' => 'master/komentar-blog',
                 'icon' => 'fa-solid fa-comments',
-                'urutan' => 21,
+                'urutan' => 24,
                 'permission_slug' => 'master.komentar-blog.index',
             ],
 
@@ -203,7 +229,7 @@ class MenuSeeder extends Seeder
                 'nama_menu' => 'Pengaturan Logo',
                 'url' => 'master/pengaturan-logo',
                 'icon' => 'fa-solid fa-palette',
-                'urutan' => 22,
+                'urutan' => 25,
                 'permission_slug' => 'master.pengaturan-logo.index',
             ],
             [
@@ -211,7 +237,7 @@ class MenuSeeder extends Seeder
                 'nama_menu' => 'Tentang Sekolah',
                 'url' => 'master/tentang',
                 'icon' => 'fa-solid fa-building-columns',
-                'urutan' => 23,
+                'urutan' => 26,
                 'permission_slug' => 'master.tentang.index',
             ],
             [
@@ -219,7 +245,7 @@ class MenuSeeder extends Seeder
                 'nama_menu' => 'Profil Sekolah',
                 'url' => 'master/profil-sekolah',
                 'icon' => 'fa-solid fa-school',
-                'urutan' => 24,
+                'urutan' => 27,
                 'permission_slug' => 'master.profil-sekolah.index',
             ],
             [
@@ -227,7 +253,7 @@ class MenuSeeder extends Seeder
                 'nama_menu' => 'Halaman Statis',
                 'url' => 'master/page',
                 'icon' => 'fa-solid fa-file',
-                'urutan' => 25,
+                'urutan' => 28,
                 'permission_slug' => 'master.page.index',
             ],
             [
@@ -235,7 +261,7 @@ class MenuSeeder extends Seeder
                 'nama_menu' => 'Tautan Kaki (Footer)',
                 'url' => 'master/footer-link',
                 'icon' => 'link',
-                'urutan' => 26,
+                'urutan' => 29,
                 'permission_slug' => 'master.footer-link.index',
             ],
             [
@@ -243,7 +269,7 @@ class MenuSeeder extends Seeder
                 'nama_menu' => 'Pesan Masuk Kontak',
                 'url' => 'master/kontak',
                 'icon' => 'fa-solid fa-comment',
-                'urutan' => 27,
+                'urutan' => 30,
                 'permission_slug' => 'master.kontak.index',
             ],
             [
@@ -251,7 +277,7 @@ class MenuSeeder extends Seeder
                 'nama_menu' => 'Info Kontak Sekolah',
                 'url' => 'master/setting-kontak',
                 'icon' => 'phone',
-                'urutan' => 28,
+                'urutan' => 31,
                 'permission_slug' => 'master.setting-kontak.index',
             ],
             [
@@ -259,7 +285,7 @@ class MenuSeeder extends Seeder
                 'nama_menu' => 'Backup & Restore Sistem',
                 'url' => 'master/backup',
                 'icon' => 'fa-solid fa-database',
-                'urutan' => 29,
+                'urutan' => 32,
                 'permission_slug' => 'master.backup.index',
             ]
         ];

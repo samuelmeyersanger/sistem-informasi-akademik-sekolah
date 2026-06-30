@@ -11,7 +11,19 @@
         </div>
     </div>
 
-    <div class="flex items-center">
+    <div class="flex items-center gap-3">
+        
+        <a href="{{ route('chat.index') }}" 
+           class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors cursor-pointer {{ request()->routeIs('chat.*') ? 'bg-indigo-50 text-indigo-600 border border-indigo-100' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50' }}"
+           title="Ruang Diskusi & Chat">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 0 1-.923 1.785 10.53 10.53 0 0 0 3.104-.94c.54-.191 1.135-.112 1.657.211.967.6 2.108.923 3.303.923Z"></path>
+            </svg>
+            <span class="hidden sm:inline">Chat Sekolah</span>
+        </a>
+
+        <div class="h-4 w-[1px] bg-gray-200"></div>
+
         <x-dropdown align="right" width="48">
             <x-slot name="trigger">
                 <button class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-500 hover:text-gray-700 focus:outline-none transition-colors cursor-pointer rounded-lg hover:bg-gray-50">

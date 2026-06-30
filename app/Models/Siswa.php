@@ -123,4 +123,12 @@ class Siswa extends Model
     {
         return $this->hasMany(AnggotaEkstrakurikuler::class, 'siswa_id');
     }
+
+    public function pelanggaran() {
+        return $this->hasMany(PelanggaranSiswa::class, 'siswa_id');
+    }
+
+    public function keterlambatan() {
+        return $this->hasMany(SiswaTerlambat::class, 'siswa_id');
+    }
 }

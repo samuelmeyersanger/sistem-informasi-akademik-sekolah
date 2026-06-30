@@ -1640,7 +1640,7 @@
                                 Lanjut ➡️
                             </button>
                             
-                            <form action="{{ url('kesiswaan/siswa/' . $siswaTunggal->id) }}" method="POST" novalidate>
+                            <form action="{{ url('kesiswaan/siswa/' . ($siswaTunggal?->id ?? '')) }}" method="POST" novalidate>
                                 @csrf
                                 @method('PUT') 
                                 <button type="submit" x-show="currentStep === 3" class="...">

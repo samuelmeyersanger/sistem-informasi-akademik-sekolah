@@ -196,6 +196,29 @@ class RoleAndPermissionSeeder extends Seeder
             ['name' => 'master.backup.restore', 'modul' => 'pengaturan', 'description' => 'Mengrestore backup sistem'],
             ['name' => 'master.backup.download', 'modul' => 'pengaturan', 'description' => 'Mengunduh backup file'],
             ['name' => 'master.backup.upload-restore', 'modul' => 'pengaturan', 'description' => 'Mengupload dan restore backup file'],
+
+            // --- 📌 Modul Bimbingan Konseling (BK) ---
+            // 📝 Sub-Modul: Jurnal Harian BK
+            ['name' => 'bk.jurnal.index', 'modul' => 'bk', 'description' => 'Melihat daftar arsip jurnal harian guru BK'],
+            ['name' => 'bk.jurnal.store', 'modul' => 'bk', 'description' => 'Mencatat log jurnal aktivitas BK baru'],
+            ['name' => 'bk.jurnal.update', 'modul' => 'bk', 'description' => 'Memperbarui lembar catatan data jurnal harian BK'],
+            ['name' => 'bk.jurnal.destroy', 'modul' => 'bk', 'description' => 'Menghapus catatan log jurnal harian BK'],
+
+            // 📂 Sub-Modul: Penanganan Kasus / Alih Tangan Kasus
+            ['name' => 'bk.penanganan.index', 'modul' => 'bk', 'description' => 'Melihat modul penanganan dan berkas alih tangan kasus'],
+            ['name' => 'bk.penanganan.storeAlih', 'modul' => 'bk', 'description' => 'Menerbitkan dokumen cetak alih tangan kasus (Referral) baru'],
+            ['name' => 'bk.penanganan.destroyAlih', 'modul' => 'bk', 'description' => 'Menghapus dokumen cetak alih tangan kasus (Referral)'],
+            ['name' => 'bk.penanganan.storePanggilan', 'modul' => 'bk', 'description' => 'Menerbitkan Pemanggilan Orang Tua'],
+            ['name' => 'bk.penanganan.destroyPanggilan', 'modul' => 'bk', 'description' => 'Menghapus Pemanggilan Orang Tua'],
+
+            // 📂 Sub-Modul: Kedisiplinan
+            ['name' => 'bk.kedisiplinan.index', 'modul' => 'bk', 'description' => 'Melihat modul kedisiplinan'],
+            ['name' => 'bk.kedisiplinan.storePelanggaran', 'modul' => 'bk', 'description' => 'Menerbitkan Pelanggaran Siswa'],
+            ['name' => 'bk.kedisiplinan.storeTerlambat', 'modul' => 'bk', 'description' => 'Menerbitkan Siswa Yang terlambat'],
+            ['name' => 'bk.kedisiplinan.destroyPelanggaran', 'modul' => 'bk', 'description' => 'Menghapus Pelanggaran Siswa'],
+            ['name' => 'bk.kedisiplinan.destroyTerlambat', 'modul' => 'bk', 'description' => 'Menghapus Siswa Yang terlambat'],
+
+
         ];
 
         // 3. Masukkan ke database dan pasangkan ke Role secara otomatis
