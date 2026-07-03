@@ -24,12 +24,22 @@ class SiswaController extends Controller
      */
     public function index(Request $request)
     {
+
+        
         $search = $request->input('search');
         $filter_tingkat = $request->input('tingkat');
         $filter_status = $request->input('status');
 
         // Eager load kelas, semester, dan wali untuk mencegah N+1 Query Problem
-        $query = Siswa::with(['kelas', 'semester', 'wali'])->orderBy('nama_lengkap', 'asc');
+        $query = Siswa::with([
+            'kelas', 
+            'semester', 
+            'wali', 
+            'provinsi_relasi', 
+            'kota_relasi', 
+            'kecamatan_relasi', 
+            'kelurahan_relasi'
+        ])->orderBy('nama_lengkap', 'asc');
 
         // Pencarian multi-kolom
         if ($search) {

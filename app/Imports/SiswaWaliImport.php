@@ -15,26 +15,16 @@ class SiswaWaliImport implements WithMultipleSheets
     }
 }
 
-// ⬇️ Pindahkan seluruh logika import Anda ke dalam class sheet khusus ini
 class SiswaDataImportSheet implements \Maatwebsite\Excel\Concerns\ToModel
 {
     public function model(array $row)
     {
-        // 1. LEWATI BARIS PERTAMA (JUDUL/HEADING)
-        if (isset($row[0]) && (strtolower($row[0]) == 'nama_lengkap' || strtolower($row[0]) == 'nama lengkap')) {
+        // 1. LEWATI BARIS PERTAMA JIKA ITU JUDUL (HEADING)
+        if (isset($row[0]) && (strtolower(trim($row[0])) == 'nama_lengkap' || strtolower(trim($row[0])) == 'nama lengkap')) {
             return null;
         }
 
-        // 2. FILTER BARIS KOSONG TOTAL
-        $filteredRow = array_filter($row, function($value) {
-            return $value !== null && trim($value) !== '';
-        });
-
-        if (empty($filteredRow)) {
-            return null; 
-        }
-
-        // 3. AMBIL DATA BERDASARKAN INDEKS KOLOM
+        // 2. AMBIL DATA BERDASARKAN INDEKS URUTAN KOLOM EXCEL (A=0, B=1, dst.)
         $nama_lengkap   = isset($row[0]) ? trim($row[0]) : null;
         $nik            = isset($row[1]) ? trim($row[1]) : '-';
         $nipd           = isset($row[2]) ? trim($row[2]) : '-';
@@ -47,12 +37,13 @@ class SiswaDataImportSheet implements \Maatwebsite\Excel\Concerns\ToModel
         $asal_sekolah   = isset($row[9]) ? trim($row[9]) : '-';
         $no_peserta_un  = isset($row[10]) ? trim($row[10]) : '-';
         
+        // Kolom L, M, N, O (Indeks 11, 12, 13, 14)
         $text_provinsi  = isset($row[11]) ? trim($row[11]) : null;
         $text_kota      = isset($row[12]) ? trim($row[12]) : null;
         $text_kecamatan = isset($row[13]) ? trim($row[13]) : null;
         $text_kelurahan = isset($row[14]) ? trim($row[14]) : null;
-        $alamat_lengkap = isset($row[15]) ? trim($row[15]) : 'Alamat belum diisi';
         
+        $alamat_lengkap = isset($row[15]) ? trim($row[15]) : 'Alamat belum diisi';
         $rt             = isset($row[16]) ? trim($row[16]) : '00';
         $rw             = isset($row[17]) ? trim($row[17]) : '00';
         $kode_pos       = isset($row[18]) ? trim($row[18]) : '00000';
@@ -67,21 +58,20 @@ class SiswaDataImportSheet implements \Maatwebsite\Excel\Concerns\ToModel
         $wali_nama      = isset($row[26]) ? trim($row[26]) : null;
         $wali_pekerjaan = isset($row[27]) ? trim($row[27]) : '-';
 
+        // Jika nama kosong, skip baris ini
         if (empty($nama_lengkap)) {
             return null;
         }
 
-        // 🔴 NORMALISASI AGAMA: Mengikuti ENUM ['Islam', 'Kristen', 'Katholik', 'Hindu', 'Budha']
+        // Normalisasi Agama
         $agama_input = strtolower(trim($agama_raw));
-
         if (str_contains($agama_input, 'katolik') || str_contains($agama_input, 'katholik')) {
-            $agama = 'Katholik'; // Pakai 'h' sesuai ENUM Anda
+            $agama = 'Katholik';
         } elseif (str_contains($agama_input, 'kristen') || str_contains($agama_input, 'protestan')) {
-            $agama = 'Kristen';  // Sesuai ENUM Anda
+            $agama = 'Kristen';
         } elseif (str_contains($agama_input, 'budha') || str_contains($agama_input, 'buddha')) {
-            $agama = 'Budha';    // Tanpa 'h' di tengah sesuai ENUM Anda
+            $agama = 'Budha';
         } else {
-            // Untuk Islam dan Hindu
             $agama = ucwords($agama_input); 
         }
 
@@ -91,42 +81,75 @@ class SiswaDataImportSheet implements \Maatwebsite\Excel\Concerns\ToModel
             $semesterAktif = \App\Models\Semester::where('is_aktif', true)->first(); 
             $semesterId = $semesterAktif ? $semesterAktif->id : null;
 
-            // --- KONVERSI WILAYAH (Sama seperti sebelumnya) ---
+            // --- KONVERSI WILAYAH (SOLUSI ANTI-SPASI & OPERATOR LIKE NYALA) ---
             $provinsiId = null;
+            $provinsiCode = null;
             if (!empty($text_provinsi)) {
-                $provinsi = \Laravolt\Indonesia\Models\Province::where('name', 'ILIKE', '%' . $text_provinsi . '%')->first();
-                $provinsiId = $provinsi ? $provinsi->id : null;
+                $cleanProvinsi = strtoupper(trim($text_provinsi));
+                $provinsi = \Laravolt\Indonesia\Models\Province::where('name', 'LIKE', '%' . $cleanProvinsi . '%')->first();
+                if ($provinsi) {
+                    $provinsiId = $provinsi->id;
+                    $provinsiCode = $provinsi->code;
+                }
             }
-            if (empty($provinsiId)) { $provinsiId = 32; }
+            if (empty($provinsiId)) {
+                $fallbackProv = \Laravolt\Indonesia\Models\Province::where('code', '32')->first();
+                $provinsiId = $fallbackProv ? $fallbackProv->id : 32;
+                $provinsiCode = '32';
+            }
 
             $kotaId = null;
+            $kotaCode = null;
             if (!empty($text_kota)) {
-                $kota = \Laravolt\Indonesia\Models\City::where('province_code', $provinsiId)->where('name', 'ILIKE', '%' . $text_kota . '%')->first();
-                $kotaId = $kota ? $kota->id : null;
+                $cleanKota = strtoupper(trim($text_kota));
+                $kota = \Laravolt\Indonesia\Models\City::where('province_code', $provinsiCode)
+                    ->where('name', 'LIKE', '%' . $cleanKota . '%')
+                    ->first();
+                if ($kota) {
+                    $kotaId = $kota->id;
+                    $kotaCode = $kota->code;
+                }
             }
-            if (empty($kotaId)) { $kotaId = 3216; }
+            if (empty($kotaId)) {
+                $fallbackCity = \Laravolt\Indonesia\Models\City::where('code', '3216')->first();
+                $kotaId = $fallbackCity ? $fallbackCity->id : 3216;
+                $kotaCode = '3216';
+            }
 
             $kecamatanId = null;
+            $kecamatanCode = null;
             if (!empty($text_kecamatan)) {
-                $kecamatan = \Laravolt\Indonesia\Models\District::where('city_code', $kotaId)->where('name', 'ILIKE', '%' . $text_kecamatan . '%')->first();
-                $kecamatanId = $kecamatan ? $kecamatan->id : null;
+                $cleanKecamatan = strtoupper(trim($text_kecamatan));
+                $kecamatan = \Laravolt\Indonesia\Models\District::where('city_code', $kotaCode)
+                    ->where('name', 'LIKE', '%' . $cleanKecamatan . '%')
+                    ->first();
+                if ($kecamatan) {
+                    $kecamatanId = $kecamatan->id;
+                    $kecamatanCode = $kecamatan->code;
+                }
             }
-            if (empty($kecamatanId)) { $kecamatanId = 3216060; }
+            if (empty($kecamatanId)) {
+                $fallbackDist = \Laravolt\Indonesia\Models\District::where('code', '3216060')->first();
+                $kecamatanId = $fallbackDist ? $fallbackDist->id : 3216060;
+                $kecamatanCode = '3216060';
+            }
 
             $kelurahanId = null;
             if (!empty($text_kelurahan)) {
-                $kelurahan = \Laravolt\Indonesia\Models\Village::where('district_code', $kecamatanId)->where('name', 'ILIKE', '%' . $text_kelurahan . '%')->first();
+                $cleanKelurahan = strtoupper(trim($text_kelurahan));
+                $kelurahan = \Laravolt\Indonesia\Models\Village::where('district_code', $kecamatanCode)
+                    ->where('name', 'LIKE', '%' . $cleanKelurahan . '%')
+                    ->first();
                 $kelurahanId = $kelurahan ? $kelurahan->id : null;
             }
-            if (empty($kelurahanId)) { $kelurahanId = 3216060001; }
+            if (empty($kelurahanId)) {
+                $firstVillage = \Laravolt\Indonesia\Models\Village::where('district_code', $kecamatanCode)->first();
+                $kelurahanId = $firstVillage ? $firstVillage->id : 3216060001;
+            }
 
-
-            // 🔴 SOLUSI DUPLIKAT NIPD: Gunakan updateOrCreate alih-alih create
-            // Jika NIPD sudah ada, data lama akan ditimpa dengan data Excel terbaru (Aman dari Unique Violation)
+            // SIMPAN DATA SISWA
             $siswa = \App\Models\Siswa::updateOrCreate(
-                [
-                    'nipd' => $nipd // Kunci pengecekan keunikan data
-                ],
+                ['nipd' => $nipd],
                 [
                     'semester_id'           => $semesterId,
                     'nama_lengkap'          => $nama_lengkap,
@@ -156,7 +179,7 @@ class SiswaDataImportSheet implements \Maatwebsite\Excel\Concerns\ToModel
                 ]
             );
 
-            // --- MAPPING WALI ---
+            // MAPPING WALI
             $kategoriWali = [
                 'Ayah' => ['nama' => $ayah_nama, 'pekerjaan' => $ayah_pekerjaan, 'jk' => 'Laki-laki'],
                 'Ibu'  => ['nama' => $ibu_nama, 'pekerjaan' => $ibu_pekerjaan, 'jk' => 'Perempuan'],
@@ -164,9 +187,7 @@ class SiswaDataImportSheet implements \Maatwebsite\Excel\Concerns\ToModel
             ];
 
             foreach ($kategoriWali as $hubungan => $data) {
-                if (empty($data['nama'])) {
-                    continue; 
-                }
+                if (empty($data['nama'])) { continue; }
 
                 $wali = \App\Models\WaliSiswa::create([
                     'nama_lengkap'   => $data['nama'],
@@ -177,7 +198,6 @@ class SiswaDataImportSheet implements \Maatwebsite\Excel\Concerns\ToModel
                     'alamat_lengkap' => $siswa->alamat_lengkap,
                 ]);
 
-                // Gunakan syncWithoutDetaching agar jika datanya di-update, relasi pivotnya tidak duplikat
                 $siswa->wali()->syncWithoutDetaching([
                     $wali->id => [
                         'hubungan'   => $hubungan,
@@ -196,30 +216,21 @@ class SiswaDataImportSheet implements \Maatwebsite\Excel\Concerns\ToModel
             return null; 
         }
     }
+
     private function parseTanggalIndonesia($dateValue)
     {
-        if (empty($dateValue)) {
-            return now()->format('Y-m-d');
-        }
-
-        // JIKA FORMATNYA ADALAH FORMAT TANGGAL OLEH EXCEL (Berupa angka serial atau objek)
+        if (empty($dateValue)) { return now()->format('Y-m-d'); }
         if (is_numeric($dateValue)) {
             try {
                 return \Carbon\Carbon::instance(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($dateValue))->format('Y-m-d');
-            } catch (\Exception $e) {
-                // Lanjut ke pengecekan string jika gagal
-            }
+            } catch (\Exception $e) {}
         }
 
-        // JIKA FORMATNYA ADALAH TEKS (Contoh: "25 Oktober 2011")
         $dateString = strtolower(trim($dateValue));
         $bulan = [
-            'januari'   => 'January',   'februari'  => 'February',
-            'maret'     => 'March',     'april'     => 'April',
-            'mei'       => 'May',       'juni'      => 'June',
-            'juli'      => 'July',      'agustus'   => 'August',
-            'september' => 'September', 'oktober'   => 'October',
-            'november'  => 'November',  'desember'  => 'December'
+            'januari' => 'January', 'februari' => 'February', 'maret' => 'March', 'april' => 'April',
+            'mei' => 'May', 'juni' => 'June', 'juli' => 'July', 'agustus' => 'August',
+            'september' => 'September', 'oktober' => 'October', 'november' => 'November', 'desember' => 'December'
         ];
 
         foreach ($bulan as $indo => $inggris) {

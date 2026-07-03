@@ -131,4 +131,55 @@ class Siswa extends Model
     public function keterlambatan() {
         return $this->hasMany(SiswaTerlambat::class, 'siswa_id');
     }
+
+    // Tambahkan ini di dalam class Siswa di file app/Models/Siswa.php
+
+    public function provinsi_relasi()
+    {
+        return $this->belongsTo(\Laravolt\Indonesia\Models\Province::class, 'provinsi', 'id');
+    }
+
+    public function kota_relasi()
+    {
+        return $this->belongsTo(\Laravolt\Indonesia\Models\City::class, 'kota', 'id');
+    }
+
+    public function kecamatan_relasi()
+    {
+        return $this->belongsTo(\Laravolt\Indonesia\Models\District::class, 'kecamatan', 'id');
+    }
+
+    public function kelurahan_relasi()
+    {
+        return $this->belongsTo(\Laravolt\Indonesia\Models\Village::class, 'kelurahan_desa', 'id');
+    }
+
+    // =====================================================
+    // ACCESSOR untuk JSON export ke form Edit
+    // =====================================================
+    protected $appends = ['ayah_data', 'ibu_data', 'wali_data'];
+    /**
+     * Ambil data Ayah dari relasi wali yang sudah di-load
+     */
+    public function getAyahDataAttribute(): ?WaliSiswa
+    {
+        if (!$this->relationLoaded('wali')) return null;
+        return $this->wali->first(fn($w) => $w->pivot->hubungan === 'Ayah');
+    }
+    /**
+     * Ambil data Ibu dari relasi wali yang sudah di-load
+     */
+    public function getIbuDataAttribute(): ?WaliSiswa
+    {
+        if (!$this->relationLoaded('wali')) return null;
+        return $this->wali->first(fn($w) => $w->pivot->hubungan === 'Ibu');
+    }
+    /**
+     * Ambil data Wali Asuh dari relasi wali yang sudah di-load
+     */
+    public function getWaliDataAttribute(): ?WaliSiswa
+    {
+        if (!$this->relationLoaded('wali')) return null;
+        return $this->wali->first(fn($w) => $w->pivot->hubungan === 'Wali');
+    }
 }

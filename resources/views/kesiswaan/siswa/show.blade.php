@@ -79,7 +79,13 @@
                         </div>
                         <div class="p-3.5 bg-gray-50 border border-gray-100 rounded-xl">
                             <span class="text-gray-400 block mb-1 font-semibold">Alamat Domisili Tetap Sesuai KK:</span>
-                            <strong class="text-gray-800">{{ $siswa->alamat_lengkap }}, RT.{{ $siswa->rt }}/RW.{{ $siswa->rw }}, Kel/Desa. {{ $siswa->kelurahan_desa }}, Kec. {{ $siswa->kecamatan }}, {{ $siswa->kota }}, {{ $siswa->provinsi }}</strong>
+                            <strong class="text-gray-800">
+                                {{ $siswa->alamat_lengkap }}, RT.{{ $siswa->rt }}/RW.{{ $siswa->rw }}, 
+                                Kel/Desa. {{ $siswa->kelurahan_relasi?->name ?? $siswa->kelurahan_desa }}, 
+                                Kec. {{ $siswa->kecamatan_relasi?->name ?? $siswa->kecamatan }}, 
+                                {{ $siswa->kota_relasi?->name ?? $siswa->kota }}, 
+                                {{ $siswa->provinsi_relasi?->name ?? $siswa->provinsi }}
+                            </strong>
                         </div>
                     </div>
 

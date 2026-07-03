@@ -11,72 +11,8 @@
         editActionUrl: '',
         
         initEdit(actionUrl, itemData) {
-            this.editActionUrl = actionUrl;
-            this.currentStep = 1;
-            this.openEdit = true;
-            
-            // Mengisi otomatis data input di form edit berdasarkan data baris yang diklik
-            this.$nextTick(() => {
-                const form = document.getElementById('formEditSiswa'); // Pastikan <form> edit Anda punya ID ini
-                if (!form) return;
-                
-                // 1. Perulangan Standar untuk Input Biasa (Tanpa tanda kutip internal)
-                for (const key in itemData) {
-                    const input = form.querySelector('[name=' + key + ']');
-                    if (input && input.type !== 'file') {
-                        if (input.type === 'date' && itemData[key]) {
-                            // Menggunakan IF biasa untuk memotong tanggal ISO agar tidak merah di editor
-                            if (itemData[key].indexOf('T') !== -1) {
-                                input.value = itemData[key].split('T')[0];
-                            } else {
-                                input.value = itemData[key];
-                            }
-                        } else {
-                            input.value = itemData[key];
-                        }
-                    }
-                }
-
-                // 2. KODE TAMBAHAN KHUSUS: Mapping Manual untuk Input Array Wali [0] sampai [2]
-                // Kita cari berdasarkan semua elemen input terlebih dahulu, lalu filter namanya agar editor tidak merah
-                const semuaInputForm = form.getElementsByTagName('input');
-                let waliNamaInput, waliHubunganInput, waliTelpInput;
-
-                for (let i = 0; i < semuaInputForm.length; i++) {
-                    if (semuaInputForm[i].name === 'wali[0]') waliNamaInput = semuaInputForm[i];
-                    if (semuaInputForm[i].name === 'wali[1]') waliHubunganInput = semuaInputForm[i];
-                    if (semuaInputForm[i].name === 'wali[2]') waliTelpInput = semuaInputForm[i];
-                }
-
-                if (waliNamaInput) waliNamaInput.value = itemData.nama_wali || itemData.wali_nama || '';
-                if (waliHubunganInput) waliHubunganInput.value = itemData.hubungan_wali || itemData.wali_hubungan || '';
-                if (waliTelpInput) waliTelpInput.value = itemData.nomor_hp_wali || itemData.wali_telepon || itemData.telp_wali || '';
-
-                // 3. Trigger manual nilai wilayah untuk mode Edit (Konstruksi string digabung memakai tanda +)
-                const prefixes = ['edit_siswa', 'edit_ayah', 'edit_ibu', 'edit_wali'];
-                prefixes.forEach(prefix => {
-                    const dbPrefix = prefix.replace('edit_', '');
-                    const prov = document.getElementById(prefix + '_provinsi');
-                    const kota = document.getElementById(prefix + '_kota');
-                    const kec  = document.getElementById(prefix + '_kecamatan');
-                    const kel  = document.getElementById(prefix + '_kelurahan');
-
-                    // Ditambahkan fallback itemData.provinsi dkk jika nama kolom di DB tidak pakai prefix siswa_
-                    if(prov) prov.setAttribute('data-current', itemData[dbPrefix + '_provinsi'] || itemData.provinsi || '');
-                    if(kota) kota.setAttribute('data-current', itemData[dbPrefix + '_kota'] || itemData.kota || '');
-                    if(kec)  kec.setAttribute('data-current', itemData[dbPrefix + '_kecamatan'] || itemData.kecamatan || '');
-                    if(kel)  kel.setAttribute('data-current', itemData[dbPrefix + '_kelurahan_desa'] || itemData.kelurahan_desa || itemData.kelurahan || '');
-                });
-
-                // 4. Panggil fungsi inisialisasi script wilayah agar dropdown otomatis memuat data lama
-                if (typeof initRegionDropdowns === 'function') {
-                    initRegionDropdowns('edit_siswa');
-                    initRegionDropdowns('edit_ayah');
-                    initRegionDropdowns('edit_ibu');
-                    initRegionDropdowns('edit_wali');
-                }
-            });
-        }, 
+            doInitEdit(this, actionUrl, itemData);
+        },
 
         openDelete: false,
         openGenerateMassal: false,
@@ -982,7 +918,7 @@
                 
                 <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50">
                     <div>
-                        <h3 class="text-sm font-bold text-gray-900 uppercase">Form Pendaftaran Akun Siswa</h3>
+                        <h3 class="text-sm font-bold text-gray-900 uppercase">Form Edit Akun Siswa</h3>
                         <p class="text-[11px] text-gray-400">Harap isi form data diri, domisili, dan silsilah keluarga di bawah.</p>
                     </div>
                     <button type="button" @click="resetWizard()" class="text-gray-400 hover:text-gray-600 text-lg font-bold cursor-pointer">&times;</button>
@@ -1263,25 +1199,25 @@
                             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                                 <div>
                                     <label class="block font-semibold text-gray-600 mb-1">Provinsi</label>
-                                    <select id="ayah_provinsi" name="wali[0][provinsi]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    <select id="edit_ayah_provinsi" name="wali[0][provinsi]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
                                         <option value="{{ old('wali.0.provinsi', $ayah->provinsi ?? '') }}">{{ old('wali.0.provinsi', $ayah->provinsi ?? '-- Pilih Provinsi --') }}</option>
                                     </select>
                                 </div>
                                 <div>
                                     <label class="block font-semibold text-gray-600 mb-1">Kota / Kabupaten</label>
-                                    <select id="ayah_kota" name="wali[0][kota]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    <select id="edit_ayah_kota" name="wali[0][kota]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
                                         <option value="{{ old('wali.0.kota', $ayah->kota ?? '') }}">{{ old('wali.0.kota', $ayah->kota ?? '-- Pilih Kota/Kabupaten --') }}</option>
                                     </select>
                                 </div>
                                 <div>
                                     <label class="block font-semibold text-gray-600 mb-1">Kecamatan</label>
-                                    <select id="ayah_kecamatan" name="wali[0][kecamatan]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    <select id="edit_ayah_kecamatan" name="wali[0][kecamatan]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
                                         <option value="{{ old('wali.0.kecamatan', $ayah->kecamatan ?? '') }}">{{ old('wali.0.kecamatan', $ayah->kecamatan ?? '-- Pilih Kecamatan --') }}</option>
                                     </select>
                                 </div>
                                 <div>
                                     <label class="block font-semibold text-gray-600 mb-1">Kelurahan / Desa</label>
-                                    <select id="ayah_kelurahan" name="wali[0][kelurahan_desa]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    <select id="edit_ayah_kelurahan" name="wali[0][kelurahan_desa]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
                                         <option value="{{ old('wali.0.kelurahan_desa', $ayah->kelurahan_desa ?? '') }}">{{ old('wali.0.kelurahan_desa', $ayah->kelurahan_desa ?? '-- Pilih Kelurahan/Desa --') }}</option>
                                     </select>
                                 </div>
@@ -1417,25 +1353,25 @@
                                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                                     <div>
                                         <label class="block font-semibold text-gray-600 mb-1">Provinsi</label>
-                                        <select id="ibu_provinsi" name="wali[1][provinsi]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm focus:ring-indigo-500">
+                                        <select id="edit_ibu_provinsi" name="wali[1][provinsi]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm focus:ring-indigo-500">
                                             <option value="{{ old('wali.1.provinsi', $ibu->provinsi ?? '') }}">{{ old('wali.1.provinsi', $ibu->provinsi ?? '-- Pilih Provinsi --') }}</option>
                                         </select>
                                     </div>
                                     <div>
                                         <label class="block font-semibold text-gray-600 mb-1">Kota / Kabupaten</label>
-                                        <select id="ibu_kota" name="wali[1][kota]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm focus:ring-indigo-500">
+                                        <select id="edit_ibu_kota" name="wali[1][kota]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm focus:ring-indigo-500">
                                             <option value="{{ old('wali.1.kota', $ibu->kota ?? '') }}">{{ old('wali.1.kota', $ibu->kota ?? '-- Pilih Kota/Kabupaten --') }}</option>
                                         </select>
                                     </div>
                                     <div>
                                         <label class="block font-semibold text-gray-600 mb-1">Kecamatan</label>
-                                        <select id="ibu_kecamatan" name="wali[1][kecamatan]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm focus:ring-indigo-500">
+                                        <select id="edit_ibu_kecamatan" name="wali[1][kecamatan]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm focus:ring-indigo-500">
                                             <option value="{{ old('wali.1.kecamatan', $ibu->kecamatan ?? '') }}">{{ old('wali.1.kecamatan', $ibu->kecamatan ?? '-- Pilih Kecamatan --') }}</option>
                                         </select>
                                     </div>
                                     <div>
                                         <label class="block font-semibold text-gray-600 mb-1">Kelurahan / Desa</label>
-                                        <select id="ibu_kelurahan" name="wali[1][kelurahan_desa]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm focus:ring-indigo-500">
+                                        <select id="edit_ibu_kelurahan" name="wali[1][kelurahan_desa]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm focus:ring-indigo-500">
                                             <option value="{{ old('wali.1.kelurahan_desa', $ibu->kelurahan_desa ?? '') }}">{{ old('wali.1.kelurahan_desa', $ibu->kelurahan_desa ?? '-- Pilih Kelurahan/Desa --') }}</option>
                                         </select>
                                     </div>
@@ -1574,25 +1510,25 @@
                                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                                     <div>
                                         <label class="block font-semibold text-gray-600 mb-1">Provinsi</label>
-                                        <select id="wali_provinsi" name="wali[2][provinsi]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm focus:ring-indigo-500">
+                                        <select id="edit_wali_provinsi" name="wali[2][provinsi]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm focus:ring-indigo-500">
                                             <option value="{{ old('wali.2.provinsi', $dataWali->provinsi ?? '') }}">{{ old('wali.2.provinsi', $dataWali->provinsi ?? '-- Pilih Provinsi --') }}</option>
                                         </select>
                                     </div>
                                     <div>
                                         <label class="block font-semibold text-gray-600 mb-1">Kota / Kabupaten</label>
-                                        <select id="wali_kota" name="wali[2][kota]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm focus:ring-indigo-500">
+                                        <select id="edit_wali_kota" name="wali[2][kota]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm focus:ring-indigo-500">
                                             <option value="{{ old('wali.2.kota', $dataWali->kota ?? '') }}">{{ old('wali.2.kota', $dataWali->kota ?? '-- Pilih Kota/Kabupaten --') }}</option>
                                         </select>
                                     </div>
                                     <div>
                                         <label class="block font-semibold text-gray-600 mb-1">Kecamatan</label>
-                                        <select id="wali_kecamatan" name="wali[2][kecamatan]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm focus:ring-indigo-500">
+                                        <select id="edit_wali_kecamatan" name="wali[2][kecamatan]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm focus:ring-indigo-500">
                                             <option value="{{ old('wali.2.kecamatan', $dataWali->kecamatan ?? '') }}">{{ old('wali.2.kecamatan', $dataWali->kecamatan ?? '-- Pilih Kecamatan --') }}</option>
                                         </select>
                                     </div>
                                     <div>
                                         <label class="block font-semibold text-gray-600 mb-1">Kelurahan / Desa</label>
-                                        <select id="wali_kelurahan" name="wali[2][kelurahan_desa]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm focus:ring-indigo-500">
+                                        <select id="edit_wali_kelurahan" name="wali[2][kelurahan_desa]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm focus:ring-indigo-500">
                                             <option value="{{ old('wali.2.kelurahan_desa', $dataWali->kelurahan_desa ?? '') }}">{{ old('wali.2.kelurahan_desa', $dataWali->kelurahan_desa ?? '-- Pilih Kelurahan/Desa --') }}</option>
                                         </select>
                                     </div>
@@ -1698,117 +1634,224 @@
     </div>
 
     <script>
-        // =========================================================================
-        // LOGIKA UTAMA WILAYAH (Fungsi Generic untuk Semua Grup)
-        // =========================================================================
-        
+        var _regionControllers = {};
         async function fetchJsonRegion(url) {
             try {
-                let response = await fetch(url);
-                return await response.json();
-            } catch (e) {
-                console.error("Gagal menarik data API wilayah: ", e);
+                var res = await fetch(url);
+                return await res.json();
+            } catch(e) {
+                console.error('Gagal fetch:', url, e);
                 return [];
             }
         }
-
-        // Fungsi untuk menginisialisasi satu rumpun dropdown wilayah
         function initRegionDropdowns(prefix) {
-            const provSelect = document.getElementById(`${prefix}_provinsi`);
-            const kotaSelect = document.getElementById(`${prefix}_kota`);
-            const kecSelect  = document.getElementById(`${prefix}_kecamatan`);
-            const kelSelect  = document.getElementById(`${prefix}_kelurahan`);
-
-            if (!provSelect) return; // Proteksi jika elemen tidak ada di halaman
-
-            // Ambil data default/current jika ada (untuk edit mode)
-            const currentProv = provSelect.getAttribute('data-current');
-            const currentKota = kotaSelect.getAttribute('data-current');
-            const currentKec  = kecSelect.getAttribute('data-current');
-            const currentKel  = kelSelect.getAttribute('data-current');
-
-            // 1. Memuat Data Provinsi
-            async function loadProvinsi() {
-                let data = await fetchJsonRegion(`/kesiswaan/api/provinsi`);
-                provSelect.innerHTML = '<option value="">-- Pilih Provinsi --</option>';
-                data.forEach(p => {
-                    let selected = (p.name === currentProv) ? 'selected' : '';
-                    provSelect.innerHTML += `<option value="${p.name}" data-id="${p.code}" ${selected}>${p.name}</option>`;
+            var provEl = document.getElementById(prefix + '_provinsi');
+            var kotaEl = document.getElementById(prefix + '_kota');
+            var kecEl  = document.getElementById(prefix + '_kecamatan');
+            var kelEl  = document.getElementById(prefix + '_kelurahan');
+            if (!provEl) return;
+            if (_regionControllers[prefix]) _regionControllers[prefix].abort();
+            _regionControllers[prefix] = new AbortController();
+            var sig = _regionControllers[prefix].signal;
+            var curProv = String(provEl.getAttribute('data-current') || '');
+            var curKota = String(kotaEl ? (kotaEl.getAttribute('data-current') || '') : '');
+            var curKec  = String(kecEl  ? (kecEl.getAttribute('data-current')  || '') : '');
+            var curKel  = String(kelEl  ? (kelEl.getAttribute('data-current')  || '') : '');
+            // Helper: tambah options ke select, return true jika ada yang cocok
+                function populateSelect(selectEl, items, nameKey, codeKey, current) {
+                selectEl.innerHTML = '';
+                var defaultOpt = document.createElement('option');
+                defaultOpt.value = '';
+                defaultOpt.textContent = '-- Pilih --';
+                selectEl.appendChild(defaultOpt);
+                // Jika tidak ada data dari API, stop
+                if (!items || !items.length) return false;
+                var currentStr  = String(current || '');
+                var curLower    = currentStr.toLowerCase();
+                var matchedName = null;
+                // Cari match HANYA jika ada nilai current (mode Edit)
+                if (currentStr) {
+                    // Prioritas 1: auto-increment id (data dari import)
+                    for (var i = 0; i < items.length; i++) {
+                        if (String(items[i].id || '') === currentStr) {
+                            matchedName = items[i][nameKey];
+                            break;
+                        }
+                    }
+                    // Prioritas 2: BPS code (data dari form manual)
+                    if (!matchedName) {
+                        for (var i = 0; i < items.length; i++) {
+                            if (String(items[i][codeKey] || '') === currentStr) {
+                                matchedName = items[i][nameKey];
+                                break;
+                            }
+                        }
+                    }
+                    // Prioritas 3: nama (case-insensitive)
+                    if (!matchedName && curLower) {
+                        for (var i = 0; i < items.length; i++) {
+                            if ((items[i][nameKey] || '').toLowerCase() === curLower) {
+                                matchedName = items[i][nameKey];
+                                break;
+                            }
+                        }
+                    }
+                }
+                // Bangun semua options (selalu dijalankan, termasuk form Create)
+                items.forEach(function(item) {
+                    var opt = document.createElement('option');
+                    opt.value       = item[nameKey];
+                    opt.setAttribute('data-id', item[codeKey]);
+                    opt.textContent = item[nameKey];
+                    // Hanya set selected jika ada match (mode Edit)
+                    if (matchedName && item[nameKey] === matchedName) {
+                        opt.selected = true;
+                    }
+                    selectEl.appendChild(opt);
                 });
-
-                if (currentProv) {
-                    provSelect.dispatchEvent(new Event('change'));
+                return matchedName !== null;
+            }
+            // ── Load Provinsi ─────────────────────────────────────────────────────
+            async function loadProvinsi() {
+                var data = await fetchJsonRegion('/kesiswaan/api/provinsi');
+                var matched = populateSelect(provEl, data, 'name', 'code', curProv);
+                if (matched && curProv) {
+                    provEl.dispatchEvent(new Event('change'));
                 }
             }
-
-            // 2. Event: Provinsi Berubah -> Ambil Kota
-            provSelect.addEventListener('change', async function() {
-                kotaSelect.innerHTML = '<option value="">-- Memuat Kota... --</option>';
-                kecSelect.innerHTML  = '<option value="">-- Pilih Kecamatan --</option>';
-                kelSelect.innerHTML  = '<option value="">-- Pilih Kelurahan/Desa --</option>';
-                
-                let opt = this.options[this.selectedIndex];
-                let provId = opt ? opt.getAttribute('data-id') : null;
-                if(!provId) { kotaSelect.innerHTML = '<option value="">-- Pilih Kota/Kabupaten --</option>'; return; }
-
-                let data = await fetchJsonRegion(`/kesiswaan/api/kota/${provId}`);
-                kotaSelect.innerHTML = '<option value="">-- Pilih Kota/Kabupaten --</option>';
-                data.forEach(k => {
-                    let selected = (k.name === currentKota) ? 'selected' : '';
-                    kotaSelect.innerHTML += `<option value="${k.name}" data-id="${k.code}" ${selected}>${k.name}</option>`;
-                });
-
-                if (currentKota) {
-                    kotaSelect.dispatchEvent(new Event('change'));
+            // ── Provinsi → Kota ───────────────────────────────────────────────────
+            provEl.addEventListener('change', async function() {
+                if (kotaEl) { kotaEl.innerHTML = '<option value="">-- Memuat Kota... --</option>'; }
+                if (kecEl)  { kecEl.innerHTML  = '<option value="">-- Pilih Kecamatan --</option>'; }
+                if (kelEl)  { kelEl.innerHTML  = '<option value="">-- Pilih Kelurahan/Desa --</option>'; }
+                var opt    = this.options[this.selectedIndex];
+                var provId = opt ? opt.getAttribute('data-id') : null;
+                if (!provId || !kotaEl) {
+                    if (kotaEl) kotaEl.innerHTML = '<option value="">-- Pilih Kota/Kabupaten --</option>';
+                    return;
                 }
-            });
-
-            // 3. Event: Kota Berubah -> Ambil Kecamatan
-            kotaSelect.addEventListener('change', async function() {
-                kecSelect.innerHTML = '<option value="">-- Memuat Kecamatan... --</option>';
-                kelSelect.innerHTML = '<option value="">-- Pilih Kelurahan/Desa --</option>';
-
-                let opt = this.options[this.selectedIndex];
-                let kotaId = opt ? opt.getAttribute('data-id') : null;
-                if(!kotaId) { kecSelect.innerHTML = '<option value="">-- Pilih Kecamatan --</option>'; return; }
-
-                let data = await fetchJsonRegion(`/kesiswaan/api/kecamatan/${kotaId}`);
-                kecSelect.innerHTML = '<option value="">-- Pilih Kecamatan --</option>';
-                data.forEach(kc => {
-                    let selected = (kc.name === currentKec) ? 'selected' : '';
-                    kecSelect.innerHTML += `<option value="${kc.name}" data-id="${kc.code}" ${selected}>${kc.name}</option>`;
-                });
-
-                if (currentKec) {
-                    kecSelect.dispatchEvent(new Event('change'));
+                var data    = await fetchJsonRegion('/kesiswaan/api/kota/' + provId);
+                var matched = populateSelect(kotaEl, data, 'name', 'code', curKota);
+                if (matched && curKota) {
+                    kotaEl.dispatchEvent(new Event('change'));
                 }
-            });
-
-            // 4. Event: Kecamatan Berubah -> Ambil Desa/Kelurahan
-            kecSelect.addEventListener('change', async function() {
-                kelSelect.innerHTML = '<option value="">-- Memuat Kelurahan... --</option>';
-
-                let opt = this.options[this.selectedIndex];
-                let kecId = opt ? opt.getAttribute('data-id') : null;
-                if(!kecId) { kelSelect.innerHTML = '<option value="">-- Pilih Kelurahan/Desa --</option>'; return; }
-
-                let data = await fetchJsonRegion(`/kesiswaan/api/kelurahan/${kecId}`);
-                kelSelect.innerHTML = '<option value="">-- Pilih Kelurahan/Desa --</option>';
-                data.forEach(kl => {
-                    let selected = (kl.name === currentKel) ? 'selected' : '';
-                    kelSelect.innerHTML += `<option value="${kl.name}" ${selected}>${kl.name}</option>`;
-                });
-            });
-
-            // Jalankan trigger awal untuk memuat provinsi
+            }, { signal: sig });
+            // ── Kota → Kecamatan ──────────────────────────────────────────────────
+            if (kotaEl) {
+                kotaEl.addEventListener('change', async function() {
+                    if (kecEl) { kecEl.innerHTML = '<option value="">-- Memuat Kecamatan... --</option>'; }
+                    if (kelEl) { kelEl.innerHTML = '<option value="">-- Pilih Kelurahan/Desa --</option>'; }
+                    var opt    = this.options[this.selectedIndex];
+                    var kotaId = opt ? opt.getAttribute('data-id') : null;
+                    if (!kotaId || !kecEl) {
+                        if (kecEl) kecEl.innerHTML = '<option value="">-- Pilih Kecamatan --</option>';
+                        return;
+                    }
+                    var data    = await fetchJsonRegion('/kesiswaan/api/kecamatan/' + kotaId);
+                    var matched = populateSelect(kecEl, data, 'name', 'code', curKec);
+                    if (matched && curKec) {
+                        kecEl.dispatchEvent(new Event('change'));
+                    }
+                }, { signal: sig });
+            }
+            // ── Kecamatan → Kelurahan ─────────────────────────────────────────────
+            if (kecEl) {
+                kecEl.addEventListener('change', async function() {
+                    if (kelEl) { kelEl.innerHTML = '<option value="">-- Memuat Kelurahan... --</option>'; }
+                    var opt   = this.options[this.selectedIndex];
+                    var kecId = opt ? opt.getAttribute('data-id') : null;
+                    if (!kecId || !kelEl) {
+                        if (kelEl) kelEl.innerHTML = '<option value="">-- Pilih Kelurahan/Desa --</option>';
+                        return;
+                    }
+                    var data = await fetchJsonRegion('/kesiswaan/api/kelurahan/' + kecId);
+                    populateSelect(kelEl, data, 'name', 'code', curKel);
+                    // Kelurahan tidak perlu trigger event lagi (level terakhir)
+                }, { signal: sig });
+            }
             loadProvinsi();
         }
-
-        // =========================================================================
-        // EKSEKUSI SAAT HALAMAN SELESAI DIMUAT
-        // =========================================================================
-        document.addEventListener("DOMContentLoaded", function() {
-            // Daftarkan semua prefix id rumpun wilayah kamu di sini
+        // ── doInitEdit ──────────────────────────────────────────────────────────────
+        function doInitEdit(alpine, actionUrl, itemData) {
+            alpine.editActionUrl = actionUrl;
+            alpine.currentStep   = 1;
+            alpine.openEdit      = true;
+            setTimeout(function() {
+                var form = document.getElementById('formEditSiswa');
+                if (!form) { console.error('Form tidak ditemukan'); return; }
+                function fillField(el, value) {
+                    if (!el || value === null || value === undefined || value === '') return;
+                    var v = String(value);
+                    if (el.tagName === 'SELECT') {
+                        el.value = v;
+                    } else if (el.type === 'date') {
+                        el.value = v.indexOf('T') !== -1 ? v.split('T')[0] : v;
+                    } else {
+                        el.value = v;
+                    }
+                }
+                // Isi data siswa
+                ['nama_lengkap','nik','nipd','nisn','jenis_kelamin','tempat_lahir',
+                'tanggal_lahir','agama','nomor_hp','asal_sekolah','no_peserta_un',
+                'anak_ke','alamat_lengkap','rt','rw','kode_pos','tingkat',
+                'semester_id','diterima_pada_tanggal'
+                ].forEach(function(key) {
+                    fillField(form.querySelector('[name="' + key + '"]'), itemData[key]);
+                });
+                // Isi data wali
+                var waliKeys = ['nama_lengkap','nik','jenis_kelamin','tempat_lahir','tanggal_lahir',
+                    'agama','pendidikan_terakhir','pekerjaan','penghasilan_bulanan',
+                    'alamat_lengkap','rt','rw','kode_pos','nomor_hp','email',
+                    'nomor_hp_darurat','catatan'];
+                [{index:0, data:itemData.ayah_data},
+                {index:1, data:itemData.ibu_data},
+                {index:2, data:itemData.wali_data}
+                ].forEach(function(w) {
+                    if (!w.data) return;
+                    waliKeys.forEach(function(field) {
+                        fillField(
+                            form.querySelector('[name="wali[' + w.index + '][' + field + ']"]'),
+                            w.data[field]
+                        );
+                    });
+                });
+                // Set data-current wilayah (kode Laravolt disimpan langsung)
+                function setWilayah(prefix, prov, kota, kec, kel) {
+                    var p  = document.getElementById(prefix + '_provinsi');
+                    var k  = document.getElementById(prefix + '_kota');
+                    var kc = document.getElementById(prefix + '_kecamatan');
+                    var kl = document.getElementById(prefix + '_kelurahan');
+                    if (p)  p.setAttribute('data-current',  prov || '');
+                    if (k)  k.setAttribute('data-current',  kota || '');
+                    if (kc) kc.setAttribute('data-current', kec  || '');
+                    if (kl) kl.setAttribute('data-current', kel  || '');
+                }
+                setWilayah('edit_siswa',
+                    itemData.provinsi, itemData.kota, itemData.kecamatan, itemData.kelurahan_desa);
+                setWilayah('edit_ayah',
+                    itemData.ayah_data ? itemData.ayah_data.provinsi : '',
+                    itemData.ayah_data ? itemData.ayah_data.kota : '',
+                    itemData.ayah_data ? itemData.ayah_data.kecamatan : '',
+                    itemData.ayah_data ? itemData.ayah_data.kelurahan_desa : '');
+                setWilayah('edit_ibu',
+                    itemData.ibu_data ? itemData.ibu_data.provinsi : '',
+                    itemData.ibu_data ? itemData.ibu_data.kota : '',
+                    itemData.ibu_data ? itemData.ibu_data.kecamatan : '',
+                    itemData.ibu_data ? itemData.ibu_data.kelurahan_desa : '');
+                setWilayah('edit_wali',
+                    itemData.wali_data ? itemData.wali_data.provinsi : '',
+                    itemData.wali_data ? itemData.wali_data.kota : '',
+                    itemData.wali_data ? itemData.wali_data.kecamatan : '',
+                    itemData.wali_data ? itemData.wali_data.kelurahan_desa : '');
+                // Init dropdown (otomatis bersihkan listener lama)
+                initRegionDropdowns('edit_siswa');
+                initRegionDropdowns('edit_ayah');
+                initRegionDropdowns('edit_ibu');
+                initRegionDropdowns('edit_wali');
+            }, 150);
+        }
+        // ── Init CREATE form saat halaman dimuat ────────────────────────────────────
+        document.addEventListener('DOMContentLoaded', function() {
             initRegionDropdowns('siswa');
             initRegionDropdowns('ayah');
             initRegionDropdowns('ibu');
