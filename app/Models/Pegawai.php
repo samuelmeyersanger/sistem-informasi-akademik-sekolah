@@ -88,4 +88,9 @@ class Pegawai extends Model
         // 2. Jika bukan admin, KUNCI data agar hanya menunjuk ke dirinya sendiri!
         return $query->where('user_id', $user->id);
     }
+    public function jadwalPelajaran()
+    {
+        // Ganti 'JadwalPelajaran' dengan nama Model jadwal Anda yang sebenarnya
+        return $this->hasMany(JadwalPelajaran::class, 'pegawai_id'); 
+    }
 }
