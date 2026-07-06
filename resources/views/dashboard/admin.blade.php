@@ -62,18 +62,27 @@
             <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
                 <h3 class="text-lg font-bold text-slate-800 mb-4">Akses Cepat Administrator</h3>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <a href="#" class="p-4 rounded-xl border border-dashed border-slate-200 hover:bg-slate-50 transition-colors text-center text-sm font-semibold text-slate-600 flex flex-col items-center gap-2">
+                    
+                    <!-- 1. Jalan Pintas ke Manajemen User -->
+                    <a href="{{ route('master.user.index') }}" class="p-4 rounded-xl border border-dashed border-slate-200 hover:bg-slate-50 transition-colors text-center text-sm font-semibold text-slate-600 flex flex-col items-center gap-2">
                         <span class="text-2xl">📝</span> Kelola Pengguna
                     </a>
-                    <a href="#" class="p-4 rounded-xl border border-dashed border-slate-200 hover:bg-slate-50 transition-colors text-center text-sm font-semibold text-slate-600 flex flex-col items-center gap-2">
+                    
+                    <!-- 2. Jalan Pintas ke Hak Akses -->
+                    <a href="{{ route('master.permission.index') }}" class="p-4 rounded-xl border border-dashed border-slate-200 hover:bg-slate-50 transition-colors text-center text-sm font-semibold text-slate-600 flex flex-col items-center gap-2">
                         <span class="text-2xl">🛡️</span> Hak Akses
                     </a>
-                    <a href="#" class="p-4 rounded-xl border border-dashed border-slate-200 hover:bg-slate-50 transition-colors text-center text-sm font-semibold text-slate-600 flex flex-col items-center gap-2">
-                        <span class="text-2xl">⚙️</span> Pengaturan Web
+                    
+                    <!-- 3. Jalan Pintas ke Pengaturan Sekolah -->
+                    <a href="{{ route('master.profil-sekolah.index') }}" class="p-4 rounded-xl border border-dashed border-slate-200 hover:bg-slate-50 transition-colors text-center text-sm font-semibold text-slate-600 flex flex-col items-center gap-2">
+                        <span class="text-2xl">⚙️</span> Profil Sekolah
                     </a>
-                    <a href="#" class="p-4 rounded-xl border border-dashed border-slate-200 hover:bg-slate-50 transition-colors text-center text-sm font-semibold text-slate-600 flex flex-col items-center gap-2">
-                        <span class="text-2xl">📊</span> Laporan Akademik
+                    
+                    <!-- 4. Jalan Pintas ke Data Siswa -->
+                    <a href="{{ route('kesiswaan.siswa') }}" class="p-4 rounded-xl border border-dashed border-slate-200 hover:bg-slate-50 transition-colors text-center text-sm font-semibold text-slate-600 flex flex-col items-center gap-2">
+                        <span class="text-2xl">🎓</span> Data Siswa
                     </a>
+                    
                 </div>
             </div>
 
