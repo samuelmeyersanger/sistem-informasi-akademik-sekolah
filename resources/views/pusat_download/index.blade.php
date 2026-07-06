@@ -82,7 +82,35 @@
                             </form>
                         </div>
                     </div>
-                    <!-- Akhir Kotak Jadwal -->
+                    <!-- ============================================== -->
+                    <!-- KOTAK 3: DOWNLOAD ABSENSI EKSKUL               -->
+                    <!-- ============================================== -->
+                    <div class="border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                        <div class="bg-amber-50 border-b border-gray-200 p-4">
+                            <h4 class="font-bold text-amber-900 text-sm flex items-center gap-2">
+                                🎯 Daftar Hadir (Ekskul)
+                            </h4>
+                        </div>
+                        <div class="p-4">
+                            <!-- Target="_blank" agar PDF terbuka di tab baru -->
+                            <form action="{{ route('pusat_download.cetak_absensi_ekskul') }}" method="GET" target="_blank" class="space-y-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-600 mb-1">Pilih Ekstrakurikuler *</label>
+                                    <select name="ekskul_id" required class="w-full text-xs rounded-lg border-gray-300 focus:border-amber-500 focus:ring-amber-500 shadow-sm">
+                                        <option value="">-- Pilih Ekskul --</option>
+                                        @foreach($daftarEkskul as $ekskul)
+                                            <option value="{{ $ekskul->id }}">{{ $ekskul->nama_ekskul }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="flex gap-2 pt-2">
+                                    <button type="submit" class="w-full px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold rounded-lg shadow-sm transition-colors flex justify-center items-center gap-2">
+                                        📄 Download PDF (Folio)
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
 
                 </div>
             </div>

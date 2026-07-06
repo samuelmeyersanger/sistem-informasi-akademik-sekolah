@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 use App\Models\Kelas;
 use App\Models\Semester;
 use App\Models\AnggotaKelas;
+use App\Models\Ekstrakurikuler;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\AbsensiKelasExport;
@@ -13,7 +14,8 @@ class PusatDownloadController extends Controller
     public function index()
     {
         $daftarKelas = Kelas::orderBy('tingkat', 'asc')->orderBy('nama_kelas', 'asc')->get();
-        return view('pusat_download.index', compact('daftarKelas'));
+        $daftarEkskul = Ekstrakurikuler::orderBy('nama_ekskul', 'asc')->get();
+        return view('pusat_download.index', compact('daftarKelas', 'daftarEkskul'));
     }
     // =========================================================================
     // FITUR 1: DOWNLOAD ABSENSI
@@ -113,5 +115,23 @@ class PusatDownloadController extends Controller
         $pdf = Pdf::loadView('pusat_download.exports.jadwal', $data)
                   ->setPaper('folio', 'landscape');
         return $pdf->download($namaFile . '.pdf');
+    }
+    // =========================================================================
+    // FITUR 3: DOWNLOAD ABSENSI EKSTRAKURIKULER
+    // =========================================================================
+    public function cetakAbsensiEkskul(Request $request)
+    {
+        // Pastikan ekskul dipilih
+        $request->validate([
+            'ekskul_id' => 'required|exists:ekstrakurikuler,id'
+        ]);
+        $id = $request->ekskul_id;
+        // Ambil data ekskul, pembina, dan anggota-anggotanya (urut abjad)
+        $ekskul = Ekstrakurikuler::with(['pembina', 'anggota' => function($query) {
+            $query->join('siswa', 'anggota_ekstrakurikuler.siswa_id', '=', 'siswa.id')
+                  ->orderBy('siswa.nama_lengkap', 'asc')
+                  ->select('anggota_ekstrakurikuler.*');
+        }, 'anggota.siswa.kelas'])->findOrFail($id);
+        return view('pusat_download.exports.absensi_ekskul', compact('ekskul'));
     }
 }
