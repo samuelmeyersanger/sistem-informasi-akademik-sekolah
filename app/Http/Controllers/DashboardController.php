@@ -9,6 +9,8 @@ use App\Models\Pegawai;
 use App\Models\Kelas;
 use App\Models\MataPelajaran;
 use App\Models\Ekstrakurikuler;
+use App\Models\KodeGuru;         // 👈 Tambahkan ini
+use App\Models\JadwalPelajaran;  // 👈 Tambahkan ini
 use Carbon\Carbon;
 
 class DashboardController extends Controller
@@ -45,9 +47,16 @@ class DashboardController extends Controller
             ];
 
             if ($pegawai) {
-                // Anda bisa menyesuaikan logika perhitungan ini dengan relasi database Anda nanti
-                $data['jumlahMapel'] = $pegawai->jadwalPelajaran()->distinct('mata_pelajaran_id')->count() ?? 0;
+                // 1. Hitung jumlah Mapel unik yang diajarkan dari tabel KodeGuru
+                $data['jumlahMapel'] = KodeGuru::where('pegawai_id', $pegawai->id)
+                                        ->distinct('mata_pelajaran_id')
+                                        ->count('mata_pelajaran_id');
+                // 2. Hitung jumlah ekskul
                 $data['jumlahEkskul'] = Ekstrakurikuler::where('pembina_id', $pegawai->id)->count();
+                // (BONUS) 3. Jika Anda ingin menghitung Total Jam Mengajar per minggu
+                // Kita ambil kumpulan ID kode gurunya, lalu hitung ada berapa kotak jadwalnya
+                $kumpulanKode = KodeGuru::where('pegawai_id', $pegawai->id)->pluck('id');
+                $data['totalJam'] = JadwalPelajaran::whereIn('kode_guru_id', $kumpulanKode)->count();
             }
             
             return view('dashboard.guru', compact('data'));
