@@ -52,4 +52,33 @@ class JadwalMengajarController extends Controller
         // Return view diarahkan ke folder akademik
         return view('akademik.jadwal_mengajar.index', compact('pegawai', 'jadwalPelajaran', 'daftarWaktu'));
     }
+
+        /**
+     * Fitur Download / Cetak PDF Jadwal Mengajar Pribadi
+     */
+    public function downloadPdf(Request $request)
+    {
+        $pegawai = Pegawai::where('user_id', auth()->id())->first();
+        $jadwalPelajaran = collect();
+        $daftarWaktu = collect();
+        if ($pegawai) {
+            $kodeGuruIds = KodeGuru::where('pegawai_id', $pegawai->id)->pluck('id');
+            if ($kodeGuruIds->isNotEmpty()) {
+                // Relasi disesuaikan dengan kode index() milik Anda
+                $jadwalPelajaran = JadwalPelajaran::with(['kelas', 'mataPelajaran', 'ruangan'])
+                                    ->whereIn('kode_guru_id', $kodeGuruIds)
+                                    ->get();
+                $daftarWaktu = WaktuKbm::orderByRaw("
+                                    CASE hari 
+                                        WHEN 'Senin' THEN 1 WHEN 'Selasa' THEN 2
+                                        WHEN 'Rabu' THEN 3 WHEN 'Kamis' THEN 4
+                                        WHEN 'Jumat' THEN 5 WHEN 'Sabtu' THEN 6
+                                        ELSE 7 
+                                    END
+                                ")->orderBy('jam_ke', 'asc')->get();
+            }
+        }
+        // Arahkan ke file cetak
+        return view('akademik.jadwal_mengajar.cetak', compact('pegawai', 'jadwalPelajaran', 'daftarWaktu'));
+    }
 }

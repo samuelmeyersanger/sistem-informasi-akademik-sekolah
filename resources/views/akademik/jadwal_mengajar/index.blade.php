@@ -31,9 +31,17 @@
                             </p>
                         </div>
                     @else
-                        <div class="mb-4">
-                            <h3 class="text-lg font-bold text-gray-700">Jadwal Mengajar: {{ $pegawai->nama_lengkap }}</h3>
-                            <p class="text-sm text-gray-500">Berikut adalah jadwal Anda yang tersebar di berbagai kelas.</p>
+                        <!-- Baris Judul & Tombol (Flexbox) -->
+                        <div class="mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div>
+                                <h3 class="text-lg font-bold text-gray-700">Jadwal Mengajar: {{ $pegawai->nama_lengkap }}</h3>
+                                <p class="text-sm text-gray-500">Berikut adalah jadwal Anda yang tersebar di berbagai kelas.</p>
+                            </div>
+                            
+                            <!-- TOMBOL DOWNLOAD PDF -->
+                            <a href="{{ route('akademik.jadwal_mengajar.download') }}" target="_blank" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold rounded-lg shadow-sm transition-colors flex items-center justify-center gap-2 shrink-0">
+                                📄 Cetak / Simpan PDF
+                            </a>
                         </div>
 
                         <div class="overflow-x-auto">
