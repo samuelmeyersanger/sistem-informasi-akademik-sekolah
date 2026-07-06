@@ -408,6 +408,7 @@ Route::middleware(['auth', CheckApproval::class])->group(function () {
         Route::post('/waktu-kbm', [WaktuKbmController::class, 'store'])->name('waktu-kbm.store');
         Route::put('/waktu-kbm/{id}', [WaktuKbmController::class, 'update'])->name('waktu-kbm.update');
         Route::delete('/waktu-kbm/{id}', [WaktuKbmController::class, 'destroy'])->name('waktu-kbm.destroy');
+        Route::get('/jadwal-mengajar', [\App\Http\Controllers\Akademik\JadwalMengajarController::class, 'index'])->name('jadwal_mengajar');
     });
     /*
     |--------------------------------------------------------------------------
