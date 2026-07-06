@@ -15,31 +15,22 @@ class PermissionController extends Controller
      */
     public function index(Request $request)
     {
-        // Tangkap kata kunci pencarian dari input name="search"
-        $search = $request->input('search');
-
-        // Menggunakan query builder dasar dengan Eager Loading relasi roles
-        $query = Permission::with('roles');
-
-        // Logika pencarian multi-kolom
-        if (!empty($search)) {
-            $query->where(function($q) use ($search) {
-                $q->where('name', 'like', '%' . $search . '%')
-                  ->orWhere('modul', 'like', '%' . $search . '%')
-                  ->orWhere('description', 'like', '%' . $search . '%');
-            });
-        }
-
-        // DIUBAH: Menggunakan paginate(10) dan mempertahankan keyword saat pindah halaman paginasi
-        $permissions = $query->orderBy('modul', 'asc')
-                             ->orderBy('created_at', 'desc')
-                             ->paginate(10)
-                             ->appends(['search' => $search]);
-        
-        // Ambil semua data role untuk ditampilkan sebagai opsi checkbox di modal
+        // Gunakan query() agar Laravel fokus mengambil parameter dari URL (GET Request)
+        $search = $request->query('search');
+        // Menggunakan fitur 'when' bawaan Laravel, lebih bersih dan aman dari error
+        $permissions = Permission::with('roles')
+            ->when($search, function ($query, $keyword) {
+                return $query->where(function ($q) use ($keyword) {
+                    $q->where('name', 'LIKE', "%{$keyword}%")
+                      ->orWhere('modul', 'LIKE', "%{$keyword}%")
+                      ->orWhere('description', 'LIKE', "%{$keyword}%");
+                });
+            })
+            ->orderBy('modul', 'asc')
+            ->orderBy('created_at', 'desc')
+            ->paginate(10)
+            ->withQueryString(); // Ini fitur otomatis Laravel agar parameter pencarian ikut ke halaman paginasi 2, 3, dst
         $roles = Role::orderBy('display_name', 'asc')->get();
-
-        // Ditambahkan variabel 'search' agar bisa dibaca di view Blade
         return view('master.permission.index', compact('permissions', 'roles', 'search'));
     }
 
