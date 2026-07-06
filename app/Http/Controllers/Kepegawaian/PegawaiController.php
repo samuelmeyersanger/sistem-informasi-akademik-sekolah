@@ -207,7 +207,7 @@ class PegawaiController extends Controller
     }
 
     /**
-     * GENERATE AKUN PEGAWAI INDIVIDU
+     * GENERATE AKUN PEGAWAI INDIVIDU (Menggunakan Email Asli Pegawai)
      */
     public function generateAkunIndividu($id)
     {
@@ -217,24 +217,36 @@ class PegawaiController extends Controller
             return redirect()->back()->with('error', 'Pegawai ini sudah memiliki akun.');
         }
 
-        $profil = DB::table('profil_sekolah')->first();
-        $namaSekolahBersih = $profil ? strtolower(str_replace(' ', '', $profil->nama_sekolah)) : 'sekolah';
-        $domainSekolah = '@' . $namaSekolahBersih . '.sch.id'; 
-
-        if ($pegawai->nip) {
-            $prefixEmail = trim($pegawai->nip);
-        } elseif ($pegawai->nuptk) {
-            $prefixEmail = trim($pegawai->nuptk);
+        // 1. Cek apakah ada email asli di table pegawai
+        if (!empty($pegawai->email)) {
+            $emailPegawai = strtolower(trim($pegawai->email));
+            
+            // Antisipasi jika email asli tersebut ternyata sudah pernah dipakai akun lain di sistem
+            if (User::where('email', $emailPegawai)->exists()) {
+                return redirect()->back()->with('error', "Gagal! Email asli ({$emailPegawai}) sudah digunakan oleh akun lain.");
+            }
         } else {
-            $prefixEmail = strtolower(explode(' ', trim($pegawai->nama_lengkap))[0]) . rand(10, 99);
-        }
-        
-        $emailPegawai = strtolower($prefixEmail) . $domainSekolah;
+            // 2. FALLBACK: Jika email kosong di DB, buat otomatis pakai domain sekolah seperti kode lama Anda
+            $profil = DB::table('profil_sekolah')->first();
+            $namaSekolahBersih = $profil ? strtolower(str_replace(' ', '', $profil->nama_sekolah)) : 'sekolah';
+            $domainSekolah = '@' . $namaSekolahBersih . '.sch.id'; 
 
-        if (User::where('email', $emailPegawai)->exists()) {
-            $emailPegawai = strtolower($prefixEmail) . rand(1, 9) . $domainSekolah;
+            if ($pegawai->nip) {
+                $prefixEmail = trim($pegawai->nip);
+            } elseif ($pegawai->nuptk) {
+                $prefixEmail = trim($pegawai->nuptk);
+            } else {
+                $prefixEmail = strtolower(explode(' ', trim($pegawai->nama_lengkap))[0]) . rand(10, 99);
+            }
+            
+            $emailPegawai = strtolower($prefixEmail) . $domainSekolah;
+
+            if (User::where('email', $emailPegawai)->exists()) {
+                $emailPegawai = strtolower($prefixEmail) . rand(1, 9) . $domainSekolah;
+            }
         }
 
+        // Pembuatan user baru
         $user = User::create([
             'name' => $pegawai->nama_lengkap,
             'email' => $emailPegawai,
@@ -259,7 +271,7 @@ class PegawaiController extends Controller
     }
 
     /**
-     * GENERATE AKUN PEGAWAI MASSAL
+     * GENERATE AKUN PEGAWAI MASSAL (Menggunakan Email Asli Pegawai)
      */
     public function generateAkunMassal()
     {
@@ -286,20 +298,32 @@ class PegawaiController extends Controller
         try {
             foreach ($pegawaiBelumPunyaAkun as $pegawai) {
                 
-                if ($pegawai->nip) {
-                    $prefixEmail = trim($pegawai->nip);
-                } elseif ($pegawai->nuptk) {
-                    $prefixEmail = trim($pegawai->nuptk);
+                // 1. Ambil dari email asli jika tersedia
+                if (!empty($pegawai->email)) {
+                    $emailPegawai = strtolower(trim($pegawai->email));
+                    
+                    // Jika email asli ternyata sudah dipakai di tabel user, skip pegawai ini demi keamanan
+                    if (User::where('email', $emailPegawai)->exists()) {
+                        continue; 
+                    }
                 } else {
-                    $prefixEmail = strtolower(explode(' ', trim($pegawai->nama_lengkap))[0]) . rand(10, 99);
-                }
-                
-                $emailPegawai = strtolower($prefixEmail) . $domainSekolah;
+                    // 2. FALLBACK: Jika email di database kosong, buat otomatis berbasis NIP/NUPTK/Nama
+                    if ($pegawai->nip) {
+                        $prefixEmail = trim($pegawai->nip);
+                    } elseif ($pegawai->nuptk) {
+                        $prefixEmail = trim($pegawai->nuptk);
+                    } else {
+                        $prefixEmail = strtolower(explode(' ', trim($pegawai->nama_lengkap))[0]) . rand(10, 99);
+                    }
+                    
+                    $emailPegawai = strtolower($prefixEmail) . $domainSekolah;
 
-                if (User::where('email', $emailPegawai)->exists()) {
-                    $emailPegawai = strtolower($prefixEmail) . rand(1, 9) . $domainSekolah;
+                    if (User::where('email', $emailPegawai)->exists()) {
+                        $emailPegawai = strtolower($prefixEmail) . rand(1, 9) . $domainSekolah;
+                    }
                 }
 
+                // Daftarkan User
                 $user = User::create([
                     'name' => $pegawai->nama_lengkap,
                     'email' => $emailPegawai,
@@ -324,7 +348,7 @@ class PegawaiController extends Controller
             }
 
             DB::commit();
-            return redirect()->back()->with('success', "Berhasil men-generate {$counter} akun pegawai secara dinamis!");
+            return redirect()->back()->with('success', "Berhasil men-generate {$counter} akun pegawai berdasarkan data email!");
 
         } catch (\Exception $e) {
             DB::rollBack();
