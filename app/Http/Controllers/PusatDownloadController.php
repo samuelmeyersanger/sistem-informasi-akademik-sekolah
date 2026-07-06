@@ -48,8 +48,10 @@ class PusatDownloadController extends Controller
         if ($request->format === 'excel') {
             return Excel::download(new AbsensiKelasExport($data), $namaFile . '.xlsx');
         }
+        // Render PDF menggunakan kertas F4 (folio) bentuk Potrait
         $pdf = Pdf::loadView('pusat_download.exports.absensi', $data)
-                  ->setPaper('A4', 'landscape');
+                  ->setPaper('folio', 'portrait');
+                  
         return $pdf->download($namaFile . '.pdf');
     }
 }
