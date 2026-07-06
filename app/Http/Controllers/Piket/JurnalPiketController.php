@@ -20,27 +20,73 @@ use Illuminate\Support\Facades\Auth;
 class JurnalPiketController extends Controller
 {
     /**
+     * =========================================================================
+     * PENGAMAN OTORITAS PIKET (SECURITY GATE)
+     * =========================================================================
+     */
+    private function checkOtoritasPiket($tanggal)
+    {
+        $user = Auth::user();
+
+        // 1. Jika punya izin super admin (Kepsek/Admin), bebas cek piket hari apa saja
+        // (Pastikan permission ini Anda buat nanti di tabel Manajemen Hak Akses)
+        if ($user->hasPermission('akses-semua-piket')) {
+            return true;
+        }
+
+        // 2. Cek apakah user adalah pegawai
+        $pegawai = Pegawai::where('user_id', $user->id)->first();
+        if (!$pegawai) {
+            abort(403, 'Akses Ditolak: Akun Anda tidak terhubung dengan profil Pegawai.');
+        }
+
+        $namaHari = Carbon::parse($tanggal)->translatedFormat('l');
+
+        // 3. Cari jadwal piket pada hari tersebut
+        $petugasHariIni = PetugasPiket::where('hari', $namaHari)->first();
+        
+        if (!$petugasHariIni) {
+            abort(403, "Akses Ditolak: Belum ada daftar master petugas piket yang diatur untuk hari {$namaHari}.");
+        }
+
+        // 4. Verifikasi apakah pegawai ini adalah Penanggung Jawab ATAU Anggota Piket
+        $isPenanggungJawab = $petugasHariIni->penanggung_jawab_id == $pegawai->id;
+        
+        $isAnggota = false;
+        if (is_array($petugasHariIni->anggota_piket)) {
+            // Cek apakah ID pegawai ada di dalam array anggota_piket
+            $isAnggota = in_array((string)$pegawai->id, $petugasHariIni->anggota_piket) || in_array($pegawai->id, $petugasHariIni->anggota_piket);
+        }
+
+        // 5. Tendang jika dia mencoba masuk di luar jadwal piketnya
+        if (!$isPenanggungJawab && !$isAnggota) {
+            abort(403, "Akses Ditolak: Anda tidak terdaftar sebagai tim petugas piket pada hari {$namaHari}. Halaman terkunci.");
+        }
+    }
+
+
+    /**
      * Halaman Pusat Kendali Jurnal Piket (Berdasarkan Tanggal Hari Ini)
      */
     public function index(Request $request)
     {
-        // Set tanggal hari ini atau berdasarkan request filter kalender
         $tanggal = $request->input('tanggal', Carbon::today()->toDateString());
-        $namaHari = Carbon::parse($tanggal)->translatedFormat('l'); // Mengasilkan: Senin, Selasa, dst.
+        
+        // 👇 PENGAMAN (Security Check)
+        $this->checkOtoritasPiket($tanggal);
 
-        // 1. Ambil data petugas piket yang bertugas berdasarkan hari terpilih
+        $namaHari = Carbon::parse($tanggal)->translatedFormat('l');
+
         $petugasHariIni = PetugasPiket::with('penanggungJawab')
             ->where('hari', $namaHari)
             ->first();
 
-        // 2. Ambil data operasional harian (Izin & Absen) sesuai tanggal terpilih
         $izinSiswa = IzinKeluarSiswa::with(['kelas', 'siswa'])->where('tanggal', $tanggal)->get();
         $izinPegawai = IzinPegawai::with(['pegawai', 'mataPelajaran', 'invaler'])->where('tanggal', $tanggal)->get();
         $absenSiswa = KetidakhadiranSiswa::with(['kelas', 'siswa'])->where('tanggal', $tanggal)->get();
         $absenPegawai = KetidakhadiranPegawai::with(['pegawai', 'mataPelajaran'])->where('tanggal', $tanggal)->get();
         $catatanHarian = CatatanPiketHarian::with('pembuatCatatan')->where('tanggal', $tanggal)->first();
 
-        // 3. Data Master untuk modal pencatatan baru
         $daftarKelas = Kelas::orderBy('nama_kelas', 'asc')->get();
         $daftarSiswa = Siswa::orderBy('nama_lengkap', 'asc')->get();
         $daftarPegawai = Pegawai::orderBy('nama_lengkap', 'asc')->get();
@@ -66,6 +112,9 @@ class JurnalPiketController extends Controller
             'alasan_keluar' => 'required|string'
         ]);
 
+        // 👇 PENGAMAN
+        $this->checkOtoritasPiket($request->tanggal);
+
         IzinKeluarSiswa::create([
             'tanggal' => $request->tanggal,
             'kelas_id' => $request->kelas_id,
@@ -84,6 +133,10 @@ class JurnalPiketController extends Controller
     public function kembaliSiswa($id)
     {
         $izin = IzinKeluarSiswa::findOrFail($id);
+        
+        // 👇 PENGAMAN (Ambil tanggal dari data izinnya)
+        $this->checkOtoritasPiket($izin->tanggal);
+
         $izin->update([
             'waktu_kembali' => Carbon::now()->toTimeString(),
             'status' => 'Sudah Kembali',
@@ -107,6 +160,9 @@ class JurnalPiketController extends Controller
             'invaler_id' => 'nullable|exists:pegawai,id'
         ]);
 
+        // 👇 PENGAMAN
+        $this->checkOtoritasPiket($request->tanggal);
+
         IzinPegawai::create([
             'tanggal' => $request->tanggal,
             'pegawai_id' => $request->pegawai_id,
@@ -126,6 +182,10 @@ class JurnalPiketController extends Controller
     public function kembaliPegawai($id)
     {
         $izin = IzinPegawai::findOrFail($id);
+        
+        // 👇 PENGAMAN
+        $this->checkOtoritasPiket($izin->tanggal);
+
         $izin->update([
             'waktu_kembali' => Carbon::now()->toTimeString(),
             'status' => 'Sudah Kembali',
@@ -147,6 +207,9 @@ class JurnalPiketController extends Controller
             'keterangan' => 'required|in:Sakit,Izin,Alpha'
         ]);
 
+        // 👇 PENGAMAN
+        $this->checkOtoritasPiket($request->tanggal);
+
         KetidakhadiranSiswa::create($request->all());
 
         return redirect()->back()->with('success', 'Ketidakhadiran siswa berhasil direkam.');
@@ -165,6 +228,9 @@ class JurnalPiketController extends Controller
             'tindak_lanjut' => 'nullable|string'
         ]);
 
+        // 👇 PENGAMAN
+        $this->checkOtoritasPiket($request->tanggal);
+
         KetidakhadiranPegawai::create($request->all());
 
         return redirect()->back()->with('success', 'Ketidakhadiran pegawai berhasil direkam.');
@@ -180,12 +246,14 @@ class JurnalPiketController extends Controller
             'catatan_kejadian' => 'required|string'
         ]);
 
-        // Gunakan updateOrCreate agar data per tanggal tidak terduplikasi ganda
+        // 👇 PENGAMAN
+        $this->checkOtoritasPiket($request->tanggal);
+
         CatatanPiketHarian::updateOrCreate(
             ['tanggal' => $request->tanggal],
             [
                 'catatan_kejadian' => $request->catatan_kejadian,
-                'pegawai_id' => Auth::user()->pegawai_id ?? null // Mengikat ke id pegawai user login jika ada
+                'pegawai_id' => Auth::user()->pegawai_id ?? null 
             ]
         );
 
