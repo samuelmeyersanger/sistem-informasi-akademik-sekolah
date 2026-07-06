@@ -71,18 +71,18 @@ class JurnalPiketController extends Controller
     /**
      * Halaman Pusat Kendali Jurnal Piket (Berdasarkan Tanggal Hari Ini)
      */
-    public function index(Request $request)
+     public function index(Request $request)
     {
         $tanggal = $request->input('tanggal', Carbon::today()->toDateString());
+        
+        // 👇 TAMBAHKAN BARIS INI SEMENTARA UNTUK MELACAK ERROR
+        $namaHari = Carbon::parse($tanggal)->translatedFormat('l');
+        $petugas = \App\Models\PetugasPiket::where('hari', $namaHari)->first();
+        dd('HARI INI TERBACA: ' . $namaHari, 'DATA PETUGAS: ', $petugas);
         
         // 👇 PENGAMAN (Security Check)
         $this->checkOtoritasPiket($tanggal);
 
-        $namaHari = Carbon::parse($tanggal)->translatedFormat('l');
-
-        $petugasHariIni = PetugasPiket::with('penanggungJawab')
-            ->where('hari', $namaHari)
-            ->first();
 
         $izinSiswa = IzinKeluarSiswa::with(['kelas', 'siswa'])->where('tanggal', $tanggal)->get();
         $izinPegawai = IzinPegawai::with(['pegawai', 'mataPelajaran', 'invaler'])->where('tanggal', $tanggal)->get();
