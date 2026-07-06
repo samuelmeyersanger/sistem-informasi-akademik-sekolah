@@ -76,10 +76,11 @@
                                 🔍 Cari
                             </button>
                         </form>
-
+                        @if(auth()->user()->hasPermission('kesiswaan.kelas.store'))
                         <button @click="openCreate = true" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg shadow-sm transition-all flex items-center justify-center gap-1 cursor-pointer">
                             ➕ Tambah Kelas Baru
                         </button>
+                        @endif
                     </div>
                 </div>
 
@@ -125,10 +126,11 @@
                                             <button type="button" @click="initEdit('{{ route('kesiswaan.kelas.update', $item->id) }}', '{{ $item->tingkat }}', '{{ $item->nama_kelas }}', '{{ $item->wali_kelas_id }}')" class="p-1 text-indigo-600 hover:underline font-semibold cursor-pointer">
                                                 ✏️ Edit
                                             </button>
-
+                                            @if(auth()->user()->hasPermission('kesiswaan.kelas.destroy'))
                                             <button type="button" @click="initDelete('{{ route('kesiswaan.kelas.destroy', $item->id) }}', 'Kelas {{ addslashes($item->nama_kelas) }}')" class="p-1 text-rose-600 hover:underline font-medium cursor-pointer">
                                                 🗑️ Hapus
                                             </button>
+                                            @endif
                                         </div>
                                     </td>
                                 </tr>

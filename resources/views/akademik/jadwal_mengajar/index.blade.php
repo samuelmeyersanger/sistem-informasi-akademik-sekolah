@@ -15,8 +15,20 @@
                             Akun Anda belum terhubung dengan data Pegawai/Guru.
                         </div>
                     @elseif($jadwalPelajaran->isEmpty())
-                        <div class="p-4 mb-4 text-sm text-yellow-800 rounded-lg bg-yellow-50">
-                            Anda belum memiliki jadwal mengajar aktif di sistem.
+                        <div class="flex flex-col items-center justify-center py-16 px-4 bg-gradient-to-b from-slate-50 to-white rounded-2xl border-2 border-slate-100 border-dashed my-6 text-center shadow-sm">
+                            <!-- Ikon Kalender Lingkaran -->
+                            <div class="w-20 h-20 mb-5 bg-indigo-50 rounded-full flex items-center justify-center text-indigo-500 shadow-inner ring-4 ring-white">
+                                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 12h.01M12 16h.01M8 12h.01M8 16h.01M16 12h.01"></path>
+                                </svg>
+                            </div>
+                            
+                            <!-- Teks -->
+                            <h3 class="text-lg font-bold text-gray-800 mb-2">Belum Ada Jadwal Mengajar</h3>
+                            <p class="text-sm text-gray-500 max-w-sm mx-auto leading-relaxed">
+                                Saat ini Anda belum diplot ke dalam jadwal pelajaran manapun. Silakan hubungi <b>Wakasek Kurikulum</b> jika Anda merasa ini adalah sebuah kekeliruan.
+                            </p>
                         </div>
                     @else
                         <div class="mb-4">

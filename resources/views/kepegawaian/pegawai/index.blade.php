@@ -61,6 +61,7 @@
                     </div>
                     
                     <div class="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-3">
+                        <!-- Form Pencarian Tetap Muncul Untuk Semua Orang -->
                         <form action="{{ route('kepegawaian.pegawai.index') }}" method="GET" class="flex items-center gap-2 w-full sm:w-auto">
                             <div class="relative flex items-center w-full sm:w-auto">
                                 <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama atau NIP..." class="text-xs rounded-lg border-gray-200 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm w-full sm:w-56 pr-8">
@@ -75,22 +76,22 @@
                                 🔍 Cari
                             </button>
                         </form>
-
-                        <a href="{{ route('kepegawaian.pegawai.downloadTemplate') }}" class="px-3 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-semibold rounded-lg shadow-sm border border-emerald-200 transition-all flex items-center justify-center gap-1 cursor-pointer">
-                            📥 Template Excel
-                        </a>
-
-                        <button @click="openImport = true" class="px-3 py-2 bg-teal-600 hover:bg-teal-700 text-black text-xs font-semibold rounded-lg shadow-sm transition-all flex items-center justify-center gap-1 cursor-pointer">
-                            📤 Import Excel
-                        </button>
-
-                        <button @click="openGeneratePegawai = true" class="px-4 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-semibold rounded-lg shadow-sm transition-all flex items-center justify-center gap-1 cursor-pointer border border-indigo-200">
-                            ⚡ Generate Akun Massal
-                        </button>
-
-                        <button @click="openCreate = true" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg shadow-sm transition-all flex items-center justify-center gap-1 cursor-pointer">
-                            ➕ Tambah Pegawai Baru
-                        </button>
+                        <!-- 👇 BUKA GEMBOK: Tombol di bawah ini hanya muncul jika punya izin 'store' -->
+                        @if(auth()->user()->hasPermission('kepegawaian.pegawai.store'))
+                            <a href="{{ route('kepegawaian.pegawai.downloadTemplate') }}" class="px-3 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-semibold rounded-lg shadow-sm border border-emerald-200 transition-all flex items-center justify-center gap-1 cursor-pointer">
+                                📥 Template Excel
+                            </a>
+                            <button @click="openImport = true" class="px-3 py-2 bg-teal-600 hover:bg-teal-700 text-black text-xs font-semibold rounded-lg shadow-sm transition-all flex items-center justify-center gap-1 cursor-pointer">
+                                📤 Import Excel
+                            </button>
+                            <button @click="openGeneratePegawai = true" class="px-4 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-semibold rounded-lg shadow-sm transition-all flex items-center justify-center gap-1 cursor-pointer border border-indigo-200">
+                                ⚡ Generate Akun Massal
+                            </button>
+                            <button @click="openCreate = true" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg shadow-sm transition-all flex items-center justify-center gap-1 cursor-pointer">
+                                ➕ Tambah Pegawai Baru
+                            </button>
+                        @endif 
+                        <!-- 👆 TUTUP GEMBOK -->
                     </div>
                 </div>
 
@@ -147,10 +148,11 @@
                                             <a href="{{ route('kepegawaian.pegawai.show', $p->id) }}" class="px-2 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 font-semibold rounded text-[10px] border border-indigo-100 transition-colors">
                                                 🔍 Detail
                                             </a>
-                                            
+                                            @if(auth()->user()->hasPermission('kepegawaian.pegawai.store'))
                                             <button type="button" @click="initDelete('{{ route('kepegawaian.pegawai.destroy', $p->id) }}', '{{ addslashes($p->nama_lengkap) }}')" class="px-2 py-1 bg-rose-50 hover:bg-rose-100 text-rose-600 font-semibold rounded text-[10px] border border-rose-100 cursor-pointer transition-colors">
                                                 🗑️ Hapus
                                             </button>
+                                            @endif
                                         </div>
                                     </td>
                                 </tr>

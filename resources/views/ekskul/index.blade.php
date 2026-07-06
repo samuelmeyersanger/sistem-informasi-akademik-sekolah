@@ -92,12 +92,11 @@
                                 🔍 Cari
                             </button>
                         </form>
-
                         @if(auth()->user()->hasPermission('ekskul.ekstrakurikuler.store'))
-                            <a href="..." class="btn btn-primary">
-                                + Tambah Ekskul
-                            </a>
-                        @endif
+                        <button @click="openCreate = true" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg shadow-sm transition-all flex items-center justify-center gap-1 cursor-pointer">
+                            ➕ Tambah Ekskul
+                        </button>
+                        @endif 
                     </div>
                 </div>
 
