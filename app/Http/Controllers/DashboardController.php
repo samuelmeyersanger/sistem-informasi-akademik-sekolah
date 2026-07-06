@@ -58,6 +58,19 @@ class DashboardController extends Controller
                 // Kita ambil kumpulan ID kode gurunya, lalu hitung ada berapa kotak jadwalnya
                 $kumpulanKode = KodeGuru::where('pegawai_id', $pegawai->id)->pluck('id');
                 $data['totalJam'] = JadwalPelajaran::whereIn('kode_guru_id', $kumpulanKode)->count();
+                // 👇 TAMBAHKAN KODE NOMOR 4 INI 👇
+                // 4. Cari Jadwal HARI INI
+                $mapHari = [0 => 'Minggu', 1 => 'Senin', 2 => 'Selasa', 3 => 'Rabu', 4 => 'Kamis', 5 => 'Jumat', 6 => 'Sabtu'];
+                $hariIni = $mapHari[Carbon::today()->dayOfWeek]; // Sistem mendeteksi nama hari ini
+                
+                $data['namaHariIni'] = $hariIni;
+                $data['jadwalHariIni'] = JadwalPelajaran::with(['waktuKbm', 'kelas', 'ruangan', 'kodeGuru.mataPelajaran'])
+                    ->whereIn('kode_guru_id', $kumpulanKode)
+                    ->where('hari', $hariIni)
+                    ->get()
+                    ->sortBy(function ($jadwal) {
+                        return $jadwal->waktuKbm->jam_ke ?? 0; // Urutkan dari jam pertama
+                    });
             }
             
             return view('dashboard.guru', compact('data'));
