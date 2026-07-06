@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Absensi Ekskul - {{ $ekskul->nama_ekskul }}</title>
+    <title>Absensi Ekskul - {{ $ekskul->nama }}</title>
     <style>
         /* Pengaturan Kertas Folio (F4) = 8.5 x 13 inci */
         @page { size: 8.5in 13in; margin: 20mm; }
@@ -40,7 +40,7 @@
         
         <div class="teks-tengah">
             <h2 style="margin: 0; font-size: 18px;">DAFTAR HADIR EKSTRAKURIKULER</h2>
-            <h1 style="margin: 5px 0; font-size: 22px;">{{ strtoupper($ekskul->nama_ekskul) }}</h1>
+            <h1 style="margin: 5px 0; font-size: 22px;">{{ strtoupper($ekskul->nama) }}</h1>
             <p style="margin: 0; font-size: 12px;">Semester: Ganjil / Genap &nbsp;&nbsp;|&nbsp;&nbsp; Tahun Ajaran: 2026/2027</p>
         </div>
         

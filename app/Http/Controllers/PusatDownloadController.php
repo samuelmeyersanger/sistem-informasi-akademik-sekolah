@@ -14,7 +14,7 @@ class PusatDownloadController extends Controller
     public function index()
     {
         $daftarKelas = Kelas::orderBy('tingkat', 'asc')->orderBy('nama_kelas', 'asc')->get();
-        $daftarEkskul = Ekstrakurikuler::orderBy('nama_ekskul', 'asc')->get();
+        $daftarEkskul = Ekstrakurikuler::orderBy('nama', 'asc')->get();
         return view('pusat_download.index', compact('daftarKelas', 'daftarEkskul'));
     }
     // =========================================================================
