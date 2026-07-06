@@ -44,6 +44,7 @@ class DashboardController extends Controller
                 'jumlahMuridDiajar' => 0,
                 'jumlahMapel' => 0,
                 'jumlahEkskul' => 0,
+                'totalJam' => 0,
             ];
 
             if ($pegawai) {
