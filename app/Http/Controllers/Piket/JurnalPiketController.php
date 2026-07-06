@@ -62,7 +62,7 @@ class JurnalPiketController extends Controller
         if (!$isPenanggungJawab && !$isAnggota) {
             
             // UBAH BARIS ABORT MENJADI DD SEMENTARA:
-            dd('SISTEM BEKERJA! SAYA DITOLAK OLEH CONTROLLER KARENA BUKAN JADWAL PIKET SAYA!');
+            //dd('SISTEM BEKERJA! SAYA DITOLAK OLEH CONTROLLER KARENA BUKAN JADWAL PIKET SAYA!');
             
         }
     }
@@ -78,7 +78,7 @@ class JurnalPiketController extends Controller
         // 👇 TAMBAHKAN BARIS INI SEMENTARA UNTUK MELACAK ERROR
         $namaHari = Carbon::parse($tanggal)->translatedFormat('l');
         $petugas = \App\Models\PetugasPiket::where('hari', $namaHari)->first();
-        dd('HARI INI TERBACA: ' . $namaHari, 'DATA PETUGAS: ', $petugas);
+        //dd('HARI INI TERBACA: ' . $namaHari, 'DATA PETUGAS: ', $petugas);
         
         // 👇 PENGAMAN (Security Check)
         $this->checkOtoritasPiket($tanggal);
