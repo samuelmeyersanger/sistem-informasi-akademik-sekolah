@@ -26,7 +26,10 @@ class KelasController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('search');
-        $query = Kelas::with('waliKelas')->orderBy('tingkat', 'asc')->orderBy('nama_kelas', 'asc');
+        $query = Kelas::with('waliKelas')
+            ->aksesSesuaiWali(auth()->user())
+            ->orderBy('tingkat', 'asc')
+            ->orderBy('nama_kelas', 'asc');
 
         if ($search) {
             $query->where(function($q) use ($search) {
@@ -81,7 +84,7 @@ class KelasController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $kelas = Kelas::with('waliKelas')->findOrFail($id);
+        $kelas = Kelas::with('waliKelas')->aksesSesuaiWali(auth()->user())->findOrFail($id);
         $semester_id = $request->input('semester_id');
 
         $semester_list = Semester::with('tahunAjaran')->orderBy('id', 'desc')->get();
@@ -115,7 +118,7 @@ class KelasController extends Controller
      */
     public function showJadwal(Request $request, $id)
     {
-        $kelas = Kelas::with('waliKelas')->findOrFail($id);
+        $kelas = Kelas::with('waliKelas')->aksesSesuaiWali(auth()->user())->findOrFail($id);
         
         // Ambil data master kode guru beserta relasi Many-to-Many mata pelajaran yang baru
         $daftarKodeGuru = KodeGuru::with(['pegawai', 'mataPelajarans'])->get();
@@ -148,7 +151,7 @@ class KelasController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $kelas = Kelas::findOrFail($id);
+        $kelas = Kelas::aksesSesuaiWali(auth()->user())->findOrFail($id);
 
         $validated = $request->validate([
             'nama_kelas'    => 'required|string|max:50|unique:kelas,nama_kelas,' . $id,
@@ -178,7 +181,7 @@ class KelasController extends Controller
      */
     public function destroy($id)
     {
-        $kelas = Kelas::findOrFail($id);
+        $kelas = Kelas::aksesSesuaiWali(auth()->user())->findOrFail($id);
         try {
             $kelas->delete();
             return redirect()->route('kesiswaan.kelas.index')
@@ -335,7 +338,7 @@ class KelasController extends Controller
      */
     public function downloadTemplateAnggota(Request $request, $id)
     {
-        $kelas = Kelas::findOrFail($id);
+        $kelas = Kelas::aksesSesuaiWali(auth()->user())->findOrFail($id);
         $current_semester_id = $request->input('semester_id');
 
         if (!$current_semester_id) {
@@ -362,7 +365,8 @@ class KelasController extends Controller
             'file_excel.mimes'    => 'Format file harus berupa excel (.xlsx atau .xls)',
             'file_excel.max'      => 'Ukuran file maksimal adalah 2MB.'
         ]);
-
+        // 👇 TAMBAHKAN 1 BARIS PENGAMAN INI DI SINI 👇
+        Kelas::aksesSesuaiWali(auth()->user())->findOrFail($id);
         try {
             Excel::import(new AnggotaKelasImport($id, $request->semester_id), $request->file('file_excel'));
             

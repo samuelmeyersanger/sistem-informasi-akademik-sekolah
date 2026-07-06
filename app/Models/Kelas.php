@@ -45,4 +45,25 @@ class Kelas extends Model
     {
         return $this->belongsTo(Semester::class, 'semester_id');
     }
+
+        /**
+     * ========================================================================
+     * SCOPE PENGAMAN KELAS & JADWAL
+     * ========================================================================
+     */
+    public function scopeAksesSesuaiWali($query, $user)
+    {
+        // 1. Izin khusus untuk Admin (harus dibuat di tabel Permission nanti)
+        if ($user->hasPermission('akses-semua-kelas')) {
+            return $query;
+        }
+        // 2. Cek apakah user adalah Pegawai
+        $pegawai = \App\Models\Pegawai::where('user_id', $user->id)->first();
+        if ($pegawai) {
+            // 3. Filter kelas hanya di mana pegawai ini menjadi wali kelasnya
+            return $query->where('wali_kelas_id', $pegawai->id);
+        }
+        // 4. Tolak akses jika bukan keduanya
+        return $query->where('id', 0);
+    }
 }
