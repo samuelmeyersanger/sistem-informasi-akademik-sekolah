@@ -59,11 +59,14 @@
                     </div>
                     
                     <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                        
+                        <!-- FORM PENCARIAN -->
                         <form action="{{ route('master.permission.index') }}" method="GET" class="flex items-center gap-2 w-full sm:w-auto">
                             <div class="relative flex items-center w-full sm:w-auto">
                                 <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari izin / modul / deskripsi..." class="text-xs rounded-lg border-gray-200 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm w-full sm:w-56 pr-8">
                                 
                                 @if(request('search'))
+                                    <!-- Tombol Silang (Clear Search) -->
                                     <a href="{{ route('master.permission.index') }}" class="absolute right-2.5 text-gray-400 hover:text-gray-600 font-bold text-sm" title="Clear Search">
                                         &times;
                                     </a>
@@ -134,7 +137,7 @@
                                 <tr>
                                     <td colspan="5" class="p-12 text-center text-gray-400 italic bg-gray-50/30">
                                         @if(request('search'))
-                                            ❌ Hasil pencarian dengan kata kunci "{{ request('search') }}" tidak ditemukan.
+                                            ❌ Hasil pencarian dengan kata kunci <b>"{{ request('search') }}"</b> tidak ditemukan.
                                         @else
                                             Belum ada data permission yang terdaftar.
                                         @endif
@@ -153,6 +156,7 @@
             </div>
         </div>
 
+        <!-- MODAL CREATE -->
         <div x-show="openCreate" class="fixed inset-0 z-50 overflow-y-auto bg-gray-900/60 backdrop-blur-sm flex items-center justify-center p-4" style="display: none;" x-transition>
             <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl border border-gray-100 p-6 space-y-4" @click.away="openCreate = false">
                 <div class="flex justify-between items-center border-b border-gray-100 pb-3">
@@ -192,6 +196,7 @@
             </div>
         </div>
 
+        <!-- MODAL EDIT -->
         <div x-show="openEdit" class="fixed inset-0 z-50 overflow-y-auto bg-gray-900/60 backdrop-blur-sm flex items-center justify-center p-4" style="display: none;" x-transition>
             <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl border border-gray-100 p-6 space-y-4" @click.away="openEdit = false">
                 <div class="flex justify-between items-center border-b border-gray-100 pb-3">
@@ -232,6 +237,7 @@
             </div>
         </div>
 
+        <!-- MODAL HAPUS -->
         <div x-show="openDelete" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm" style="display: none;" x-transition>
             <div class="bg-white rounded-2xl shadow-xl border border-gray-200 max-w-sm w-full p-6 text-center space-y-4" @click.away="openDelete = false">
                 <div class="w-12 h-12 bg-rose-50 text-rose-600 rounded-full flex items-center justify-center text-xl mx-auto border border-rose-100">
