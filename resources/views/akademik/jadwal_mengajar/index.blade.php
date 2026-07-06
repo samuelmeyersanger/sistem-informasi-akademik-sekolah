@@ -11,8 +11,21 @@
                 <div class="p-6 text-gray-900">
                     
                     @if(!$pegawai)
-                        <div class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50">
-                            Akun Anda belum terhubung dengan data Pegawai/Guru.
+                        <div class="flex flex-col items-center justify-center py-16 px-4 bg-gradient-to-b from-rose-50 to-white rounded-3xl border border-rose-100 my-6 text-center shadow-sm">
+                            <!-- Ikon Peringatan Elegan -->
+                            <div class="w-24 h-24 mb-6 bg-white rounded-full flex items-center justify-center shadow-sm border-8 border-rose-50/50">
+                                <span class="text-5xl">🔗</span>
+                            </div>
+                            
+                            <!-- Teks -->
+                            <h3 class="text-xl font-extrabold text-gray-800 mb-3 tracking-tight">Akses Terbatas: Data Pegawai Belum Terhubung</h3>
+                            <p class="text-sm text-gray-500 max-w-md mx-auto leading-relaxed mb-8">
+                                Sistem mendeteksi bahwa akun login Anda saat ini belum dikaitkan dengan biodata Pegawai atau Guru manapun di dalam <i>database</i> sekolah. Anda tidak dapat melihat jadwal mengajar.
+                            </p>
+                            <!-- Tombol Aksi / Saran -->
+                            <div class="inline-flex items-center gap-2 px-6 py-3 bg-gray-900 hover:bg-gray-800 transition-colors text-white text-sm font-semibold rounded-xl shadow-md cursor-default">
+                                <span>👨‍💻</span> Hubungi Wakilasek Kurikulum
+                            </div>
                         </div>
                     @elseif($jadwalPelajaran->isEmpty())
                         <div class="flex flex-col items-center justify-center py-16 px-4 bg-gradient-to-b from-slate-50 to-white rounded-2xl border-2 border-slate-100 border-dashed my-6 text-center shadow-sm">
