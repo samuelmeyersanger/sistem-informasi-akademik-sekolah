@@ -66,11 +66,15 @@
                             <p class="text-xs text-gray-500">Gunakan bilah pencarian dan filter di bawah untuk memilah status operasional akademik siswa.</p>
                         </div>
                         
+                        <!-- 👇 BUKA GEMBOK 1: Tombol Tambah Siswa -->
+                        @if(auth()->user()->hasPermission('kesiswaan.siswa.store'))
                         <button @click="openCreate = true" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg shadow-sm transition-all flex items-center justify-center gap-1 cursor-pointer whitespace-nowrap">
                             ➕ Tambah Siswa Baru
                         </button>
+                        @endif
+                        
                     </div>
-
+                    <!-- FORM PENCARIAN & FILTER TETAP MUNCUL UNTUK SEMUA ORANG -->
                     <form action="{{ route('kesiswaan.siswa') }}" method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-3 pt-2">
                         <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari Nama, NISN, NIPD, NIK..." class="text-xs rounded-lg border-gray-200 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm w-full bg-white">
                         
@@ -80,7 +84,6 @@
                             <option value="8" {{ request('tingkat') == '8' ? 'selected' : '' }}>Tingkat 8</option>
                             <option value="9" {{ request('tingkat') == '9' ? 'selected' : '' }}>Tingkat 9</option>
                         </select>
-
                         <select name="status" class="text-xs rounded-lg border-gray-200 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm text-gray-600 bg-white">
                             <option value="">-- Semua Status --</option>
                             <option value="Aktif" {{ request('status') == 'Aktif' ? 'selected' : '' }}>🟢 Aktif</option>
@@ -88,15 +91,14 @@
                             <option value="Mutasi" {{ request('status') == 'Mutasi' ? 'selected' : '' }}>🟡 Mutasi Masuk/Keluar</option>
                             <option value="Keluar" {{ request('status') == 'Keluar' ? 'selected' : '' }}>🔴 Keluar / DO</option>
                         </select>
-
                         <div class="flex gap-2">
                             <button type="submit" class="w-full bg-gray-800 hover:bg-gray-700 text-white text-xs font-medium rounded-lg transition-colors cursor-pointer">Filter</button>
                             <a href="{{ route('kesiswaan.siswa') }}" class="w-1/2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-medium rounded-lg flex items-center justify-center transition-colors">Reset</a>
                         </div>
                     </form>
-
+                    <!-- 👇 BUKA GEMBOK 2: Seluruh Fitur Import dan Generate Akun -->
+                    @if(auth()->user()->hasPermission('kesiswaan.siswa.store'))
                     <div class="border-t border-gray-200/60 my-2"></div>
-
                     <div class="bg-gradient-to-br from-white to-slate-50/50 p-4 border border-gray-200/80 rounded-2xl shadow-sm flex flex-col md:flex-row md:items-center gap-4 transition-all hover:shadow-md">
                         <div class="flex items-start gap-3 md:max-w-[240px]">
                             <div class="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center text-lg shadow-inner flex-shrink-0 border border-emerald-100">
@@ -132,13 +134,14 @@
                             </button>
                         </form>
                     </div>
-
                     <div class="mb-4 flex justify-start">
                         <button type="button" @click="openGenerateMassal = true" class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg shadow-sm transition-colors cursor-pointer">
                             <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                             Generate Akun Massal
                         </button>
                     </div>
+                    @endif
+                    <!-- 👆 TUTUP GEMBOK 2 -->
                 </div>
 
                 <div class="overflow-x-auto">
