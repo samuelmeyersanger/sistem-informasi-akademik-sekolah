@@ -26,23 +26,34 @@ class AbsensiKelasExport implements FromView, WithColumnWidths, WithStyles
             'B' => 14,  // NISN
             'C' => 32,  // Nama
             'D' => 5,   // L/P
-            // 20 Kolom untuk Tanggal
             'E' => 4, 'F' => 4, 'G' => 4, 'H' => 4, 'I' => 4,
             'J' => 4, 'K' => 4, 'L' => 4, 'M' => 4, 'N' => 4,
             'O' => 4, 'P' => 4, 'Q' => 4, 'R' => 4, 'S' => 4,
             'T' => 4, 'U' => 4, 'V' => 4, 'W' => 4, 'X' => 4,
-            // Kolom S, I, A
             'Y' => 4, 'Z' => 4, 'AA' => 4,
         ];
     }
     public function styles(Worksheet $sheet)
     {
-        // 1. Ratakan semua teks ke tengah secara Vertikal
+        // Ratakan ke tengah secara vertikal & Aktifkan Wrap Text (Turun ke bawah jika kepanjangan)
         $sheet->getStyle('A1:AA100')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
-        // Hitung baris terakhir data (Data mulai dari baris ke-7)
+        $sheet->getStyle('A1:AA100')->getAlignment()->setWrapText(true);
         $jumlahSiswa = count($this->data['anggota']);
         $barisTerakhir = $jumlahSiswa > 0 ? 6 + $jumlahSiswa : 7;
-        // --- PENGATURAN BORDER (GARIS TEPI) ---
+        // --- ATUR TINGGI BARIS AGAR PROPOSIONAL SEPERTI KERTAS ABSEN ---
+        // Baris Kop Header
+        $sheet->getRowDimension(1)->setRowHeight(15);
+        $sheet->getRowDimension(2)->setRowHeight(15);
+        $sheet->getRowDimension(3)->setRowHeight(15);
+        
+        // Baris Header Tabel
+        $sheet->getRowDimension(5)->setRowHeight(20);
+        $sheet->getRowDimension(6)->setRowHeight(20);
+        // Baris Data Siswa (Dibuat tinggi 22 agar lega)
+        for ($i = 7; $i <= $barisTerakhir; $i++) {
+            $sheet->getRowDimension($i)->setRowHeight(22);
+        }
+        // --- BORDERS & COLORS ---
         $styleBorder = [
             'borders' => [
                 'allBorders' => [
@@ -51,30 +62,21 @@ class AbsensiKelasExport implements FromView, WithColumnWidths, WithStyles
                 ],
             ],
         ];
-        // Terapkan Border ke Tabel Utama (Mulai Baris 5 sampai baris terakhir)
+        // Border Tabel Data
         $sheet->getStyle('A5:AA' . $barisTerakhir)->applyFromArray($styleBorder);
-        // --- PENGATURAN WARNA KUNING & BORDER UNTUK KOP ATAS ---
-        // Kolom Nama Wali Kelas
-        $sheet->getStyle('A2:F2')->applyFromArray($styleBorder);
-        $sheet->getStyle('A2:F2')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFF2CC');
-        $sheet->getStyle('A2:F2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-        // Kolom Nama Kelas
-        $sheet->getStyle('J2:N2')->applyFromArray($styleBorder);
-        $sheet->getStyle('J2:N2')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFF2CC');
-        $sheet->getStyle('J2:N2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-        // Kolom Tahun Ajaran
+        // Styling Kop Atas (Wali Kelas & Kelas & Tahun Ajaran)
+        $sheet->getStyle('A2:F3')->applyFromArray($styleBorder);
+        $sheet->getStyle('A2:F3')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFF2CC');
+        $sheet->getStyle('J1:N3')->applyFromArray($styleBorder);
+        $sheet->getStyle('J1:N3')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFF2CC');
         $sheet->getStyle('P3:AA3')->applyFromArray($styleBorder);
         $sheet->getStyle('P3:AA3')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFF2CC');
-        $sheet->getStyle('P3:AA3')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-        // --- PENGATURAN WARNA ABU-ABU UNTUK HEADER TABEL ---
+        // Styling Header Tabel (Abu-abu & Tebal)
         $sheet->getStyle('A5:AA6')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFF2F2F2');
         $sheet->getStyle('A5:AA6')->getFont()->setBold(true);
-        $sheet->getStyle('A5:AA6')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-        // --- PENYESUAIAN ALIGNMENT (RATA KIRI UNTUK NAMA) ---
+        // Rata Kiri untuk Nama Siswa
         if ($jumlahSiswa > 0) {
-            $sheet->getStyle('A7:B' . $barisTerakhir)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER); // No, NISN (Tengah)
-            $sheet->getStyle('C7:C' . $barisTerakhir)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);   // Nama (Kiri)
-            $sheet->getStyle('D7:AA' . $barisTerakhir)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER); // Sisanya (Tengah)
+            $sheet->getStyle('C7:C' . $barisTerakhir)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
         }
         return [];
     }

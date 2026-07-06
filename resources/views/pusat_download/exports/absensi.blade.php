@@ -13,32 +13,43 @@
         .text-bold { font-weight: bold; }
         .bg-gray { background-color: #f2f2f2; }
         .bg-yellow { background-color: #fff2cc; }
+        .valign-middle { vertical-align: middle; }
     </style>
 </head>
 <body>
     <table>
         <!-- ================= HEADER AREA ================= -->
+        <!-- Baris 1 -->
         <tr>
             <td colspan="6" class="text-center text-bold" style="font-size: 9px;">WALI KELAS</td>
-            <td colspan="9"></td>
+            <td colspan="3"></td>
+            <!-- Kotak Kelas (Misal: 8,1) dibuat membentang 3 baris ke bawah -->
+            <td colspan="5" rowspan="3" class="text-center text-bold bg-yellow valign-middle" style="font-size: 24px; border: 1px solid #000;">
+                {{ $kelas->nama_kelas }}
+            </td>
+            <td colspan="1"></td>
             <td colspan="12" class="text-center text-bold" style="font-size: 13px;">DAFTAR HADIR</td>
         </tr>
+        <!-- Baris 2 -->
         <tr>
-            <td colspan="6" class="text-center text-bold bg-yellow" style="border: 1px solid #000;">
+            <!-- Kotak Nama Wali dibuat membentang 2 baris ke bawah -->
+            <td colspan="6" rowspan="2" class="text-center text-bold bg-yellow valign-middle" style="border: 1px solid #000;">
                 {{ $kelas->waliKelas ? $kelas->waliKelas->nama_lengkap : 'Belum Ada Wali Kelas' }}
             </td>
             <td colspan="3"></td>
-            <td colspan="5" class="text-center text-bold bg-yellow" style="font-size: 20px; border: 1px solid #000;">
-                {{ $kelas->nama_kelas }}
-            </td>
+            <!-- Kolom J sampai N sudah diisi rowspan dari Baris 1 -->
             <td colspan="1"></td>
             <td colspan="12" class="text-center text-bold" style="font-size: 13px;">
                 {{ $nama_sekolah }}
             </td>
         </tr>
+        <!-- Baris 3 -->
         <tr>
-            <td colspan="15"></td>
-            <td colspan="12" class="text-center text-bold bg-yellow" style="border: 1px solid #000;">
+            <!-- Kolom A sampai F sudah diisi rowspan dari Baris 2 -->
+            <td colspan="3"></td>
+            <!-- Kolom J sampai N sudah diisi rowspan dari Baris 1 -->
+            <td colspan="1"></td>
+            <td colspan="12" class="text-center text-bold bg-yellow" style="border: 1px solid #000; padding: 2px;">
                 TAHUN AJARAN {{ $tahun_ajaran }}
             </td>
         </tr>
