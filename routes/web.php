@@ -530,6 +530,10 @@ Route::middleware(['auth', CheckApproval::class])->group(function () {
 
         Route::get('/keluar/{id}/cetak', [SuratKeluarController::class, 'cetakPdf'])->name('keluar.cetak');
     });
+        Route::prefix('pusat-download')->name('pusat_download.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\PusatDownloadController::class, 'index'])->name('index');
+        Route::post('/absensi', [\App\Http\Controllers\PusatDownloadController::class, 'downloadAbsensi'])->name('absensi');
+    });
 });
 
 // 5. Rute Autentikasi Bawaan Laravel (Login, Register, Logout, dll)
