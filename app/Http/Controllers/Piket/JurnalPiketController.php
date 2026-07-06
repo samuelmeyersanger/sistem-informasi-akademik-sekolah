@@ -77,7 +77,7 @@ class JurnalPiketController extends Controller
         
         // 👇 TAMBAHKAN BARIS INI SEMENTARA UNTUK MELACAK ERROR
         $namaHari = Carbon::parse($tanggal)->translatedFormat('l');
-        $petugas = \App\Models\PetugasPiket::where('hari', $namaHari)->first();
+        $petugasHariIni = \App\Models\PetugasPiket::where('hari', $namaHari)->first();
         //dd('HARI INI TERBACA: ' . $namaHari, 'DATA PETUGAS: ', $petugas);
         
         // 👇 PENGAMAN (Security Check)
