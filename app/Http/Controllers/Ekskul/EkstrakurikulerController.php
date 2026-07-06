@@ -10,7 +10,7 @@ use App\Models\Pegawai;
 use App\Models\Siswa;
 use App\Models\Kelas;
 use Illuminate\Http\Request;
-use Illuminate\Support5\Facades\Storage;
+use Illuminate\Support\Facades\Storage;
 
 class EkstrakurikulerController extends Controller
 {
@@ -19,20 +19,20 @@ class EkstrakurikulerController extends Controller
      */
     public function index()
     {
-        $ekskul = Ekstrakurikuler::with('pembina')->withCount('anggota')->get();
+        // 👇 PENGAMAN: Hanya munculkan ekskul binaannya
+        $ekskul = Ekstrakurikuler::aksesPembina(auth()->user())->with('pembina')->withCount('anggota')->get();
         
-        // Tambahkan ini agar dropdown Pembina di Modal muncul
         $pembina = Pegawai::all(); 
 
         return view('ekskul.index', compact('ekskul', 'pembina'));
     }
 
     /**
-     * 2. FORM TAMBAH EKSKUL
+     * 2. FORM TAMBAH EKSKUL (Biarkan, biasanya hanya admin yang bisa akses ini lewat menu/blade)
      */
     public function create()
     {
-        $pembina = Pegawai::all(); // Untuk dropdown pilihan pembina ekskul
+        $pembina = Pegawai::all(); 
         return view('ekskul.create', compact('pembina'));
     }
 
@@ -53,7 +53,6 @@ class EkstrakurikulerController extends Controller
 
         $data = $request->all();
 
-        // Handle upload logo
         if ($request->hasFile('logo')) {
             $data['logo'] = $request->file('logo')->store('ekskul/logo', 'public');
         }
@@ -68,10 +67,11 @@ class EkstrakurikulerController extends Controller
      */
     public function show($id)
     {
-        // Mengambil data ekskul beserta seluruh relasinya
-        $ekskul = Ekstrakurikuler::with(['pembina', 'anggota.siswa', 'anggota.kelas', 'prestasi'])->findOrFail($id);
+        // 👇 PENGAMAN: Cegah intip ekskul lain
+        $ekskul = Ekstrakurikuler::aksesPembina(auth()->user())
+                    ->with(['pembina', 'anggota.siswa', 'anggota.kelas', 'prestasi'])
+                    ->findOrFail($id);
         
-        // Data master untuk modal/form tambah komponen di dalam halaman show
         $siswaBelumMendaftar = Siswa::whereDoesntHave('ekskulYangDiikuti', function($query) use ($id) {
             $query->where('ekstrakurikuler_id', $id);
         })->get();
@@ -86,7 +86,8 @@ class EkstrakurikulerController extends Controller
      */
     public function edit($id)
     {
-        $ekskul = Ekstrakurikuler::findOrFail($id);
+        // 👇 PENGAMAN
+        $ekskul = Ekstrakurikuler::aksesPembina(auth()->user())->findOrFail($id);
         $pembina = Pegawai::all();
         return view('ekskul.edit', compact('ekskul', 'pembina'));
     }
@@ -96,7 +97,8 @@ class EkstrakurikulerController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $ekskul = Ekstrakurikuler::findOrFail($id);
+        // 👇 PENGAMAN
+        $ekskul = Ekstrakurikuler::aksesPembina(auth()->user())->findOrFail($id);
 
         $request->validate([
             'nama' => 'required|string|max:255',
@@ -112,7 +114,6 @@ class EkstrakurikulerController extends Controller
         $data = $request->all();
 
         if ($request->hasFile('logo')) {
-            // Hapus logo lama jika ada
             if ($ekskul->logo) {
                 Storage::disk('public')->delete($ekskul->logo);
             }
@@ -129,7 +130,8 @@ class EkstrakurikulerController extends Controller
      */
     public function destroy($id)
     {
-        $ekskul = Ekstrakurikuler::findOrFail($id);
+        // 👇 PENGAMAN
+        $ekskul = Ekstrakurikuler::aksesPembina(auth()->user())->findOrFail($id);
         $ekskul->delete();
 
         return redirect()->route('ekstrakurikuler.index')->with('success', 'Ekstrakurikuler berhasil dinonaktifkan (Soft Delete).');
@@ -137,10 +139,12 @@ class EkstrakurikulerController extends Controller
 
     /**
      * 🟢 SUB-FITUR: PENGELOLAAN ANGGOTA (DARI HALAMAN SHOW)
-     * ========================================================================= */
-
+     */
     public function storeAnggota(Request $request, $ekskulId)
     {
+        // 👇 PENGAMAN: Pastikan dia pemilik ekskul ini
+        Ekstrakurikuler::aksesPembina(auth()->user())->findOrFail($ekskulId);
+
         $request->validate([
             'siswa_id' => 'required|exists:siswa,id',
             'kelas_id' => 'required|exists:kelas,id',
@@ -149,7 +153,6 @@ class EkstrakurikulerController extends Controller
             'tanggal_bergabung' => 'required|date',
         ]);
 
-        // Cek double input karena ada rule Unique di database
         $terdaftar = AnggotaEkstrakurikuler::where('ekstrakurikuler_id', $ekskulId)
                                             ->where('siswa_id', $request->siswa_id)
                                             ->exists();
@@ -172,18 +175,23 @@ class EkstrakurikulerController extends Controller
 
     public function destroyAnggota($ekskulId, $anggotaId)
     {
+        // 👇 PENGAMAN: Pastikan dia pemilik ekskul ini
+        Ekstrakurikuler::aksesPembina(auth()->user())->findOrFail($ekskulId);
+
         $anggota = AnggotaEkstrakurikuler::where('ekstrakurikuler_id', $ekskulId)->findOrFail($anggotaId);
         $anggota->delete();
 
         return redirect()->route('ekstrakurikuler.show', $ekskulId)->with('success', 'Anggota berhasil dikeluarkan dari ekskul.');
     }
 
-    /* =========================================================================
+    /**
      * 🟢 SUB-FITUR: PENGELOLAAN PRESTASI (DARI HALAMAN SHOW)
-     * ========================================================================= */
-
+     */
     public function storePrestasi(Request $request, $ekskulId)
     {
+        // 👇 PENGAMAN: Pastikan dia pemilik ekskul ini
+        Ekstrakurikuler::aksesPembina(auth()->user())->findOrFail($ekskulId);
+
         $request->validate([
             'nama_prestasi' => 'required|string|max:255',
             'tingkat' => 'required|string',
@@ -197,12 +205,10 @@ class EkstrakurikulerController extends Controller
         $data = $request->all();
         $data['ekstrakurikuler_id'] = $ekskulId;
 
-        // Handle upload file sertifikat
         if ($request->hasFile('file_sertifikat')) {
             $data['file_sertifikat'] = $request->file('file_sertifikat')->store('ekskul/sertifikat', 'public');
         }
 
-        // Handle upload file dokumentasi juara
         if ($request->hasFile('file_dokumentasi')) {
             $data['file_dokumentasi'] = $request->file('file_dokumentasi')->store('ekskul/dokumentasi', 'public');
         }
@@ -214,9 +220,11 @@ class EkstrakurikulerController extends Controller
 
     public function destroyPrestasi($ekskulId, $prestasiId)
     {
+        // 👇 PENGAMAN: Pastikan dia pemilik ekskul ini
+        Ekstrakurikuler::aksesPembina(auth()->user())->findOrFail($ekskulId);
+
         $prestasi = PrestasiEkstrakurikuler::where('ekstrakurikuler_id', $ekskulId)->findOrFail($prestasiId);
         
-        // Hapus berkas fisik dari storage jika ada sebelum record di soft delete
         if($prestasi->file_sertifikat) Storage::disk('public')->delete($prestasi->file_sertifikat);
         if($prestasi->file_dokumentasi) Storage::disk('public')->delete($prestasi->file_dokumentasi);
 

@@ -61,4 +61,25 @@ class Ekstrakurikuler extends Model
     {
         return $this->hasMany(PrestasiEkstrakurikuler::class, 'ekstrakurikuler_id');
     }
+
+        /**
+     * ========================================================================
+     * SCOPE PENGAMAN AKSES PEMBINA EKSKUL
+     * ========================================================================
+     */
+    public function scopeAksesPembina($query, $user)
+    {
+        // 1. Jika punya izin super admin, bisa lihat semua ekskul
+        if ($user->hasPermission('akses-semua-ekskul')) {
+            return $query;
+        }
+        // 2. Cek apakah user ini adalah pegawai
+        $pegawai = \App\Models\Pegawai::where('user_id', $user->id)->first();
+        if (!$pegawai) {
+            // Jika bukan pegawai (atau tidak terhubung), sembunyikan semua data
+            return $query->where('id', '<', 0);
+        }
+        // 3. Kunci data hanya untuk ekskul di mana dia menjadi pembinanya
+        return $query->where('pembina_id', $pegawai->id);
+    }
 }
