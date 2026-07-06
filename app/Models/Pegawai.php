@@ -72,4 +72,20 @@ class Pegawai extends Model
     {
         return $this->hasMany(Ekstrakurikuler::class, 'pembina_id');
     }
+
+        /**
+     * ========================================================================
+     * SCOPE PENGAMAN DATA PEGAWAI (PROFIL PRIBADI)
+     * ========================================================================
+     */
+    public function scopeAksesPribadi($query, $user)
+    {
+        // 1. Jika punya hak istimewa (Admin / HRD / Kepala Sekolah)
+        // (Pastikan membuat permission ini nanti!)
+        if ($user->hasPermission('akses-semua-pegawai')) {
+            return $query;
+        }
+        // 2. Jika bukan admin, KUNCI data agar hanya menunjuk ke dirinya sendiri!
+        return $query->where('user_id', $user->id);
+    }
 }

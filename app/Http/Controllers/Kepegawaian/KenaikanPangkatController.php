@@ -23,13 +23,15 @@ class KenaikanPangkatController extends Controller
             'pangkat_golongan_baru' => 'required|string|max:255',
         ]);
 
+        // 👇 PENGAMAN: Pastikan dia berhak memodifikasi pegawai ini
+        $pegawai = Pegawai::aksesPribadi(auth()->user())->findOrFail($request->pegawai_id);
+
         // Gunakan Database Transaction agar jika salah satu gagal, semua dibatalkan
-        DB::transaction(function () use ($request) {
+        DB::transaction(function () use ($request, $pegawai) {
             // 1. Simpan ke riwayat kenaikan pangkat
             KenaikanPangkat::create($request->all());
 
             // 2. Otomatis update kolom pangkat_golongan di tabel pegawai
-            $pegawai = Pegawai::findOrFail($request->pegawai_id);
             $pegawai->update([
                 'pangkat_golongan' => $request->pangkat_golongan_baru
             ]);
@@ -47,7 +49,10 @@ class KenaikanPangkatController extends Controller
         $pangkatYangDihapus = KenaikanPangkat::findOrFail($id);
         $pegawaiId = $pangkatYangDihapus->pegawai_id;
 
-        DB::transaction(function () use ($pangkatYangDihapus, $pegawaiId) {
+        // 👇 PENGAMAN: Pastikan dia berhak menghapus data dari pegawai ini
+        $pegawai = Pegawai::aksesPribadi(auth()->user())->findOrFail($pegawaiId);
+
+        DB::transaction(function () use ($pangkatYangDihapus, $pegawaiId, $pegawai) {
             // 1. Hapus riwayat pangkat terpilih
             $pangkatYangDihapus->delete();
 
@@ -55,8 +60,6 @@ class KenaikanPangkatController extends Controller
             $pangkatTerakhirSisa = KenaikanPangkat::where('pegawai_id', $pegawaiId)
                                     ->latest('tanggal_sk_kp')
                                     ->first();
-
-            $pegawai = Pegawai::findOrFail($pegawaiId);
 
             if ($pangkatTerakhirSisa) {
                 // Jika masih ada riwayat pangkat sebelumnya, kembalikan ke pangkat itu
