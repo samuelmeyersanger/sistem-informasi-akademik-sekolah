@@ -12,15 +12,24 @@ class MenuController extends Controller
     /**
      * Menampilkan semua daftar menu di satu halaman (Single-Page CRUD)
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Ambil semua data menu, kelompokkan berdasarkan kategori, lalu urutkan sesuai urutannya
-        $menus = Menu::orderBy('kategori', 'asc')->orderBy('urutan', 'asc')->get();
+        // 1. Tangkap kata kunci pencarian dari kotak input
+        $search = $request->input('search');
+        // 2. Siapkan query dasar
+        $query = Menu::query();
+        // 3. Jika pengguna mengetik sesuatu, aktifkan radar pencarian
+        if ($search) {
+            $query->where('nama_menu', 'like', "%{$search}%")
+                  ->orWhere('kategori', 'like', "%{$search}%");
+        }
+        // 4. Ambil data akhir (sudah difilter jika ada pencarian), lalu urutkan
+        $menus = $query->orderBy('kategori', 'asc')->orderBy('urutan', 'asc')->get();
         
-        // Ambil daftar permission untuk opsi dropdown di dalam modal pop-up tambah/edit
+        // 5. Ambil daftar permission untuk modal popup
         $permissions = Permission::orderBy('name', 'asc')->get();
-
-        return view('master.menu.index', compact('menus', 'permissions'));
+        // 6. Lempar kembali variabel $search ke view agar tulisan yang diketik tidak hilang setelah di-enter
+        return view('master.menu.index', compact('menus', 'permissions', 'search'));
     }
 
     /**
