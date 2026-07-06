@@ -8,6 +8,7 @@ use App\Models\Blog;
 use App\Models\Page;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Publik\BlogController;
 use App\Http\Controllers\Publik\PageController;
 use App\Http\Controllers\Publik\KontakPublikController;
@@ -87,9 +88,9 @@ Route::post('/contact', [KontakPublikController::class, 'store'])->name('publik.
 */
 
 // 3. Halaman Dashboard Utama
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified', CheckApproval::class])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
 
 // 4. Grup Kelompok Back-Office Admin (SIAS)
 Route::middleware(['auth', CheckApproval::class])->group(function () {
