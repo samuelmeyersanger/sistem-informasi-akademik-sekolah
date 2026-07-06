@@ -24,22 +24,22 @@
 
             <div class="bg-gradient-to-r from-slate-900 to-indigo-950 p-6 rounded-2xl text-white shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <span class="text-[10px] bg-indigo-500/30 text-black border border-indigo-400/30 px-2.5 py-1 rounded-full font-bold uppercase tracking-wider">Jurnal Piket Harian</span>
-                    <h3 class="text-black font-bold mt-2">Personel Piket Hari {{ $namaHari }}</h3>
-                    <p class="text-black mt-0.5">Sistem otomatis mencocokkan jadwal penugasan harian.</p>
+                    <span class="text-[10px] bg-indigo-500/30 text-white border border-indigo-400/30 px-2.5 py-1 rounded-full font-bold uppercase tracking-wider">Jurnal Piket Harian</span>
+                    <h3 class="text-white font-bold mt-2">Personel Piket Hari {{ $namaHari }}</h3>
+                    <p class="text-white mt-0.5">Sistem otomatis mencocokkan jadwal penugasan harian.</p>
                 </div>
                 <div class="flex flex-wrap gap-4 text-xs">
                     <div class="bg-white/10 px-4 py-2 rounded-xl backdrop-blur-sm border border-white/5">
-                        <p class="text-black text-[10px] uppercase">Ketua / Penanggung Jawab</p>
+                        <p class="text-white text-[10px] uppercase">Ketua / Penanggung Jawab</p>
                         <p class="font-semibold text-emerald-400 mt-0.5">{{ $petugasHariIni?->penanggungJawab?->nama_lengkap ?? '⚠️ Belum diploting' }}</p>
                     </div>
                     <div class="bg-white/10 px-4 py-2 rounded-xl backdrop-blur-sm border border-white/5">
-                        <p class="text-black text-[10px] uppercase">Anggota Tim Bertugas</p>
+                        <p class="text-white text-[10px] uppercase">Anggota Tim Bertugas</p>
                         <div class="flex gap-1 mt-0.5 font-medium">
                             @if($petugasHariIni && count($petugasHariIni->objek_anggota_piket) > 0)
                                 {{ implode(', ', $petugasHariIni->objek_anggota_piket->pluck('nama_lengkap')->toArray()) }}
                             @else
-                                <span class="text-black">Tidak ada anggota</span>
+                                <span class="text-white">Tidak ada anggota</span>
                             @endif
                         </div>
                     </div>
