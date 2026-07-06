@@ -530,9 +530,19 @@ Route::middleware(['auth', CheckApproval::class])->group(function () {
 
         Route::get('/keluar/{id}/cetak', [SuratKeluarController::class, 'cetakPdf'])->name('keluar.cetak');
     });
+
+    /*
+    |--------------------------------------------------------------------------
+    | Modul Manajemen pusat download (SIAS Back-Office)
+    |--------------------------------------------------------------------------
+    | 🔐 Dikunci menggunakan middleware 'permission' secara tersinkronisasi.
+    | Prefix 'bk.' akan melekat otomatis pada setiap komponen rute di dalam grup.
+    |
+    */
         Route::prefix('pusat-download')->name('pusat_download.')->group(function () {
         Route::get('/', [\App\Http\Controllers\PusatDownloadController::class, 'index'])->name('index');
         Route::post('/absensi', [\App\Http\Controllers\PusatDownloadController::class, 'downloadAbsensi'])->name('absensi');
+        Route::post('/jadwal', [\App\Http\Controllers\PusatDownloadController::class, 'downloadJadwal'])->name('jadwal');
     });
 });
 
