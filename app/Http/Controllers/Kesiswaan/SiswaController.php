@@ -31,6 +31,7 @@ class SiswaController extends Controller
         $filter_status = $request->input('status');
 
         // Eager load kelas, semester, dan wali untuk mencegah N+1 Query Problem
+        // DITAMBAH PENGAMAN AKSES WALI: ->aksesSesuaiWali(auth()->user())
         $query = Siswa::with([
             'kelas', 
             'semester', 
@@ -39,7 +40,8 @@ class SiswaController extends Controller
             'kota_relasi', 
             'kecamatan_relasi', 
             'kelurahan_relasi'
-        ])->orderBy('nama_lengkap', 'asc');
+        ])->aksesSesuaiWali(auth()->user())
+          ->orderBy('nama_lengkap', 'asc');
 
         // Pencarian multi-kolom
         if ($search) {
@@ -200,6 +202,7 @@ class SiswaController extends Controller
     public function show($id)
     {
         // Memuat seluruh relasi riwayat dan dokumen pendukung siswa terkait
+        // DITAMBAH PENGAMAN AKSES WALI
         $siswa = Siswa::with([
             'kelas', 
             'semester.tahunAjaran', 
@@ -208,7 +211,7 @@ class SiswaController extends Controller
             'riwayatKelas.kelas', 
             'riwayatKelas.semester.tahunAjaran', 
             'riwayatStatus.semester.tahunAjaran'
-        ])->findOrFail($id);
+        ])->aksesSesuaiWali(auth()->user())->findOrFail($id);
 
         // Digunakan jika admin ingin mengubah status operasional siswa dari halaman profile
         $semester_aktif = Semester::where('is_aktif', true)->first();
@@ -353,21 +356,18 @@ class SiswaController extends Controller
      */
     public function edit($id)
     {
-        // Ambil SATU data siswa murni berdasarkan ID beserta relasi walinya
-        $siswa = Siswa::with('wali')->findOrFail($id);
-
-        // Kirim data siswa ke file view edit Anda
-        // Sesuaikan 'kesiswaan.siswa.edit' dengan folder letak file blade edit Anda
+        // DITAMBAH PENGAMAN AKSES WALI
+        $siswa = Siswa::with('wali')->aksesSesuaiWali(auth()->user())->findOrFail($id);
+        
         return view('kesiswaan.siswa.edit', compact('siswa'));
     }
-
     /**
      * 5. Mengubah Status Siswa Secara Individual (Mutasi/Keluar/Lulus) + Isi Metadata
      */
     public function updateStatus(Request $request, $id)
     {
-        $siswa = Siswa::findOrFail($id);
-
+        // 👇 INI YANG DITAMBAH (PENGAMAN AKSES WALI)
+        $siswa = Siswa::aksesSesuaiWali(auth()->user())->findOrFail($id);
         $request->validate([
             'status_siswa' => 'required|in:Aktif,Lulus,Keluar,Mutasi',
             'semester_id' => 'required|exists:semester,id',
@@ -375,12 +375,10 @@ class SiswaController extends Controller
             'sekolah_tujuan' => 'nullable|string', // Khusus jika status Mutasi
             'no_ijazah' => 'nullable|string',      // Khusus jika status Lulus
         ]);
-
         DB::beginTransaction();
         try {
             // 1. Update status di tabel utama siswa
             $siswa->update(['status_siswa' => $request->status_siswa]);
-
             // 2. Satukan data pendukung dinamis ke dalam array metadata
             $metadata = [
                 'alasan' => $request->alasan ?? 'Tidak ada keterangan tambahan.',
@@ -388,7 +386,6 @@ class SiswaController extends Controller
                 'no_ijazah' => $request->no_ijazah,
                 'tanggal_eksekusi' => now()->format('Y-m-d H:i:s')
             ];
-
             // 3. Masukkan ke log Riwayat Status Siswa
             RiwayatStatusSiswa::create([
                 'siswa_id' => $siswa->id,
@@ -396,27 +393,24 @@ class SiswaController extends Controller
                 'status' => $request->status_siswa,
                 'metadata' => $metadata
             ]);
-
             DB::commit();
             return redirect()->route('kesiswaan.siswa.show', $siswa->id)->with('success', 'Status operasional akademik siswa berhasil diperbarui.');
-
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()->withErrors(['error' => 'Gagal mengubah status: ' . $e->getMessage()]);
         }
     }
-
     /**
      * 6. Menghapus Data Siswa (Soft Delete)
      */
     public function destroy($id)
     {
-        $siswa = Siswa::findOrFail($id);
+        // 👇 INI JUGA YANG DITAMBAH (PENGAMAN AKSES WALI)
+        $siswa = Siswa::aksesSesuaiWali(auth()->user())->findOrFail($id);
         
         // Putus hubungan pivot wali_siswa sebelum di-delete
         $siswa->wali()->detach();
         $siswa->delete();
-
         return redirect()->route('kesiswaan.siswa')->with('success', 'Data rekam jejak siswa berhasil dipindahkan ke soft-deletes.');
     }
 

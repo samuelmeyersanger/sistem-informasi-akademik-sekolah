@@ -182,4 +182,31 @@ class Siswa extends Model
         if (!$this->relationLoaded('wali')) return null;
         return $this->wali->first(fn($w) => $w->pivot->hubungan === 'Wali');
     }
+        /**
+     * ========================================================================
+     * SCOPE PENGAMAN (POLICY DATA)
+     * ========================================================================
+     * Mengunci akses data siswa berdasarkan jabatan Wali Kelas.
+     */
+    public function scopeAksesSesuaiWali($query, $user)
+    {
+        // 1. Jika User punya izin super (Admin), berikan akses ke SEMUA data
+        if ($user->hasPermission('akses-semua-siswa')) {
+            return $query; 
+        }
+        // 2. Jika bukan Admin, cek apakah User ini terdaftar sebagai Pegawai
+        $pegawai = \App\Models\Pegawai::where('user_id', $user->id)->first();
+        if ($pegawai) {
+            // 3. Cek di tabel Kelas, apakah Pegawai ini menjabat sebagai Wali Kelas
+            // (Pluck digunakan karena siapa tahu 1 guru memegang 2 kelas)
+            $kelasIds = \App\Models\Kelas::where('wali_kelas_id', $pegawai->id)->pluck('id');
+            if ($kelasIds->isNotEmpty()) {
+                // 4. Jika menjabat, FILTER siswa HANYA untuk kelas yang dipegangnya
+                return $query->whereIn('kelas_id', $kelasIds);
+            }
+        }
+        // 5. Jika bukan Admin DAN bukan Wali Kelas (misal guru biasa tanpa kelas), kosongkan data!
+        // Sengaja dibuat where 'id' = 0 agar query tidak error tapi hasilnya aman (kosong).
+        return $query->where('id', 0);
+    }
 }
