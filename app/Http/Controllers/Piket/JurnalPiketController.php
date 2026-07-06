@@ -60,7 +60,10 @@ class JurnalPiketController extends Controller
 
         // 5. Tendang jika dia mencoba masuk di luar jadwal piketnya
         if (!$isPenanggungJawab && !$isAnggota) {
-            abort(403, "Akses Ditolak: Anda tidak terdaftar sebagai tim petugas piket pada hari {$namaHari}. Halaman terkunci.");
+            
+            // UBAH BARIS ABORT MENJADI DD SEMENTARA:
+            dd('SISTEM BEKERJA! SAYA DITOLAK OLEH CONTROLLER KARENA BUKAN JADWAL PIKET SAYA!');
+            
         }
     }
 
