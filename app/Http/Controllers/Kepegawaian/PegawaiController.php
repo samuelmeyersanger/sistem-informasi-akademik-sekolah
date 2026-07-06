@@ -25,7 +25,7 @@ class PegawaiController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Pegawai::latest();
+        $query = Pegawai::aksesPribadi(auth()->user())->latest();
 
         // Fitur Pencarian berdasarkan nama, NIP, atau NUPTK seirama dengan View
         if ($request->has('search') && $request->search != '') {
@@ -75,7 +75,7 @@ class PegawaiController extends Controller
      */
     public function show($id)
     {
-        $pegawai = Pegawai::with(['dokumen', 'kgb', 'kenaikanPangkat'])->findOrFail($id);
+        $pegawai = Pegawai::aksesPribadi(auth()->user())->findOrFail($id);
         
         return view('kepegawaian.pegawai.show', compact('pegawai'));
     }
@@ -85,7 +85,7 @@ class PegawaiController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $pegawai = Pegawai::findOrFail($id);
+        $pegawai = Pegawai::aksesPribadi(auth()->user())->findOrFail($id);
 
         $request->validate([
             'nama_lengkap'   => 'required|string|max:255',
@@ -110,7 +110,7 @@ class PegawaiController extends Controller
      */
     public function destroy($id)
     {
-        $pegawai = Pegawai::findOrFail($id);
+        $pegawai = Pegawai::aksesPribadi(auth()->user())->findOrFail($id);
         $pegawai->delete();
 
         return redirect()->route('kepegawaian.pegawai.index')->with('success', 'Data pegawai berhasil diarsipkan ke dalam sistem.');
@@ -155,7 +155,7 @@ class PegawaiController extends Controller
      */
     public function mutasi(Request $request, $id)
     {
-        $pegawai = Pegawai::findOrFail($id);
+        $pegawai = Pegawai::aksesPribadi(auth()->user())->findOrFail($id);
 
         $request->validate([
             'tanggal_mutasi'    => 'required|date',
@@ -185,7 +185,7 @@ class PegawaiController extends Controller
      */
     public function pensiun(Request $request, $id)
     {
-        $pegawai = Pegawai::findOrFail($id);
+        $pegawai = Pegawai::aksesPribadi(auth()->user())->findOrFail($id);
 
         $request->validate([
             'tanggal_pensiun'    => 'required|date',
@@ -211,7 +211,7 @@ class PegawaiController extends Controller
      */
     public function generateAkunIndividu($id)
     {
-        $pegawai = Pegawai::findOrFail($id);
+        $pegawai = Pegawai::aksesPribadi(auth()->user())->findOrFail($id);
 
         if ($pegawai->user_id) {
             return redirect()->back()->with('error', 'Pegawai ini sudah memiliki akun.');
