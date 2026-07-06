@@ -21,7 +21,7 @@
                     <h1 class="text-7xl font-black text-red-600 tracking-tight mb-2">403</h1>
                     <h3 class="text-2xl font-bold text-gray-900 mb-3 tracking-wide">Izin Akses Diperlukan</h3>
                     <p class="text-gray-500 mb-8 max-w-md mx-auto leading-relaxed text-sm sm:text-base">
-                        Maaf, akun Anda tidak memiliki previlese yang cukup untuk membuka halaman ini. Silakan hubungi tim IT Sekolah jika ini merupakan kesalahan sistem.
+                        {{ $exception->getMessage() ?: 'Maaf, akun Anda tidak memiliki previlese yang cukup untuk membuka halaman ini. Silakan hubungi tim IT Sekolah jika ini merupakan kesalahan sistem.' }}
                     </p>
 
                     {{-- Tombol dengan Efek Ring & Hover Modern --}}
