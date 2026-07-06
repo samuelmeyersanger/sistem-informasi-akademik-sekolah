@@ -41,7 +41,7 @@
                     <div class="w-14 h-14 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center text-2xl font-bold">⏱️</div>
                     <div>
                         <p class="text-sm font-semibold text-gray-500 uppercase">Jam Mengajar</p>
-                        <h4 class="text-2xl font-bold text-gray-800">24 <span class="text-sm font-normal text-gray-400">Jam/Mgg</span></h4>
+                        <h4 class="text-2xl font-bold text-gray-800">{{ $data['totalJam'] }} <span class="text-sm font-normal text-gray-400">Jam/Mgg</span></h4>
                     </div>
                 </div>
 
