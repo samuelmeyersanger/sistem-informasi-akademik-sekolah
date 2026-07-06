@@ -124,7 +124,7 @@
                                         <span>{{ $item->nama }}</span>
                                     </td>
                                     <td class="p-4 font-medium text-gray-600">
-                                        {{ $item->pembina->nama ?? 'Belum Ditentukan' }}
+                                        {{ $item->pembina->nama_lengkap ?? 'Belum Ditentukan' }}
                                     </td>
                                     <td class="p-4">
                                         <span class="font-semibold text-gray-800">{{ $item->hari_latihan }}</span>
@@ -192,7 +192,7 @@
                         <select name="pembina_id" class="w-full text-xs rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
                             <option value="">-- Pilih Pembina --</option>
                             @foreach($pembina as $p)
-                                <option value="{{ $p->id }}">{{ $p->nama }}</option>
+                                <option value="{{ $p->id }}">{{ $p->nama_lengkap }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -251,7 +251,7 @@
                         <select x-model="editPembinaId" name="pembina_id" class="w-full text-xs rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
                             <option value="">-- Pilih Pembina --</option>
                             @foreach($pembina as $p)
-                                <option value="{{ $p->id }}">{{ $p->nama }}</option>
+                                <option value="{{ $p->id }}">{{ $p->nama_lengkap }}</option>
                             @endforeach
                         </select>
                     </div>
