@@ -16,7 +16,7 @@ class PusatDownloadController extends Controller
         $daftarKelas = Kelas::orderBy('tingkat', 'asc')->orderBy('nama_kelas', 'asc')->get();
         $daftarEkskul = Ekstrakurikuler::orderBy('nama', 'asc')->get();
         $daftarKelasWali = \App\Models\KelasWali::orderBy('tingkat', 'asc')->orderBy('nama_kelas', 'asc')->get();
-        return view('pusat_download.index', compact('daftarKelas', 'daftarEkskul'));
+        return view('pusat_download.index', compact('daftarKelas', 'daftarEkskul', 'daftarKelasWali'));
     }
     // =========================================================================
     // FITUR 1: DOWNLOAD ABSENSI
