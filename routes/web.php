@@ -547,6 +547,7 @@ Route::middleware(['auth', CheckApproval::class])->group(function () {
         Route::post('/absensi', [\App\Http\Controllers\PusatDownloadController::class, 'downloadAbsensi'])->name('absensi');
         Route::post('/jadwal', [\App\Http\Controllers\PusatDownloadController::class, 'downloadJadwal'])->name('jadwal');
         Route::get('/cetak-absensi', [\App\Http\Controllers\PusatDownloadController::class, 'cetakAbsensiEkskul'])->name('cetak_absensi_ekskul');
+        Route::post('/kelas-wali', [PusatDownloadController::class, 'downloadDataKelasWali'])->name('data_kelas_wali');
     });
 });
 

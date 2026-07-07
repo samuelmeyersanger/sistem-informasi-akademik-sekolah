@@ -82,6 +82,7 @@
                             </form>
                         </div>
                     </div>
+
                     <!-- ============================================== -->
                     <!-- KOTAK 3: DOWNLOAD ABSENSI EKSKUL               -->
                     <!-- ============================================== -->
@@ -92,7 +93,6 @@
                             </h4>
                         </div>
                         <div class="p-4">
-                            <!-- Target="_blank" agar PDF terbuka di tab baru -->
                             <form action="{{ route('pusat_download.cetak_absensi_ekskul') }}" method="GET" target="_blank" class="space-y-4">
                                 <div>
                                     <label class="block text-xs font-semibold text-gray-600 mb-1">Pilih Ekstrakurikuler *</label>
@@ -100,6 +100,36 @@
                                         <option value="">-- Pilih Ekskul --</option>
                                         @foreach($daftarEkskul as $ekskul)
                                             <option value="{{ $ekskul->id }}">{{ $ekskul->nama_ekskul }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="flex gap-2 pt-2">
+                                    <button type="submit" class="w-full px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold rounded-lg shadow-sm transition-colors flex justify-center items-center gap-2">
+                                        📄 Download PDF (Folio)
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- ============================================== -->
+                    <!-- KOTAK 4: KELOMPOK WALI (BARU)                  -->
+                    <!-- ============================================== -->
+                    <div class="border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                        <div class="bg-teal-50 border-b border-gray-200 p-4">
+                            <h4 class="font-bold text-teal-900 text-sm flex items-center gap-2">
+                                👨‍🏫 Data Kelompok Wali
+                            </h4>
+                        </div>
+                        <div class="p-4">
+                            <form action="{{ route('pusat_download.data_kelas_wali') }}" method="POST" target="_blank" class="space-y-4">
+                                @csrf
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-600 mb-1">Pilih Kelompok Wali *</label>
+                                    <select name="kelas_wali_id" required class="w-full text-xs rounded-lg border-gray-300 focus:border-teal-500 focus:ring-teal-500 shadow-sm">
+                                        <option value="">-- Pilih Kelompok --</option>
+                                        @foreach($daftarKelasWali as $kw)
+                                            <option value="{{ $kw->id }}">Kelompok {{ $kw->nama_kelas }} (Grade {{ $kw->tingkat }})</option>
                                         @endforeach
                                     </select>
                                 </div>
