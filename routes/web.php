@@ -268,6 +268,24 @@ Route::middleware(['auth', CheckApproval::class])->group(function () {
         Route::post('/kelas/anggota/kelulusan', [KelasController::class, 'prosesKelulusan'])->name('kelas.anggota.kelulusan');
         Route::delete('/kelas/anggota/{id}/remove', [KelasController::class, 'removeSiswa'])->name('kelas.anggota.remove');
         Route::get('kelas/{id}/jadwal', [KelasController::class, 'showJadwal'])->name('kelas.jadwal');
+
+                // ====================================================================
+        // Domain: Master Kelompok Wali (Bimbingan), Detail & Manajemen Anggota
+        // ====================================================================
+        Route::get('/kelas-wali', [KelasWaliController::class, 'index'])->name('kelas_wali.index');
+        Route::post('/kelas-wali', [KelasWaliController::class, 'store'])->name('kelas_wali.store');
+        Route::get('/kelas-wali/{id}', [KelasWaliController::class, 'show'])->name('kelas_wali.show'); // <-- Menampilkan Detail Anggota
+        Route::put('/kelas-wali/{id}', [KelasWaliController::class, 'update'])->name('kelas_wali.update');
+        Route::delete('/kelas-wali/{id}', [KelasWaliController::class, 'destroy'])->name('kelas_wali.destroy');
+        
+        // Download & Import Anggota Kelompok Wali Massal via Excel
+        Route::get('/kelas-wali/{id}/download-template', [KelasWaliController::class, 'downloadTemplateAnggota'])->name('kelas_wali.anggota.downloadTemplate');
+        Route::post('/kelas-wali/{id}/import', [KelasWaliController::class, 'importAnggota'])->name('kelas_wali.anggota.import');
+        // Sub-aksi Anggota Kelompok internal di dalam KelasWaliController
+        Route::post('/kelas-wali/anggota/store', [KelasWaliController::class, 'storeAnggota'])->name('kelas_wali.anggota.store');
+        Route::post('/kelas-wali/anggota/mutasi', [KelasWaliController::class, 'prosesKenaikan'])->name('kelas_wali.anggota.mutasi');
+        Route::post('/kelas-wali/anggota/kelulusan', [KelasWaliController::class, 'prosesKelulusan'])->name('kelas_wali.anggota.kelulusan');
+        Route::delete('/kelas-wali/anggota/{id}/remove', [KelasWaliController::class, 'removeSiswa'])->name('kelas_wali.anggota.remove');
         /*
         |--------------------------------------------------------------------------
         | 🔓 API Wilayah Lokal Sekaligus (Laravolt)
