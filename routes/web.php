@@ -34,7 +34,7 @@ use App\Http\Controllers\Kesiswaan\SiswaController;
 use App\Http\Controllers\Kesiswaan\DokumenSiswaController;
 use App\Http\Controllers\Kesiswaan\KelasController;
 use App\Http\Controllers\Kesiswaan\AnggotaKelasController;
-use App\Http\Controllers\Kesiswaan\KelasWaliontroller;
+use App\Http\Controllers\Kesiswaan\KelasWaliController;
 use App\Http\Controllers\Kepegawaian\PegawaiController;
 use App\Http\Controllers\Kepegawaian\DokumenPegawaiController;
 use App\Http\Controllers\Kepegawaian\KenaikanGajiBerkalaController;
