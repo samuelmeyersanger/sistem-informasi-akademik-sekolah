@@ -18,32 +18,30 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class KelasWaliController extends Controller
 {
-    /**
+       /**
      * 1. Menampilkan Daftar Semua Kelompok Wali
      */
     public function index(Request $request)
     {
         $search = $request->input('search');
         
+        // 👇 PERHATIKAN BARIS INI: Kita memanggil aksesSesuaiWali() untuk melimit datanya!
         $query = KelasWali::with('waliKelas')
+            ->aksesSesuaiWali(auth()->user()) 
             ->orderBy('tingkat', 'asc')
             ->orderBy('nama_kelas', 'asc');
-
         if ($search) {
             $query->where(function($q) use ($search) {
                 $q->where('nama_kelas', 'like', "%{$search}%")
                   ->orWhere('tingkat', 'like', "%{$search}%");
             });
         }
-
         $kelasWali = $query->paginate(15)->withQueryString();
-
         // Cari pegawai (guru) yang bisa dijadikan Wali Bimbingan
         $guru_list = Pegawai::where('status_keaktifan', 'Aktif')
                             ->whereIn('jenis_ptk', ['Guru', 'Kepala Sekolah'])
                             ->orderBy('nama_lengkap', 'asc')
                             ->get(); 
-
         return view('kesiswaan.kelas_wali.index', compact('kelasWali', 'guru_list'));
     }
 
@@ -82,7 +80,7 @@ class KelasWaliController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $kelas = KelasWali::with('waliKelas')->findOrFail($id);
+        $kelas = KelasWali::with('waliKelas')->aksesSesuaiWali(auth()->user())->findOrFail($id);
         $semester_id = $request->input('semester_id');
 
         $semester_list = Semester::with('tahunAjaran')->orderBy('id', 'desc')->get();
@@ -116,7 +114,7 @@ class KelasWaliController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $kelas = KelasWali::findOrFail($id);
+        $kelas = KelasWali::with('waliKelas')->aksesSesuaiWali(auth()->user())->findOrFail($id);
 
         $validated = $request->validate([
             'nama_kelas'    => 'required|string|max:50|unique:kelas_wali,nama_kelas,' . $id,
@@ -144,7 +142,7 @@ class KelasWaliController extends Controller
      */
     public function destroy($id)
     {
-        $kelas = KelasWali::findOrFail($id);
+        $kelas = KelasWali::with('waliKelas')->aksesSesuaiWali(auth()->user())->findOrFail($id);
         try {
             $kelas->delete();
             return redirect()->route('kesiswaan.kelas_wali.index')

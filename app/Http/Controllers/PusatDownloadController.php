@@ -15,6 +15,7 @@ class PusatDownloadController extends Controller
     {
         $daftarKelas = Kelas::orderBy('tingkat', 'asc')->orderBy('nama_kelas', 'asc')->get();
         $daftarEkskul = Ekstrakurikuler::orderBy('nama', 'asc')->get();
+        $daftarKelasWali = \App\Models\KelasWali::orderBy('tingkat', 'asc')->orderBy('nama_kelas', 'asc')->get();
         return view('pusat_download.index', compact('daftarKelas', 'daftarEkskul'));
     }
     // =========================================================================
@@ -133,5 +134,52 @@ class PusatDownloadController extends Controller
                   ->select('anggota_ekstrakurikuler.*');
         }, 'anggota.siswa.kelas'])->findOrFail($id);
         return view('pusat_download.exports.absensi_ekskul', compact('ekskul'));
+    }
+
+    // =========================================================================
+    // FITUR: DOWNLOAD DATA ANGGOTA KELOMPOK WALI (PDF FOLIO)
+    // =========================================================================
+    public function downloadDataKelasWali(Request $request)
+    {
+        // Pastikan Anda memanggil ID kelompok wali yang benar
+        $request->validate([
+            'kelas_wali_id' => 'required|exists:kelas_wali,id',
+        ]);
+        // Panggil model KelasWali (Bukan Kelas)
+        $kelasWali = \App\Models\KelasWali::with('waliKelas')->findOrFail($request->kelas_wali_id);
+        $semesterAktif = \App\Models\Semester::with('tahunAjaran')->where('is_aktif', true)->first();
+        
+        // Panggil model AnggotaKelasWali (Bukan AnggotaKelas)
+        $anggota = \App\Models\AnggotaKelasWali::with('siswa')
+            ->where('kelas_wali_id', $kelasWali->id)
+            ->where('semester_id', $semesterAktif->id ?? null)
+            ->get()
+            ->sortBy(function ($item) {
+                return $item->siswa->nama_lengkap; // Diurutkan otomatis berdasar abjad
+            });
+            
+        $profil = null; 
+        $nama_sekolah = $profil ? $profil->nama_sekolah : 'SMPN 4 CIBITUNG'; 
+        
+        $tahun_ajaran = $semesterAktif && $semesterAktif->tahunAjaran 
+                        ? $semesterAktif->tahunAjaran->nama_tahun_ajaran 
+                        : 'Belum Diset';
+                        
+        $data = [
+            'kelas' => $kelasWali,
+            'anggota' => $anggota,
+            'nama_sekolah' => $nama_sekolah,
+            'tahun_ajaran' => $tahun_ajaran,
+            'laki_laki' => $anggota->where('siswa.jenis_kelamin', 'Laki-Laki')->count() + $anggota->where('siswa.jenis_kelamin', 'Laki-laki')->count(),
+            'perempuan' => $anggota->where('siswa.jenis_kelamin', 'Perempuan')->count(),
+        ];
+        
+        $namaFile = "Daftar_Anggota_Kelompok_" . str_replace(' ', '_', $kelasWali->nama_kelas);
+        
+        // Memaksa cetak langsung menjadi PDF dengan ukuran Folio/F4 (8.5 x 13 inch)
+        $pdf = Pdf::loadView('pusat_download.exports.data_kelas_wali', $data)
+                  ->setPaper([0, 0, 612.00, 936.00], 'portrait'); 
+                  
+        return $pdf->download($namaFile . '.pdf');
     }
 }

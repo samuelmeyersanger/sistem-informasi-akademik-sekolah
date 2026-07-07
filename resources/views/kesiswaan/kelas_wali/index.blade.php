@@ -77,9 +77,11 @@
                             </button>
                         </form>
                         
+                        @if(auth()->user()->hasPermission('kesiswaan.kelas_wali.store'))
                         <button @click="openCreate = true" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg shadow-sm transition-all flex items-center justify-center gap-1 cursor-pointer">
                             ➕ Tambah Kelompok
                         </button>
+                        @endif
                         
                     </div>
                 </div>
@@ -118,14 +120,16 @@
                                             <a href="{{ route('kesiswaan.kelas_wali.show', $item->id) }}" class="p-1 text-teal-600 hover:underline font-semibold flex items-center gap-0.5">
                                                 🔍 Detail Anggota
                                             </a>
-
+                                            @if(auth()->user()->hasPermission('kesiswaan.kelas_wali.update'))
                                             <button type="button" @click="initEdit('{{ route('kesiswaan.kelas_wali.update', $item->id) }}', '{{ $item->tingkat }}', '{{ $item->nama_kelas }}', '{{ $item->wali_kelas_id }}')" class="p-1 text-indigo-600 hover:underline font-semibold cursor-pointer">
                                                 ✏️ Edit
                                             </button>
-                                            
+                                            @endif
+                                            @if(auth()->user()->hasPermission('kesiswaan.kelas_wali.destroy'))
                                             <button type="button" @click="initDelete('{{ route('kesiswaan.kelas_wali.destroy', $item->id) }}', 'Kelompok Wali {{ addslashes($item->nama_kelas) }}')" class="p-1 text-rose-600 hover:underline font-medium cursor-pointer">
                                                 🗑️ Hapus
                                             </button>
+                                            @endif
                                         </div>
                                     </td>
                                 </tr>
