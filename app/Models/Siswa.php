@@ -209,4 +209,11 @@ class Siswa extends Model
         // Sengaja dibuat where 'id' = 0 agar query tidak error tapi hasilnya aman (kosong).
         return $query->where('id', 0);
     }
+        /**
+     * Relasi ke Anggota Kelompok Wali (Bimbingan)
+     */
+    public function anggotaKelasWali()
+    {
+        return $this->hasMany(AnggotaKelasWali::class, 'siswa_id', 'id');
+    }
 }
