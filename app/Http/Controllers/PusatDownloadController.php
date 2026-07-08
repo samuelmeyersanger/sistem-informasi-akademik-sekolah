@@ -62,7 +62,7 @@ class PusatDownloadController extends Controller
         }
         
         $pdf = Pdf::loadView('pusat_download.exports.absensi', $data)
-                  ->setPaper('folio', 'portrait');
+                  ->setPaper([0, 0, 612.00, 936.00], 'portrait'); 
         return $pdf->download($namaFile . '.pdf');
     }
 
@@ -124,7 +124,7 @@ class PusatDownloadController extends Controller
         }
         
         $pdf = Pdf::loadView('pusat_download.exports.jadwal', $data)
-                  ->setPaper('folio', 'landscape');
+                  ->setPaper([0, 0, 612.00, 936.00], 'landscape'); 
         return $pdf->download($namaFile . '.pdf');
     }
 
@@ -211,7 +211,7 @@ class PusatDownloadController extends Controller
         }
 
         // Jangan lupa buat file view 'pusat_download/exports/kode_guru.blade.php'
-        $pdf = Pdf::loadView('pusat_download.exports.kode_guru', $data)->setPaper('A4', 'portrait');
+        $pdf = Pdf::loadView('pusat_download.exports.kode_guru', $data)->setPaper([0, 0, 612.00, 936.00], 'portrait'); 
         return $pdf->download('Daftar_Kode_Guru.pdf');
     }
 
@@ -242,7 +242,8 @@ class PusatDownloadController extends Controller
         if ($request->format === 'excel') {
             return back()->with('success', 'Fitur Export Excel Rekap Siswa belum tersedia, segera di-update.');
         }
-        $pdf = Pdf::loadView('pusat_download.exports.rekap_siswa', $data)->setPaper('A4', 'portrait');
+        $pdf = Pdf::loadView('pusat_download.exports.rekap_siswa', $data)
+          ->setPaper([0, 0, 612.00, 936.00], 'portrait'); 
         return $pdf->download('Rekap_Jumlah_Siswa.pdf');
     }
 
@@ -263,7 +264,7 @@ class PusatDownloadController extends Controller
         }
 
         // Jangan lupa buat file view 'pusat_download/exports/jadwal_global.blade.php'
-        $pdf = Pdf::loadView('pusat_download.exports.jadwal_global', $data)->setPaper('A4', 'landscape');
+        $pdf = Pdf::loadView('pusat_download.exports.jadwal_global', $data)->setPaper([0, 0, 612.00, 936.00], 'landscape'); 
         return $pdf->download('Jadwal_Pelajaran_Global.pdf');
     }
 }

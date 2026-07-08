@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <title>Rekapitulasi Jumlah Siswa</title>
     <style>
+        @page { margin: 1cm; }
+        
         body { font-family: Arial, sans-serif; font-size: 11px; }
         .header { text-align: center; margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 10px; }
         .header h2, .header h3, .header p { margin: 2px 0; }
