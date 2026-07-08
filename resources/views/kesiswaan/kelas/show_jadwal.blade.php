@@ -112,7 +112,7 @@
                         <select name="kode_guru_id" x-model="selectedGuruId" @change="onGuruChange()" required class="w-full text-xs rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
                             <option value="">-- Pilih Guru / Kode Pengampu --</option>
                             <template x-for="guru in daftarGuru" :key="guru.id">
-                                <option :value="guru.id" x-text="guru.nama_kode + ' - ' + (guru.pegawai ? guru.pegawai.nama_lengkap : '')"></option>
+                                <option :value="guru.id" x-text="guru.kode + ' - ' + (guru.pegawai ? guru.pegawai.nama_lengkap : '')"></option>
                             </template>
                         </select>
                     </div>
@@ -122,7 +122,7 @@
                         <select name="mata_pelajaran_id" x-model="selectedMapelId" :disabled="!selectedGuruId" required class="w-full text-xs rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm disabled:bg-gray-100 disabled:text-gray-400">
                             <option value="">-- Pilih Mata Pelajaran --</option>
                             <template x-for="mapel in availableMapels" :key="mapel.id">
-                                <option :value="mapel.id" x-text="'[' + mapel.kode_mapel + '] ' + mapel.nama_mapel"></option>
+                                <option :value="mapel.id" x-text="'[' + mapel.singkatan_mapel + '] ' + mapel.nama_mapel"></option>
                             </template>
                         </select>
                         <p x-show="selectedGuruId && availableMapels.length === 0" class="text-[10px] text-rose-500 mt-1 font-medium">
