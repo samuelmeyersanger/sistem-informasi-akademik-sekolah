@@ -149,7 +149,7 @@
                                             <span class="px-2 py-0.5 bg-green-50 border border-green-200 text-green-700 text-[10px] font-bold rounded">🟢 AKTIF BELAJAR</span>
                                         </td>
                                         <td class="p-4 pr-6 text-center">
-                                            <button type="button" @click="triggerConfirm('{{ route('kesiswaan.kelas.anggota.remove', $item->id) }}', '{{ $item->siswa->nama_lengkap }}')" class="p-1 text-rose-600 hover:text-rose-800 hover:underline font-medium cursor-pointer">
+                                            <button type="button" @click="triggerConfirm('{{ route('kesiswaan.kelas.anggota.remove', $item->id) }}', '{{ addslashes($item->siswa->nama_lengkap) }}')" class="p-1 text-rose-600 hover:text-rose-800 hover:underline font-medium cursor-pointer">
                                                 ❌ Keluarkan
                                             </button>
                                         </td>
