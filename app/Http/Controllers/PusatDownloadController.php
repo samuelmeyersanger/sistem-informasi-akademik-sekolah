@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Http\Controllers;
+
 use App\Models\Kelas;
 use App\Models\Semester;
 use App\Models\AnggotaKelas;
@@ -9,6 +11,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\AbsensiKelasExport;
 use App\Exports\JadwalKelasExport;
 use Barryvdh\DomPDF\Facade\Pdf;
+
 class PusatDownloadController extends Controller
 {
     public function index()
@@ -18,8 +21,9 @@ class PusatDownloadController extends Controller
         $daftarKelasWali = \App\Models\KelasWali::orderBy('tingkat', 'asc')->orderBy('nama_kelas', 'asc')->get();
         return view('pusat_download.index', compact('daftarKelas', 'daftarEkskul', 'daftarKelasWali'));
     }
+
     // =========================================================================
-    // FITUR 1: DOWNLOAD ABSENSI
+    // FITUR 1: DOWNLOAD ABSENSI KELAS REGULER
     // =========================================================================
     public function downloadAbsensi(Request $request)
     {
@@ -36,7 +40,7 @@ class PusatDownloadController extends Controller
             ->sortBy(function ($item) {
                 return $item->siswa->nama_lengkap;
             });
-        // Sesuaikan jika punya Model ProfilSekolah
+            
         $profil = null; 
         $nama_sekolah = $profil ? $profil->nama_sekolah : 'SMPN 4 CIBITUNG'; 
         
@@ -51,16 +55,19 @@ class PusatDownloadController extends Controller
             'laki_laki' => $anggota->where('siswa.jenis_kelamin', 'Laki-laki')->count(),
             'perempuan' => $anggota->where('siswa.jenis_kelamin', 'Perempuan')->count(),
         ];
+        
         $namaFile = "Daftar_Hadir_Kelas_" . str_replace(' ', '_', $kelas->nama_kelas);
         if ($request->format === 'excel') {
             return Excel::download(new AbsensiKelasExport($data), $namaFile . '.xlsx');
         }
+        
         $pdf = Pdf::loadView('pusat_download.exports.absensi', $data)
                   ->setPaper('folio', 'portrait');
         return $pdf->download($namaFile . '.pdf');
     }
+
     // =========================================================================
-    // FITUR 2: DOWNLOAD JADWAL PELAJARAN
+    // FITUR 2: DOWNLOAD JADWAL PELAJARAN PERKELAS
     // =========================================================================
     public function downloadJadwal(Request $request)
     {
@@ -77,11 +84,11 @@ class PusatDownloadController extends Controller
         $tahun_ajaran = $semesterAktif && $semesterAktif->tahunAjaran 
                         ? $semesterAktif->tahunAjaran->nama_tahun_ajaran 
                         : 'Belum Diset';
-        $hariList = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat']; // Bisa ditambah 'Sabtu'
-        // Jam maksimal
+        $hariList = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat']; 
+        
         $maxJam = \App\Models\WaktuKbm::max('jam_ke');
         if (!$maxJam) $maxJam = 10;
-        // Ambil waktu non-KBM (contoh: Istirahat)
+        
         $waktuList = \App\Models\WaktuKbm::all();
         $kegiatanMatriks = [];
         foreach($waktuList as $w) {
@@ -89,17 +96,18 @@ class PusatDownloadController extends Controller
                 $kegiatanMatriks[$w->jam_ke][$w->hari] = $w->kegiatan;
             }
         }
-        // Ambil data Jadwal Pelajaran (Beserta Relasi Lengkap: Waktu, Guru, Mapel, Ruangan)
+        
         $jadwalList = \App\Models\JadwalPelajaran::with(['waktuKbm', 'kodeGuru.pegawai', 'kodeGuru.mataPelajarans', 'ruangan'])
             ->where('kelas_id', $kelas->id)
             ->get();
-        // Susun ke matriks [jam_ke][hari]
+            
         $matriks = [];
         foreach ($jadwalList as $j) {
             if ($j->waktuKbm) {
                 $matriks[$j->waktuKbm->jam_ke][$j->hari] = $j;
             }
         }
+        
         $data = [
             'kelas' => $kelas,
             'nama_sekolah' => $nama_sekolah,
@@ -109,53 +117,54 @@ class PusatDownloadController extends Controller
             'matriks' => $matriks,
             'kegiatanMatriks' => $kegiatanMatriks,
         ];
+        
         $namaFile = "Jadwal_Pelajaran_Kelas_" . str_replace(' ', '_', $kelas->nama_kelas);
         if ($request->format === 'excel') {
             return Excel::download(new JadwalKelasExport($data), $namaFile . '.xlsx');
         }
+        
         $pdf = Pdf::loadView('pusat_download.exports.jadwal', $data)
                   ->setPaper('folio', 'landscape');
         return $pdf->download($namaFile . '.pdf');
     }
+
     // =========================================================================
     // FITUR 3: DOWNLOAD ABSENSI EKSTRAKURIKULER
     // =========================================================================
     public function cetakAbsensiEkskul(Request $request)
     {
-        // Pastikan ekskul dipilih
         $request->validate([
             'ekskul_id' => 'required|exists:ekstrakurikuler,id'
         ]);
+        
         $id = $request->ekskul_id;
-        // Ambil data ekskul, pembina, dan anggota-anggotanya (urut abjad)
         $ekskul = Ekstrakurikuler::with(['pembina', 'anggota' => function($query) {
             $query->join('siswa', 'anggota_ekstrakurikuler.siswa_id', '=', 'siswa.id')
                   ->orderBy('siswa.nama_lengkap', 'asc')
                   ->select('anggota_ekstrakurikuler.*');
         }, 'anggota.siswa.kelas'])->findOrFail($id);
+        
         return view('pusat_download.exports.absensi_ekskul', compact('ekskul'));
     }
 
     // =========================================================================
-    // FITUR: DOWNLOAD DATA ANGGOTA KELOMPOK WALI (PDF FOLIO)
+    // FITUR 4: DOWNLOAD DATA ANGGOTA KELOMPOK WALI (PDF FOLIO)
     // =========================================================================
     public function downloadDataKelasWali(Request $request)
     {
-        // Pastikan Anda memanggil ID kelompok wali yang benar
         $request->validate([
             'kelas_wali_id' => 'required|exists:kelas_wali,id',
         ]);
-        // Panggil model KelasWali (Bukan Kelas)
+        
         $kelasWali = \App\Models\KelasWali::with('waliKelas')->findOrFail($request->kelas_wali_id);
         $semesterAktif = \App\Models\Semester::with('tahunAjaran')->where('is_aktif', true)->first();
         
-        // Panggil model AnggotaKelasWali (Bukan AnggotaKelas)
         $anggota = \App\Models\AnggotaKelasWali::with('siswa')
             ->where('kelas_wali_id', $kelasWali->id)
             ->where('semester_id', $semesterAktif->id ?? null)
             ->get()
             ->sortBy(function ($item) {
-                return $item->siswa->nama_lengkap; // Diurutkan otomatis berdasar abjad
+                return $item->siswa->nama_lengkap; 
             });
             
         $profil = null; 
@@ -176,10 +185,75 @@ class PusatDownloadController extends Controller
         
         $namaFile = "Daftar_Anggota_Kelompok_" . str_replace(' ', '_', $kelasWali->nama_kelas);
         
-        // Memaksa cetak langsung menjadi PDF dengan ukuran Folio/F4 (8.5 x 13 inch)
         $pdf = Pdf::loadView('pusat_download.exports.data_kelas_wali', $data)
                   ->setPaper([0, 0, 612.00, 936.00], 'portrait'); 
                   
         return $pdf->download($namaFile . '.pdf');
+    }
+
+    // =========================================================================
+    // FITUR 5: KODE GURU
+    // =========================================================================
+    public function downloadKodeGuru(Request $request)
+    {
+        $request->validate(['format' => 'required|in:excel,pdf']);
+        
+        // Ambil data untuk dilempar ke View
+        $data = [
+            'daftar_kode' => \App\Models\KodeGuru::with(['pegawai', 'mataPelajarans', 'jadwalPelajarans.kelas'])->get(),
+            'nama_sekolah' => 'SMPN 4 CIBITUNG'
+        ];
+
+        if ($request->format === 'excel') {
+            // Silakan buat KodeGuruExport jika Anda ingin fitur Excel-nya
+            // return Excel::download(new \App\Exports\KodeGuruExport($data), 'Daftar_Kode_Guru.xlsx');
+            return back()->with('success', 'Fitur Export Excel Kode Guru belum tersedia, segera di-update.');
+        }
+
+        // Jangan lupa buat file view 'pusat_download/exports/kode_guru.blade.php'
+        $pdf = Pdf::loadView('pusat_download.exports.kode_guru', $data)->setPaper('A4', 'portrait');
+        return $pdf->download('Daftar_Kode_Guru.pdf');
+    }
+
+    // =========================================================================
+    // FITUR 6: REKAP JUMLAH SISWA
+    // =========================================================================
+    public function downloadRekapSiswa(Request $request)
+    {
+        $request->validate(['format' => 'required|in:excel,pdf']);
+        
+        $data = [
+            'nama_sekolah' => 'SMPN 4 CIBITUNG',
+            'rekap_kelas' => \App\Models\Kelas::withCount('anggotaKelas')->get()
+        ];
+
+        if ($request->format === 'excel') {
+            return back()->with('success', 'Fitur Export Excel Rekap Siswa belum tersedia, segera di-update.');
+        }
+
+        // Jangan lupa buat file view 'pusat_download/exports/rekap_siswa.blade.php'
+        $pdf = Pdf::loadView('pusat_download.exports.rekap_siswa', $data)->setPaper('A4', 'portrait');
+        return $pdf->download('Rekap_Jumlah_Siswa.pdf');
+    }
+
+    // =========================================================================
+    // FITUR 7: JADWAL PELAJARAN GLOBAL
+    // =========================================================================
+    public function downloadJadwalGlobal(Request $request)
+    {
+        $request->validate(['format' => 'required|in:excel,pdf']);
+        
+        $data = [
+            'nama_sekolah' => 'SMPN 4 CIBITUNG',
+            'jadwal_semua' => \App\Models\JadwalPelajaran::with(['kelas', 'waktuKbm', 'kodeGuru.pegawai'])->get()
+        ];
+
+        if ($request->format === 'excel') {
+            return back()->with('success', 'Fitur Export Excel Jadwal Global belum tersedia, segera di-update.');
+        }
+
+        // Jangan lupa buat file view 'pusat_download/exports/jadwal_global.blade.php'
+        $pdf = Pdf::loadView('pusat_download.exports.jadwal_global', $data)->setPaper('A4', 'landscape');
+        return $pdf->download('Jadwal_Pelajaran_Global.pdf');
     }
 }

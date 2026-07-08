@@ -553,20 +553,23 @@ Route::middleware(['auth', CheckApproval::class])->group(function () {
         Route::get('/keluar/{id}/cetak', [SuratKeluarController::class, 'cetakPdf'])->name('keluar.cetak');
     });
 
-    /*
+        /*
     |--------------------------------------------------------------------------
     | Modul Manajemen pusat download (SIAS Back-Office)
     |--------------------------------------------------------------------------
     | 🔐 Dikunci menggunakan middleware 'permission' secara tersinkronisasi.
-    | Prefix 'bk.' akan melekat otomatis pada setiap komponen rute di dalam grup.
+    | Prefix 'pusat_download.' akan melekat otomatis pada setiap komponen rute.
     |
     */
-        Route::prefix('pusat-download')->name('pusat_download.')->group(function () {
+    Route::prefix('pusat-download')->name('pusat_download.')->group(function () {
         Route::get('/', [\App\Http\Controllers\PusatDownloadController::class, 'index'])->name('index');
         Route::post('/absensi', [\App\Http\Controllers\PusatDownloadController::class, 'downloadAbsensi'])->name('absensi');
         Route::post('/jadwal', [\App\Http\Controllers\PusatDownloadController::class, 'downloadJadwal'])->name('jadwal');
         Route::get('/cetak-absensi', [\App\Http\Controllers\PusatDownloadController::class, 'cetakAbsensiEkskul'])->name('cetak_absensi_ekskul');
         Route::post('/kelas-wali', [\App\Http\Controllers\PusatDownloadController::class, 'downloadDataKelasWali'])->name('data_kelas_wali');
+        Route::post('/kode-guru', [\App\Http\Controllers\PusatDownloadController::class, 'downloadKodeGuru'])->name('kode_guru');
+        Route::post('/rekap-siswa', [\App\Http\Controllers\PusatDownloadController::class, 'downloadRekapSiswa'])->name('rekap_siswa');
+        Route::post('/jadwal-global', [\App\Http\Controllers\PusatDownloadController::class, 'downloadJadwalGlobal'])->name('jadwal_global');
     });
 });
 
