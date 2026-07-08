@@ -66,4 +66,11 @@ class Kelas extends Model
         // 4. Tolak akses jika bukan keduanya
         return $query->where('id', 0);
     }
+        /**
+     * Relasi ke Anggota Kelas (Untuk menghitung rekap jumlah siswa per kelas)
+     */
+    public function anggotaKelas()
+    {
+        return $this->hasMany(AnggotaKelas::class, 'kelas_id', 'id');
+    }
 }

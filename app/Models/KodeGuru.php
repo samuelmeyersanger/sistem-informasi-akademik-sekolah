@@ -88,4 +88,11 @@ class KodeGuru extends Model
     {
         return $this->mataPelajarans->sum('pivot.jam_mengajar_porsi');
     }
+        /**
+     * Relasi ke Jadwal Pelajaran (Untuk melacak beban mengajar dan kelas)
+     */
+    public function jadwalPelajarans()
+    {
+        return $this->hasMany(JadwalPelajaran::class, 'kode_guru_id', 'id');
+    }
 }
