@@ -133,7 +133,7 @@
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-100 text-gray-700 text-xs">
-                                '@forelse($anggota as $item)'
+                                @forelse($anggota as $item)
                                     <tr class="hover:bg-gray-50/80 transition-colors">
                                         <td class="p-4 pl-6 text-center">
                                             <input type="checkbox" value="{{ $item->siswa_id }}" x-model="selectedSiswa" class="siswa-checkbox rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
