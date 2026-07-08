@@ -44,7 +44,7 @@
             @forelse($daftar_kode as $item)
                 <tr>
                     <td class="text-center">{{ $no++ }}</td>
-                    <td class="text-center" style="font-weight: bold; font-size: 14px;">{{ $item->kode_guru ?? '-' }}</td>
+                    <td class="text-center" style="font-weight: bold; font-size: 14px;">{{ $item->kode ?? '-' }}</td>
                     <td class="text-left">
                         <span class="guru-name">{{ $item->pegawai ? $item->pegawai->nama_lengkap : 'Data Guru Kosong' }}</span>
                         <span class="guru-nip">NIP: {{ $item->pegawai ? ($item->pegawai->nip ?? '-') : '-' }}</span>
@@ -53,7 +53,7 @@
                         @if($item->mataPelajarans && $item->mataPelajarans->count() > 0)
                             <ul>
                                 @foreach($item->mataPelajarans as $mapel)
-                                    <li>{{ $mapel->nama_pelajaran }}</li>
+                                    <li>{{ $mapel->nama_mapel }}</li>
                                 @endforeach
                             </ul>
                         @else
