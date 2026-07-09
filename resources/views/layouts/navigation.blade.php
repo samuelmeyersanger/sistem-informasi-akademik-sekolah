@@ -28,38 +28,62 @@
         <button @click="sidebarOpen = false" class="lg:hidden text-slate-400 hover:text-white text-xl font-bold cursor-pointer">&times;</button>
     </div>
 
-    <nav class="flex-1 px-4 py-4 space-y-4 overflow-y-auto">
+    <nav class="flex-1 px-4 py-4 space-y-2 overflow-y-auto">
         
-        {{-- Pastikan variabel $sidebarMenus ada --}}
         @if(isset($sidebarMenus) && $sidebarMenus->isNotEmpty())
             
-            {{-- Mengelompokkan menu berdasarkan kolom 'kategori' secara otomatis --}}
             @foreach($sidebarMenus->groupBy('kategori') as $kategori => $daftarMenu)
-                
-                <div class="space-y-1">
+                @php
+                    // Cek apakah ada salah satu menu di dalam kategori ini yang sedang aktif
+                    $isCategoryActive = false;
+                    foreach($daftarMenu as $menu) {
+                        if (request()->is($menu->url) || request()->is($menu->url . '/*')) {
+                            $isCategoryActive = true;
+                            break;
+                        }
+                    }
+                    
+                    // Jika kategori kosong (menu tanpa kategori), biarkan selalu terbuka. 
+                    // Jika tidak, buka jika sedang aktif, tutup jika tidak.
+                    $isOpen = empty($kategori) ? 'true' : ($isCategoryActive ? 'true' : 'false');
+                @endphp
+
+                <!-- Bungkus kategori dengan Alpine.js Data -->
+                <div x-data="{ open: {{ $isOpen }} }" class="mb-1">
+                    
                     @if(!empty($kategori))
-                        <p class="px-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 {{ $loop->first ? '' : 'pt-2 mt-2 border-t border-slate-800/40' }}">
-                            {{ $kategori }}
-                        </p>
+                        <!-- Tombol Kategori yang bisa diklik -->
+                        <button @click="open = !open" 
+                                class="w-full flex items-center justify-between px-3 py-2 text-[10px] font-bold text-slate-500 hover:text-slate-300 uppercase tracking-widest transition-colors cursor-pointer {{ $loop->first ? '' : 'pt-3 mt-1 border-t border-slate-800/40' }}">
+                            <span>{{ $kategori }}</span>
+                            <!-- Ikon panah yang akan berputar saat terbuka -->
+                            <i class="fa-solid fa-chevron-down transition-transform duration-300" :class="open ? 'rotate-180' : ''"></i>
+                        </button>
                     @endif
 
-                    @foreach($daftarMenu as $menu)
-                        @php
-                            // Cek apakah halaman saat ini sesuai dengan rute database (Mendukung pola wildcard *)
-                            $isActive = request()->is($menu->url) || request()->is($menu->url . '/*');
-                        @endphp
+                    <!-- Area isi menu yang akan disembunyikan/dimunculkan -->
+                    <div x-show="open" 
+                         x-transition:enter="transition-all ease-out duration-300"
+                         x-transition:enter-start="opacity-0 -translate-y-2"
+                         x-transition:enter-end="opacity-100 translate-y-0"
+                         class="space-y-1 {{ !empty($kategori) ? 'mt-1' : '' }}">
+                         
+                        @foreach($daftarMenu as $menu)
+                            @php
+                                $isActive = request()->is($menu->url) || request()->is($menu->url . '/*');
+                            @endphp
 
-                        <a href="{{ url($menu->url) }}" 
-                            class="flex items-center gap-3 px-3 py-2 text-xs font-semibold rounded-lg transition-colors group
-                                {{ $isActive ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-100' }}">
-                            
+                            <a href="{{ url($menu->url) }}" 
+                                class="flex items-center gap-3 px-3 py-2 text-xs font-semibold rounded-lg transition-colors group
+                                    {{ $isActive ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-100' }}">
+                                
                                 <div class="flex items-center gap-2">
                                     <i class="fa-solid fa-{{ $menu->icon }} w-5 text-center text-sm"></i>
-
                                     <span>{{ $menu->nama_menu }}</span>
                                 </div>
-                        </a>
-                    @endforeach
+                            </a>
+                        @endforeach
+                    </div>
                 </div>
 
             @endforeach
