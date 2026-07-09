@@ -204,7 +204,7 @@
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-gray-600 mb-1">Jam Ke- *</label>
-                            <input type="number" name="jam_ke" x-model="editJamKe" required min="0" class="w-full text-xs rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
+                            <input type="text" name="jam_ke" x-model="editJamKe" required min="0" class="w-full text-xs rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
                         </div>
                     </div>
 
