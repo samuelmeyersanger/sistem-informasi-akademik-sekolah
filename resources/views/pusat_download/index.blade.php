@@ -153,7 +153,7 @@
                             <select name="kelas_wali_id" required class="w-full text-sm rounded-lg border-gray-300 focus:border-teal-500 focus:ring-teal-500 shadow-sm bg-gray-50">
                                 <option value="">-- Pilih Kelompok Wali --</option>
                                 @foreach($daftarKelasWali as $kw)
-                                    <option value="{{ $kw->id }}">Kelompok {{ $kw->nama_kelas }} (Grade {{ $kw->tingkat }})</option>
+                                    <option value="{{ $kw->id }}">{{ $kw->tingkat }} - {{ $kw->nama_kelas }}</option>
                                 @endforeach
                             </select>
                             <button type="submit" class="w-full px-3 py-2.5 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold rounded-lg transition-colors flex justify-center items-center gap-2">
