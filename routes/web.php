@@ -571,6 +571,24 @@ Route::middleware(['auth', CheckApproval::class])->group(function () {
         Route::post('/rekap-siswa', [\App\Http\Controllers\PusatDownloadController::class, 'downloadRekapSiswa'])->name('rekap_siswa');
         Route::post('/jadwal-global', [\App\Http\Controllers\PusatDownloadController::class, 'downloadJadwalGlobal'])->name('jadwal_global');
     });
+    
+    /*
+    |--------------------------------------------------------------------------
+    | Modul Manajemen rapor (SIAS Back-Office)
+    |--------------------------------------------------------------------------
+    | 🔐 Dikunci menggunakan middleware 'permission' secara tersinkronisasi.
+    | Prefix 'rapor.' akan melekat otomatis pada setiap komponen rute.
+    |
+    */
+    Route::prefix('rapor')->name('rapor.')->group(function () {
+        
+        // Rute Manajemen Pengaturan Tanggal Rapor
+        Route::get('/tanggal-rapor', [\App\Http\Controllers\Rapor\TanggalRaporController::class, 'index'])->name('tanggal_rapor.index');
+        Route::post('/tanggal-rapor', [\App\Http\Controllers\Rapor\TanggalRaporController::class, 'store'])->name('tanggal_rapor.store');
+        Route::put('/tanggal-rapor/{id}', [\App\Http\Controllers\Rapor\TanggalRaporController::class, 'update'])->name('tanggal_rapor.update');
+        Route::delete('/tanggal-rapor/{id}', [\App\Http\Controllers\Rapor\TanggalRaporController::class, 'destroy'])->name('tanggal_rapor.destroy');
+        
+    });
 });
 
 // 5. Rute Autentikasi Bawaan Laravel (Login, Register, Logout, dll)
