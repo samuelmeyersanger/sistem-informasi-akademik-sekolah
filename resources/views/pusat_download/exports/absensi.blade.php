@@ -33,11 +33,31 @@
 </head>
 <body>
 
-    <div class="header">
-        <h2>DAFTAR HADIR SISWA KELAS {{ $kelas->nama_kelas }}</h2>
-        <h3>{{ $nama_sekolah }}</h3>
-        <p>Tahun Ajaran {{ $tahun_ajaran ?? '-' }}</p>
-    </div>
+    @php
+        $logoSetting = \DB::table('pengaturan_logo')->first();
+        // Menggunakan public_path agar DomPDF bisa membaca file dari dalam server lokal
+        $logoPemda = $logoSetting && $logoSetting->logo_pemda ? public_path('storage/' . $logoSetting->logo_pemda) : null;
+        $logoSekolah = $logoSetting && $logoSetting->logo_sekolah ? public_path('storage/' . $logoSetting->logo_sekolah) : null;
+    @endphp
+    <table style="width: 100%; border-bottom: 2px solid #000; margin-bottom: 10px; padding-bottom: 5px;">
+        <tr>
+            <td style="width: 15%; text-align: left; vertical-align: middle;">
+                @if($logoPemda && file_exists($logoPemda))
+                    <img src="{{ $logoPemda }}" style="max-height: 65px; max-width: 70px; object-fit: contain;">
+                @endif
+            </td>
+            <td style="width: 70%; text-align: center; vertical-align: middle;">
+                <h2 style="margin: 2px 0;">DAFTAR HADIR SISWA KELAS {{ $kelas->nama_kelas }}</h2>
+                <h3 style="margin: 2px 0;">{{ $nama_sekolah }}</h3>
+                <p style="margin: 2px 0; font-size: 10px;">Tahun Ajaran {{ $tahun_ajaran ?? '-' }}</p>
+            </td>
+            <td style="width: 15%; text-align: right; vertical-align: middle;">
+                @if($logoSekolah && file_exists($logoSekolah))
+                    <img src="{{ $logoSekolah }}" style="max-height: 65px; max-width: 70px; object-fit: contain;">
+                @endif
+            </td>
+        </tr>
+    </table>
 
     <table class="info-table">
         <tr>
