@@ -66,28 +66,18 @@ class User extends Authenticatable
         return $this->roles->contains('name', $roleName); 
     }
 
-    /**
-     * =========================================================================
-     * PERBAIKAN DI SINI: Fungsi Pengecekan Permission Versi Many-to-Many
-     * =========================================================================
-     * Contoh pemakaian otomatis: rute via middleware('can:nama_permission')
-     */
     public function hasPermission(string $permissionName): bool
     {
-        // 👑 BYPASS LEVEL SAKTI: Jika kolom role di tabel users Anda bernilai 'admin',
-        // Langsung loloskan dari Gerbang URL manapun tanpa syarat!
         if ($this->role === 'admin' || $this->role === 'super-admin') {
             return true;
         }
-
-        // Pengecekan standar relasi database untuk user/staf biasa
         $roles = $this->roles()->with('permissions')->get();
         foreach ($roles as $role) {
-            if ($role->permissions->contains('name', $permissionName)) {
+            // 🟢 UBAH 'name' MENJADI 'slug' (Atau sesuaikan dengan nama kolom asli di DB Anda)
+            if ($role->permissions->contains('slug', $permissionName)) { 
                 return true;
             }
         }
-
         return false;
     }
 }
