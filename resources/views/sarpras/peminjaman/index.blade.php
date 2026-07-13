@@ -118,8 +118,8 @@
                                         @endif
                                     </td>
                                     <td class="p-4">
-                                        <div class="font-medium text-gray-800">{{ $p->peminjam->nama_pegawai ?? 'Tidak Diketahui' }}</div>
-                                        <div class="text-[10px] text-gray-400 mt-0.5">Petugas: {{ $p->pencatat->nama_pegawai ?? 'System/Self' }}</div>
+                                        <div class="font-medium text-gray-800">{{ $p->peminjam->nama_lengkap ?? 'Tidak Diketahui' }}</div>
+                                        <div class="text-[10px] text-gray-400 mt-0.5">Petugas: {{ $p->pencatat->nama_lengkap ?? 'System/Self' }}</div>
                                     </td>
                                     <td class="p-4 text-center">
                                         <div class="font-medium text-gray-900">{{ \Carbon\Carbon::parse($p->tanggal_pinjam)->translatedFormat('d M Y') }}</div>
@@ -202,7 +202,7 @@
                         <select name="peminjam_id" required class="w-full text-xs rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
                             <option value="">-- Pilih Personel --</option>
                             @foreach($daftarPegawai as $peg)
-                                <option value="{{ $peg->id }}">{{ $peg->nama_pegawai }}</option>
+                                <option value="{{ $peg->id }}">{{ $peg->nama_lengkap }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -258,7 +258,7 @@
                         <label class="block text-xs font-semibold text-gray-600 mb-1">Pegawai / Guru Peminjam *</label>
                         <select name="peminjam_id" x-model="editPeminjamId" required class="w-full text-xs rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
                             @foreach($daftarPegawai as $peg)
-                                <option value="{{ $peg->id }}">{{ $peg->nama_pegawai }}</option>
+                                <option value="{{ $peg->id }}">{{ $peg->nama_lengkap }}</option>
                             @endforeach
                         </select>
                     </div>
