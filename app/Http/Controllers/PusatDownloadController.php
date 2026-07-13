@@ -187,7 +187,7 @@ class PusatDownloadController extends Controller
         
         // 🟢 PERBAIKAN 2: Ubah 'portrait' menjadi 'landscape' agar tabel tidak terpotong!
         $pdf = Pdf::loadView('pusat_download.exports.data_kelas_wali', $data)
-                  ->setPaper([0, 0, 612.00, 936.00], 'landscape'); 
+                  ->setPaper([0, 0, 612.00, 936.00], 'portrait'); 
                   
         return $pdf->download($namaFile . '.pdf');
     }
