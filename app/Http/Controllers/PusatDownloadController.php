@@ -225,7 +225,6 @@ class PusatDownloadController extends Controller
         
         $data = [
             'nama_sekolah' => 'SMPN 4 CIBITUNG',
-            // Kita minta Laravel ikut menghitung jumlah Laki-laki dan Perempuan!
             'rekap_kelas' => \App\Models\Kelas::withCount([
                 'anggotaKelas',
                 'anggotaKelas as laki_laki_count' => function ($query) {
@@ -238,13 +237,20 @@ class PusatDownloadController extends Controller
                         $q->whereIn('jenis_kelamin', ['Perempuan', 'P']);
                     });
                 }
-            ])->get()
+            ])
+            // 🟢 TAMBAHKAN 2 BARIS INI UNTUK MENGURUTKAN KELAS!
+            ->orderBy('tingkat', 'asc')
+            ->orderBy('nama_kelas', 'asc')
+            ->get()
         ];
+        
         if ($request->format === 'excel') {
             return back()->with('success', 'Fitur Export Excel Rekap Siswa belum tersedia, segera di-update.');
         }
+        
         $pdf = Pdf::loadView('pusat_download.exports.rekap_siswa', $data)
           ->setPaper([0, 0, 612.00, 936.00], 'portrait'); 
+          
         return $pdf->download('Rekap_Jumlah_Siswa.pdf');
     }
 
