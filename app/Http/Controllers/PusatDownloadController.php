@@ -159,13 +159,13 @@ class PusatDownloadController extends Controller
         $kelasWali = \App\Models\KelasWali::with('waliKelas')->findOrFail($request->kelas_wali_id);
         $semesterAktif = \App\Models\Semester::with('tahunAjaran')->where('is_aktif', true)->first();
         
+        // 🟢 PERBAIKAN 1: Hapus sortBy() dan ganti dengan orderBy('id', 'asc') 
+        // agar murni sesuai urutan saat diinputkan ke sistem.
         $anggota = \App\Models\AnggotaKelasWali::with('siswa')
             ->where('kelas_wali_id', $kelasWali->id)
             ->where('semester_id', $semesterAktif->id ?? null)
-            ->get()
-            ->sortBy(function ($item) {
-                return $item->siswa->nama_lengkap; 
-            });
+            ->orderBy('id', 'asc') 
+            ->get();
             
         $profil = null; 
         $nama_sekolah = $profil ? $profil->nama_sekolah : 'SMPN 4 CIBITUNG'; 
@@ -185,8 +185,9 @@ class PusatDownloadController extends Controller
         
         $namaFile = "Daftar_Anggota_Kelompok_" . str_replace(' ', '_', $kelasWali->nama_kelas);
         
+        // 🟢 PERBAIKAN 2: Ubah 'portrait' menjadi 'landscape' agar tabel tidak terpotong!
         $pdf = Pdf::loadView('pusat_download.exports.data_kelas_wali', $data)
-                  ->setPaper([0, 0, 612.00, 936.00], 'portrait'); 
+                  ->setPaper([0, 0, 612.00, 936.00], 'landscape'); 
                   
         return $pdf->download($namaFile . '.pdf');
     }
