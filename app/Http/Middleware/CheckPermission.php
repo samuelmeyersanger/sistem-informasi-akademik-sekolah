@@ -24,20 +24,8 @@ class CheckPermission
         }
 
         // 3. Logika pengecekan permission untuk role selain admin (misal: guru/siswa)
-        $routeName = $request->route()->getName();
-       // =======================================================
-        // 🟢 RONTGEN KHUSUS 403 SARPRAS 🟢
-        // =======================================================
-        if ($routeName === 'sarpras.gedung.showRuangan') {
-            $semuaIzin = $user->roles()->with('permissions')->get()->pluck('permissions')->flatten()->pluck('name')->toArray();
-            dd([
-                '1_RUTE_YANG_DIBUTUHKAN' => $routeName,
-                '2_APAKAH_AKUN_INI_PUNYA' => in_array($routeName, $semuaIzin) ? 'YA PUNYA' : 'TIDAK PUNYA',
-                '3_DAFTAR_IZIN_SARPRAS_YANG_DIMILIKI_AKUN_INI' => array_values(array_filter($semuaIzin, function($izin) {
-                    return str_contains($izin, 'sarpras');
-                }))
-            ]);
-        }
+        $routeName = strtolower($request->route()->getName());
+
         // =======================================================
         if (method_exists($user, 'hasPermission') && !$user->hasPermission($routeName)) {
             abort(403, 'Anda tidak memiliki akses ke halaman ini.');
