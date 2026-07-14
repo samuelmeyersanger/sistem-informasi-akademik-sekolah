@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div class="flex items-center gap-4">
-                <a href="{{ route('ekstrakurikuler.index') }}" class="p-2 bg-white border border-gray-300 rounded-xl text-gray-500 hover:bg-gray-50 shadow-sm">
+                <a href="{{ route('ekskul.ekstrakurikuler.index') }}" class="p-2 bg-white border border-gray-300 rounded-xl text-gray-500 hover:bg-gray-50 shadow-sm">
                     <i class="fa-solid fa-arrow-left"></i>
                 </a>
                 <h2 class="font-semibold text-xl text-gray-800 leading-tight">
@@ -65,7 +65,7 @@
                                     <td class="p-4 text-gray-500">{{ $agt->nomor_hp ?? '-' }}</td>
                                     <td class="p-4">{{ $agt->tanggal_bergabung->format('d M Y') }}</td>
                                     <td class="p-4 flex justify-center">
-                                        <form action="{{ route('ekstrakurikuler.anggota.destroy', [$ekskul->id, $agt->id]) }}" method="POST" onsubmit="return confirm('Keluarkan siswa ini dari ekskul?')">
+                                        <form action="{{ route('ekskul.ekstrakurikuler.anggota.destroy', [$ekskul->id, $agt->id]) }}" method="POST" onsubmit="return confirm('Keluarkan siswa ini dari ekskul?')">
                                             @csrf @method('DELETE')
                                             <button type="submit" class="p-2 text-red-500 hover:bg-red-50 rounded-xl transition" title="Keluarkan Anggota">
                                                 <i class="fa-solid fa-user-minus"></i>
@@ -122,7 +122,7 @@
                                         @endif
                                     </td>
                                     <td class="p-4 flex justify-center">
-                                        <form action="{{ route('ekstrakurikuler.prestasi.destroy', [$ekskul->id, $pres->id]) }}" method="POST" onsubmit="return confirm('Hapus data prestasi ini?')">
+                                        <form action="{{ route('ekskul.ekstrakurikuler.prestasi.destroy', [$ekskul->id, $pres->id]) }}" method="POST" onsubmit="return confirm('Hapus data prestasi ini?')">
                                             @csrf @method('DELETE')
                                             <button type="submit" class="p-2 text-red-500 hover:bg-red-50 rounded-xl transition">
                                                 <i class="fa-solid fa-trash-can"></i>
@@ -146,7 +146,7 @@
                         <h4 class="text-lg font-bold text-gray-900">Form Anggota Baru</h4>
                         <button @click="modalAnggota = false" class="text-gray-400 hover:text-gray-600 text-xl">&times;</button>
                     </div>
-                    <form action="{{ route('ekstrakurikuler.anggota.store', $ekskul->id) }}" method="POST" class="space-y-4">
+                    <form action="{{ route('ekskul.ekstrakurikuler.anggota.store', $ekskul->id) }}" method="POST" class="space-y-4">
                         @csrf
                         <div>
                             <label class="block text-xs font-bold uppercase text-gray-700 mb-1">Pilih Siswa</label>
@@ -189,7 +189,7 @@
                         <h4 class="text-lg font-bold text-gray-900">Form Rekam Prestasi Juara</h4>
                         <button @click="modalPrestasi = false" class="text-gray-400 hover:text-gray-600 text-xl">&times;</button>
                     </div>
-                    <form action="{{ route('ekstrakurikuler.prestasi.store', $ekskul->id) }}" method="POST" enctype="multipart/form-data" class="space-y-4">
+                    <form action="{{ route('ekskul.ekstrakurikuler.prestasi.store', $ekskul->id) }}" method="POST" enctype="multipart/form-data" class="space-y-4">
                         @csrf
                         <div>
                             <label class="block text-xs font-bold uppercase text-gray-700 mb-1">Nama Prestasi / Nama Lomba</label>
