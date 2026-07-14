@@ -61,15 +61,15 @@ class PusatDownloadController extends Controller
             return Excel::download(new AbsensiKelasExport($data), $namaFile . '.xlsx');
         }
         
-        $pdf = Pdf::loadView('pusat_download.exports.absensi', $data)
-                  ->setPaper([0, 0, 612.00, 936.00], 'portrait'); 
-        return $pdf->stream($namaFile . '.pdf', ['Attachment' => false]);
+        // 🟢 INI YANG DIGANTI:
+        // Kita tidak lagi menggunakan DOMPDF, melainkan langsung menampilkan View HTML-nya.
+        return view('pusat_download.exports.absensi', $data);
     }
 
     // =========================================================================
     // FITUR 2: DOWNLOAD JADWAL PELAJARAN PERKELAS
     // =========================================================================
-    public function downloadJadwal(Request $request)
+        public function downloadJadwal(Request $request)
     {
         $request->validate([
             'kelas_id' => 'required|exists:kelas,id',
@@ -123,9 +123,8 @@ class PusatDownloadController extends Controller
             return Excel::download(new JadwalKelasExport($data), $namaFile . '.xlsx');
         }
         
-        $pdf = Pdf::loadView('pusat_download.exports.jadwal', $data)
-                  ->setPaper([0, 0, 612.00, 936.00], 'landscape'); 
-        return $pdf->stream($namaFile . '.pdf', ['Attachment' => false]);
+        // 🟢 INI YANG DIGANTI (Kode PDF dihapus, ganti pemanggilan HTML)
+        return view('pusat_download.exports.jadwal', $data);
     }
 
     // =========================================================================
@@ -185,11 +184,9 @@ class PusatDownloadController extends Controller
         
         $namaFile = "Daftar_Anggota_Kelompok_" . str_replace(' ', '_', $kelasWali->nama_kelas);
         
-        // 🟢 PERBAIKAN 2: Ubah 'portrait' menjadi 'landscape' agar tabel tidak terpotong!
-        $pdf = Pdf::loadView('pusat_download.exports.data_kelas_wali', $data)
-                  ->setPaper([0, 0, 612.00, 936.00], 'portrait'); 
-                  
-        return $pdf->stream($namaFile . '.pdf', ['Attachment' => false]);
+        // 🟢 INI YANG DIGANTI:
+        // Kita tidak lagi memanggil DOMPDF, cukup tampilkan View HTML murninya
+        return view('pusat_download.exports.data_kelas_wali', $data);
     }
 
     // =========================================================================
@@ -204,16 +201,11 @@ class PusatDownloadController extends Controller
             'daftar_kode' => \App\Models\KodeGuru::with(['pegawai', 'mataPelajarans', 'jadwalPelajarans.kelas'])->get(),
             'nama_sekolah' => 'SMPN 4 CIBITUNG'
         ];
-
         if ($request->format === 'excel') {
-            // Silakan buat KodeGuruExport jika Anda ingin fitur Excel-nya
-            // return Excel::download(new \App\Exports\KodeGuruExport($data), 'Daftar_Kode_Guru.xlsx');
             return back()->with('success', 'Fitur Export Excel Kode Guru belum tersedia, segera di-update.');
         }
-
-        // Jangan lupa buat file view 'pusat_download/exports/kode_guru.blade.php'
-        $pdf = Pdf::loadView('pusat_download.exports.kode_guru', $data)->setPaper([0, 0, 612.00, 936.00], 'portrait'); 
-        return $pdf->stream('Daftar_Kode_Guru.pdf', ['Attachment' => false]);
+        // 🟢 INI YANG DIGANTI (Hapus baris DOMPDF, ganti View HTML murni)
+        return view('pusat_download.exports.kode_guru', $data);
     }
 
     // =========================================================================
@@ -238,7 +230,7 @@ class PusatDownloadController extends Controller
                     });
                 }
             ])
-            // 🟢 TAMBAHKAN 2 BARIS INI UNTUK MENGURUTKAN KELAS!
+            // Mengurutkan berdasarkan tingkat dan nama kelas
             ->orderBy('tingkat', 'asc')
             ->orderBy('nama_kelas', 'asc')
             ->get()
@@ -248,10 +240,8 @@ class PusatDownloadController extends Controller
             return back()->with('success', 'Fitur Export Excel Rekap Siswa belum tersedia, segera di-update.');
         }
         
-        $pdf = Pdf::loadView('pusat_download.exports.rekap_siswa', $data)
-          ->setPaper([0, 0, 612.00, 936.00], 'portrait'); 
-          
-        return $pdf->stream('Rekap_Jumlah_Siswa.pdf', ['Attachment' => false]);
+        // 🟢 INI YANG DIGANTI (Kode PDF dihapus, cukup panggil view HTML murni)
+        return view('pusat_download.exports.rekap_siswa', $data);
     }
 
     // =========================================================================
@@ -265,13 +255,10 @@ class PusatDownloadController extends Controller
             'nama_sekolah' => 'SMPN 4 CIBITUNG',
             'jadwal_semua' => \App\Models\JadwalPelajaran::with(['kelas', 'waktuKbm', 'kodeGuru.pegawai'])->get()
         ];
-
         if ($request->format === 'excel') {
             return back()->with('success', 'Fitur Export Excel Jadwal Global belum tersedia, segera di-update.');
         }
-
-        // Jangan lupa buat file view 'pusat_download/exports/jadwal_global.blade.php'
-        $pdf = Pdf::loadView('pusat_download.exports.jadwal_global', $data)->setPaper([0, 0, 612.00, 936.00], 'landscape'); 
-        return $pdf->stream('Jadwal_Pelajaran_Global.pdf', ['Attachment' => false]);
+        // 🟢 HANYA MENYISAKAN BARIS INI:
+        return view('pusat_download.exports.jadwal_global', $data);
     }
 }

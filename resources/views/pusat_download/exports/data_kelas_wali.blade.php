@@ -2,10 +2,10 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Daftar Hadir</title>
+    <title>Daftar Hadir Kelompok Wali</title>
     <style>
         /* Margin dikurangi menjadi 0.5cm agar ruang horizontal makin maksimal di Portrait */
-        @page { margin: 0.5cm; }
+        @page { margin: 0.5cm; size: 8.5in 13in portrait; }
         body { font-family: Arial, sans-serif; font-size: 9px; }
         .header { text-align: center; margin-bottom: 10px; border-bottom: 2px solid #000; padding-bottom: 5px; }
         .header h2, .header h3, .header p { margin: 2px 0; }
@@ -31,20 +31,31 @@
         .footer { margin-top: 15px; width: 100%; font-size: 10px;}
         .ttd { float: right; width: 250px; text-align: center; }
         .clearfix::after { content: ""; clear: both; display: table; }
+
+        /* Menyembunyikan tombol saat dicetak */
+        @media print { .btn-print { display: none !important; } }
     </style>
 </head>
 <body>
 
+    <!-- Tombol Bantuan -->
+    <div class="btn-print" style="text-align: right; margin-bottom: 20px;">
+        <button onclick="window.print()" style="padding: 10px 18px; background: #dc2626; color: white; border: none; cursor: pointer; border-radius: 6px; font-weight: bold; font-size: 14px;">
+            📄 Cetak / Simpan PDF
+        </button>
+    </div>
+
     @php
         $logoSetting = \DB::table('pengaturan_logo')->first();
-        $logoPemda = $logoSetting && $logoSetting->logo_pemda ? public_path('storage/' . $logoSetting->logo_pemda) : null;
-        $logoSekolah = $logoSetting && $logoSetting->logo_sekolah ? public_path('storage/' . $logoSetting->logo_sekolah) : null;
+        // Pakai asset() karena dirender langsung di HTML browser
+        $logoPemda = $logoSetting && $logoSetting->logo_pemda ? asset('storage/' . $logoSetting->logo_pemda) : null;
+        $logoSekolah = $logoSetting && $logoSetting->logo_sekolah ? asset('storage/' . $logoSetting->logo_sekolah) : null;
     @endphp
     
     <table style="width: 100%; border-bottom: 2px solid #000; margin-bottom: 10px; padding-bottom: 5px;">
         <tr>
             <td style="width: 15%; text-align: left; vertical-align: middle;">
-                @if($logoPemda && file_exists($logoPemda))
+                @if($logoPemda)
                     <img src="{{ $logoPemda }}" style="max-height: 55px; max-width: 60px; object-fit: contain;">
                 @endif
             </td>
@@ -54,7 +65,7 @@
                 <p style="margin: 2px 0; font-size: 10px;">Tahun Ajaran {{ $tahun_ajaran ?? '-' }}</p>
             </td>
             <td style="width: 15%; text-align: right; vertical-align: middle;">
-                @if($logoSekolah && file_exists($logoSekolah))
+                @if($logoSekolah)
                     <img src="{{ $logoSekolah }}" style="max-height: 55px; max-width: 60px; object-fit: contain;">
                 @endif
             </td>
@@ -79,7 +90,6 @@
     <table class="data-table">
         <thead>
             <tr>
-                <!-- KOMPOSISI PERSENTASE KHUSUS PORTRAIT -->
                 <th rowspan="2" style="width: 3%;">No</th>
                 <th rowspan="2" style="width: 8%;">NISN</th>
                 <th rowspan="2" style="width: 25%;">Nama Lengkap</th>
@@ -89,7 +99,6 @@
             </tr>
             <tr>
                 @for($i = 1; $i <= 31; $i++)
-                    <!-- 34 Kotak dibagi sisa ruang = 1.79% per kotak -->
                     <th style="width: 1.79%;">{{ $i }}</th>
                 @endfor
                 <th style="width: 1.79%;">S</th>

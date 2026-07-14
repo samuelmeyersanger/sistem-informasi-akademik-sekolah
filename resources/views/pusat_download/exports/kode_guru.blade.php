@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <title>Daftar Kode Guru</title>
     <style>
+        /* Mengatur kertas tegak (Portrait) dengan margin rapi */
+        @page { size: portrait; margin: 1cm; }
+        
         body { font-family: Arial, sans-serif; font-size: 11px; }
         .header { text-align: center; margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 10px; }
         .header h2, .header h3 { margin: 2px 0; }
@@ -19,9 +22,19 @@
         .guru-nip { color: #444; font-size: 10px; }
         
         ul { margin: 0; padding-left: 15px; }
+
+        /* Menyembunyikan tombol merah saat dicetak ke kertas */
+        @media print { .btn-print { display: none !important; } }
     </style>
 </head>
 <body>
+
+    <!-- Tombol Bantuan -->
+    <div class="btn-print" style="text-align: right; margin-bottom: 20px;">
+        <button onclick="window.print()" style="padding: 10px 18px; background: #dc2626; color: white; border: none; cursor: pointer; border-radius: 6px; font-weight: bold; font-size: 14px;">
+            📄 Cetak / Simpan PDF
+        </button>
+    </div>
 
     <div class="header">
         <h2>DAFTAR KODE GURU & BEBAN MENGAJAR</h2>
@@ -64,7 +77,6 @@
                         {{-- Logika otomatis mengambil data kelas dari Jadwal Pelajaran --}}
                         @php
                             $kelas_list = [];
-                            // Mengecek apakah model KodeGuru punya relasi ke Jadwal
                             if(isset($item->jadwals) || isset($item->jadwalPelajarans)) {
                                 $jadwals = isset($item->jadwals) ? $item->jadwals : $item->jadwalPelajarans;
                                 foreach($jadwals as $jadwal) {

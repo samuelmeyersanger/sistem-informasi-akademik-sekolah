@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Daftar Hadir Kelas</title>
     <style>
-        @page { margin: 1cm; }
+        @page { margin: 1cm; size: 8.5in 13in portrait; }
         body { font-family: Arial, sans-serif; font-size: 9px; }
         .header { text-align: center; margin-bottom: 10px; border-bottom: 2px solid #000; padding-bottom: 5px; }
         .header h2, .header h3, .header p { margin: 2px 0; }
@@ -12,7 +12,6 @@
         .info-table { width: 100%; margin-bottom: 10px; font-weight: bold; font-size: 10px; }
         .info-table td { padding: 2px; }
         
-        /* Layout fixed dan penyesuaian font agar nama muat utuh */
         .data-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
         .data-table th, .data-table td { border: 1px solid #000; padding: 3px 1px; overflow: hidden; font-size: 8.5px; }
         .data-table th { background-color: #f0f0f0; text-align: center; font-size: 8px; font-weight: bold; }
@@ -20,29 +19,36 @@
         .text-center { text-align: center; }
         .text-left { text-align: left; padding-left: 4px !important; }
         
-        .nama-siswa { 
-            white-space: normal; /* Mengizinkan teks turun ke baris baru */
-            word-wrap: break-word; 
-            line-height: 1.1; /* Agar jarak antar baris atas-bawah tidak terlalu renggang */
-        }
+        .nama-siswa { white-space: normal; word-wrap: break-word; line-height: 1.1; }
         
         .footer { margin-top: 15px; width: 100%; font-size: 10px;}
         .ttd { float: right; width: 250px; text-align: center; }
         .clearfix::after { content: ""; clear: both; display: table; }
+
+        /* Menyembunyikan tombol saat dicetak */
+        @media print { .btn-print { display: none !important; } }
     </style>
 </head>
 <body>
 
+    <!-- Tombol Bantuan -->
+    <div class="btn-print" style="text-align: right; margin-bottom: 20px;">
+        <button onclick="window.print()" style="padding: 10px 18px; background: #dc2626; color: white; border: none; cursor: pointer; border-radius: 6px; font-weight: bold; font-size: 14px;">
+            📄 Cetak / Simpan PDF
+        </button>
+    </div>
+
     @php
         $logoSetting = \DB::table('pengaturan_logo')->first();
-        // Menggunakan public_path agar DomPDF bisa membaca file dari dalam server lokal
-        $logoPemda = $logoSetting && $logoSetting->logo_pemda ? public_path('storage/' . $logoSetting->logo_pemda) : null;
-        $logoSekolah = $logoSetting && $logoSetting->logo_sekolah ? public_path('storage/' . $logoSetting->logo_sekolah) : null;
+        // Pakai asset() saja karena ini HTML langsung di browser
+        $logoPemda = $logoSetting && $logoSetting->logo_pemda ? asset('storage/' . $logoSetting->logo_pemda) : null;
+        $logoSekolah = $logoSetting && $logoSetting->logo_sekolah ? asset('storage/' . $logoSetting->logo_sekolah) : null;
     @endphp
+    
     <table style="width: 100%; border-bottom: 2px solid #000; margin-bottom: 10px; padding-bottom: 5px;">
         <tr>
             <td style="width: 15%; text-align: left; vertical-align: middle;">
-                @if($logoPemda && file_exists($logoPemda))
+                @if($logoPemda)
                     <img src="{{ $logoPemda }}" style="max-height: 65px; max-width: 70px; object-fit: contain;">
                 @endif
             </td>
@@ -53,7 +59,7 @@
                 <p style="margin: 2px 0; font-size: 10px;">Semester {{ $semester ?? '-' }}</p>
             </td>
             <td style="width: 15%; text-align: right; vertical-align: middle;">
-                @if($logoSekolah && file_exists($logoSekolah))
+                @if($logoSekolah)
                     <img src="{{ $logoSekolah }}" style="max-height: 65px; max-width: 70px; object-fit: contain;">
                 @endif
             </td>
@@ -111,7 +117,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="38" class="text-center" style="padding: 10px;">Belum ada data anggota yang terdaftar di kelas ini.</td>
+                    <td colspan="38" class="text-center" style="padding: 10px;">Belum ada data anggota.</td>
                 </tr>
             @endforelse
         </tbody>

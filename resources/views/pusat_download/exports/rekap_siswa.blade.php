@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <title>Rekapitulasi Jumlah Siswa</title>
     <style>
-        @page { margin: 1cm; }
+        /* Mengatur ukuran kertas tegak (Portrait) */
+        @page { size: portrait; margin: 1cm; }
         
         body { font-family: Arial, sans-serif; font-size: 11px; }
         .header { text-align: center; margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 10px; }
@@ -20,9 +21,19 @@
         
         .subtotal { background-color: #e8e8e8; font-weight: bold; }
         .grandtotal { background-color: #d0d0d0; font-weight: bold; font-size: 13px; color: #111; }
+
+        /* Menyembunyikan tombol merah saat kertas dicetak */
+        @media print { .btn-print { display: none !important; } }
     </style>
 </head>
 <body>
+
+    <!-- Tombol Bantuan -->
+    <div class="btn-print" style="text-align: right; margin-bottom: 20px;">
+        <button onclick="window.print()" style="padding: 10px 18px; background: #dc2626; color: white; border: none; cursor: pointer; border-radius: 6px; font-weight: bold; font-size: 14px;">
+            📄 Cetak / Simpan PDF
+        </button>
+    </div>
 
     <div class="header">
         <h2>REKAPITULASI JUMLAH SISWA PER KELAS</h2>
