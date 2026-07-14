@@ -74,7 +74,7 @@ class User extends Authenticatable
         $roles = $this->roles()->with('permissions')->get();
         foreach ($roles as $role) {
             // 🟢 UBAH 'name' MENJADI 'slug' (Atau sesuaikan dengan nama kolom asli di DB Anda)
-            if ($role->permissions->contains('slug', $permissionName)) { 
+            if ($role->permissions->contains('name', $permissionName)) { 
                 return true;
             }
         }

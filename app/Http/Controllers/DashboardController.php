@@ -16,19 +16,6 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
         // =========================================================
-        // 🟢 TARUH KODE RONTGEN-NYA TEPAT DI SINI
-        // (Ini akan menghentikan proses ke bawah dan memunculkan layar hitam)
-        // =========================================================
-        $semuaIzin = $user->roles()->with('permissions')->get()->pluck('permissions')->flatten()->toArray();
-        
-        dd([
-            '1_CONTOH_NAMA_KOLOM_DI_DATABASE_ANDA' => $semuaIzin[0] ?? 'Kosong',
-            '2_APAKAH_IZIN_DASHBOARD_STAF_BENAR_BENAR_ADA' => array_filter($semuaIzin, function($p) {
-                // Kita cari ke semua kolom, apakah ada kata "view-dashboard-staf"
-                return in_array('view-dashboard-staf', array_values($p));
-            })
-        ]);
-        // =========================================================
         // 1. DASHBOARD ADMIN / PIMPINAN
         // =========================================================
         if ($user->hasPermission('view-dashboard-admin')) {
