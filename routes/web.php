@@ -563,13 +563,13 @@ Route::middleware(['auth', CheckApproval::class])->group(function () {
     */
     Route::prefix('pusat-download')->name('pusat_download.')->group(function () {
         Route::get('/', [\App\Http\Controllers\PusatDownloadController::class, 'index'])->name('index');
-        Route::post('/absensi', [\App\Http\Controllers\PusatDownloadController::class, 'downloadAbsensi'])->name('absensi');
-        Route::post('/jadwal', [\App\Http\Controllers\PusatDownloadController::class, 'downloadJadwal'])->name('jadwal');
+        Route::get('/absensi', [\App\Http\Controllers\PusatDownloadController::class, 'downloadAbsensi'])->name('absensi');
+        Route::get('/jadwal', [\App\Http\Controllers\PusatDownloadController::class, 'downloadJadwal'])->name('jadwal');
         Route::get('/cetak-absensi', [\App\Http\Controllers\PusatDownloadController::class, 'cetakAbsensiEkskul'])->name('cetak_absensi_ekskul');
-        Route::post('/kelas-wali', [\App\Http\Controllers\PusatDownloadController::class, 'downloadDataKelasWali'])->name('data_kelas_wali');
-        Route::post('/kode-guru', [\App\Http\Controllers\PusatDownloadController::class, 'downloadKodeGuru'])->name('kode_guru');
-        Route::post('/rekap-siswa', [\App\Http\Controllers\PusatDownloadController::class, 'downloadRekapSiswa'])->name('rekap_siswa');
-        Route::post('/jadwal-global', [\App\Http\Controllers\PusatDownloadController::class, 'downloadJadwalGlobal'])->name('jadwal_global');
+        Route::get('/kelas-wali', [\App\Http\Controllers\PusatDownloadController::class, 'downloadDataKelasWali'])->name('data_kelas_wali');
+        Route::get('/kode-guru', [\App\Http\Controllers\PusatDownloadController::class, 'downloadKodeGuru'])->name('kode_guru');
+        Route::get('/rekap-siswa', [\App\Http\Controllers\PusatDownloadController::class, 'downloadRekapSiswa'])->name('rekap_siswa');
+        Route::get('/jadwal-global', [\App\Http\Controllers\PusatDownloadController::class, 'downloadJadwalGlobal'])->name('jadwal_global');
     });
     
     /*

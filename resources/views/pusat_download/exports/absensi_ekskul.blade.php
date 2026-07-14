@@ -24,7 +24,7 @@
         @media print { .btn-print { display: none; } }
     </style>
 </head>
-<body onload="window.print()">
+<body>
 
     <!-- Tombol Bantuan (Otomatis hilang saat halaman di-print) -->
     <div class="btn-print" style="text-align: right; margin-bottom: 20px;">
