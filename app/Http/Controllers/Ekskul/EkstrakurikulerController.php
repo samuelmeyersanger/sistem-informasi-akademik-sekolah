@@ -59,7 +59,7 @@ class EkstrakurikulerController extends Controller
 
         Ekstrakurikuler::create($data);
 
-        return redirect()->route('ekstrakurikuler.index')->with('success', 'Ekstrakurikuler berhasil ditambahkan!');
+        return redirect()->route('ekskul.ekstrakurikuler.index')->with('success', 'Ekstrakurikuler berhasil ditambahkan!');
     }
 
     /**
@@ -122,7 +122,7 @@ class EkstrakurikulerController extends Controller
 
         $ekskul->update($data);
 
-        return redirect()->route('ekstrakurikuler.index')->with('success', 'Data Ekstrakurikuler berhasil diperbarui!');
+        return redirect()->route('ekskul.ekstrakurikuler.index')->with('success', 'Data Ekstrakurikuler berhasil diperbarui!');
     }
 
     /**
@@ -134,7 +134,7 @@ class EkstrakurikulerController extends Controller
         $ekskul = Ekstrakurikuler::aksesPembina(auth()->user())->findOrFail($id);
         $ekskul->delete();
 
-        return redirect()->route('ekstrakurikuler.index')->with('success', 'Ekstrakurikuler berhasil dinonaktifkan (Soft Delete).');
+        return redirect()->route('ekskul.ekstrakurikuler.index')->with('success', 'Ekstrakurikuler berhasil dinonaktifkan (Soft Delete).');
     }
 
     /**
@@ -170,7 +170,7 @@ class EkstrakurikulerController extends Controller
             'status' => 'Aktif',
         ]);
 
-        return redirect()->route('ekstrakurikuler.show', $ekskulId)->with('success', 'Anggota baru berhasil ditambahkan!');
+        return redirect()->route('ekskul.ekstrakurikuler.show', $ekskulId)->with('success', 'Anggota baru berhasil ditambahkan!');
     }
 
     public function destroyAnggota($ekskulId, $anggotaId)
@@ -181,7 +181,7 @@ class EkstrakurikulerController extends Controller
         $anggota = AnggotaEkstrakurikuler::where('ekstrakurikuler_id', $ekskulId)->findOrFail($anggotaId);
         $anggota->delete();
 
-        return redirect()->route('ekstrakurikuler.show', $ekskulId)->with('success', 'Anggota berhasil dikeluarkan dari ekskul.');
+        return redirect()->route('ekskul.ekstrakurikuler.show', $ekskulId)->with('success', 'Anggota berhasil dikeluarkan dari ekskul.');
     }
 
     /**
@@ -215,7 +215,7 @@ class EkstrakurikulerController extends Controller
 
         PrestasiEkstrakurikuler::create($data);
 
-        return redirect()->route('ekstrakurikuler.show', $ekskulId)->with('success', 'Data prestasi berhasil direkam!');
+        return redirect()->route('ekskul.ekstrakurikuler.show', $ekskulId)->with('success', 'Data prestasi berhasil direkam!');
     }
 
     public function destroyPrestasi($ekskulId, $prestasiId)
@@ -230,6 +230,6 @@ class EkstrakurikulerController extends Controller
 
         $prestasi->delete();
 
-        return redirect()->route('ekstrakurikuler.show', $ekskulId)->with('success', 'Data prestasi berhasil dihapus.');
+        return redirect()->route('ekskul.ekstrakurikuler.show', $ekskulId)->with('success', 'Data prestasi berhasil dihapus.');
     }
 }
