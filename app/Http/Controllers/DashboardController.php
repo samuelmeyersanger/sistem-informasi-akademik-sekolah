@@ -21,8 +21,8 @@ class DashboardController extends Controller
         // =========================================================
         dd([
             'NAMA_AKUN' => $user->name ?? 'Tanpa Nama',
-            'ROLE_YANG_TERBACA_DI_PIVOT' => $user->roles()->with('permissions')->get()->toArray(),
-            'HASIL_CEK_IZIN_STAF' => method_exists($user, 'hasPermission') ? $user->hasPermission('view-dashboard-staf') : 'Error: Fungsi hasPermission tidak ada!',
+            'IZIN_YANG_DIMILIKI_ROLE_INI' => $user->roles()->with('permissions')->get()->pluck('permissions')->flatten()->toArray(),
+            'HASIL_CEK_IZIN_STAF' => method_exists($user, 'hasPermission') ? $user->hasPermission('view-dashboard-staf') : 'Fungsi tidak ada!',
         ]);
         // =========================================================
         // 1. DASHBOARD ADMIN / PIMPINAN
