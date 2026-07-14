@@ -60,7 +60,7 @@
                         <tbody class="divide-y divide-gray-100 text-sm text-gray-700">
                             @forelse($ekskul->anggota as $agt)
                                 <tr class="hover:bg-gray-50/80 transition">
-                                    <td class="p-4 font-medium text-gray-900">{{ $agt->siswa->nama ?? 'N/A' }}</td>
+                                    <td class="p-4 font-medium text-gray-900">{{ $agt->siswa->nama_lengkap ?? 'N/A' }}</td>
                                     <td class="p-4">{{ $agt->kelas->nama ?? 'N/A' }}</td>
                                     <td class="p-4 text-gray-500">{{ $agt->nomor_hp ?? '-' }}</td>
                                     <td class="p-4">{{ $agt->tanggal_bergabung->format('d M Y') }}</td>
@@ -140,7 +140,28 @@
                 </div>
             </div>
 
-            <div x-show="modalAnggota" class="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4 bg-gray-950/50 backdrop-blur-sm" style="display: none;">
+            <div x-show="modalAnggota" 
+                 x-data="{ 
+                     selectedKelas: '',
+                     // 1. Kita buat array daftar siswa dari PHP ke Javascript
+                     allSiswa: [
+                         @foreach($siswaBelumMendaftar as $sw)
+                             { 
+                                 id: '{{ $sw->id }}', 
+                                 nama: '{{ addslashes($sw->nama ?? $sw->nama_lengkap) }}', 
+                                 // PENTING: Pastikan properti kelas_id ini sesuai dengan nama kolom/relasi di database Anda
+                                 kelas_id: '{{ $sw->kelas_id ?? '' }}' 
+                             },
+                         @endforeach
+                     ],
+                     // 2. Fungsi untuk menyaring siswa berdasarkan kelas yang dipilih
+                     get filteredSiswa() {
+                         if (!this.selectedKelas) return [];
+                         return this.allSiswa.filter(s => s.kelas_id == this.selectedKelas);
+                     }
+                 }" 
+                 class="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4 bg-gray-950/50 backdrop-blur-sm" style="display: none;">
+                
                 <div @click.away="modalAnggota = false" class="bg-white rounded-2xl max-w-md w-full shadow-2xl p-6 border-t-4 border-indigo-600 animate__animated animate__fadeInUp">
                     <div class="flex justify-between items-center mb-4">
                         <h4 class="text-lg font-bold text-gray-900">Form Anggota Baru</h4>
@@ -148,22 +169,35 @@
                     </div>
                     <form action="{{ route('ekskul.ekstrakurikuler.anggota.store', $ekskul->id) }}" method="POST" class="space-y-4">
                         @csrf
+                        
+                        <!-- DROP DOWN KELAS DIPINDAH KE ATAS -->
                         <div>
-                            <label class="block text-xs font-bold uppercase text-gray-700 mb-1">Pilih Siswa</label>
-                            <select name="siswa_id" required class="w-full rounded-xl border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm text-sm">
-                                <option value="">-- Cari Nama Siswa --</option>
-                                @foreach($siswaBelumMendaftar as $sw)
-                                    <option value="{{ $sw->id }}">{{ $sw->nama }}</option>
+                            <label class="block text-xs font-bold uppercase text-gray-700 mb-1">Kelas Saat Ini *</label>
+                            <!-- x-model="selectedKelas" akan menyimpan pilihan user -->
+                            <select x-model="selectedKelas" name="kelas_id" required class="w-full rounded-xl border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm text-sm">
+                                <option value="">-- Pilih Kelas --</option>
+                                @foreach($kelas as $kls)
+                                    <option value="{{ $kls->id }}">{{ $kls->nama_kelas }}</option>
                                 @endforeach
                             </select>
                         </div>
+                        
+                        <!-- DROP DOWN SISWA MENYESUAIKAN KELAS -->
                         <div>
-                            <label class="block text-xs font-bold uppercase text-gray-700 mb-1">Kelas Saat Ini</label>
-                            <select name="kelas_id" required class="w-full rounded-xl border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm text-sm">
-                                <option value="">-- Pilih Kelas --</option>
-                                @foreach($kelas as $kls)
-                                    <option value="{{ $kls->id }}">{{ $kls->nama }}</option>
-                                @endforeach
+                            <label class="block text-xs font-bold uppercase text-gray-700 mb-1">Pilih Siswa *</label>
+                            <!-- Dropdown disable jika kelas belum dipilih -->
+                            <select name="siswa_id" required :disabled="!selectedKelas" class="w-full rounded-xl border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm text-sm disabled:bg-gray-100 disabled:cursor-not-allowed">
+                                <option value="">-- Cari Nama Siswa --</option>
+                                
+                                <!-- Looping otomatis menggunakan Alpine.js -->
+                                <template x-for="siswa in filteredSiswa" :key="siswa.id">
+                                    <option :value="siswa.id" x-text="siswa.nama_lengkap ?? siswa.nama"></option>
+                                </template>
+                                
+                                <!-- Jika kelas sudah dipilih tapi kosong -->
+                                <template x-if="selectedKelas && filteredSiswa.length === 0">
+                                    <option value="" disabled>Tidak ada siswa mendaftar dari kelas ini</option>
+                                </template>
                             </select>
                         </div>
                         <div>
@@ -171,7 +205,7 @@
                             <input type="text" name="nomor_hp" placeholder="Contoh: 081234xxx" class="w-full rounded-xl border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm text-sm">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold uppercase text-gray-700 mb-1">Tanggal Bergabung</label>
+                            <label class="block text-xs font-bold uppercase text-gray-700 mb-1">Tanggal Bergabung *</label>
                             <input type="date" name="tanggal_bergabung" value="{{ date('Y-m-d') }}" required class="w-full rounded-xl border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm text-sm">
                         </div>
                         <div>
