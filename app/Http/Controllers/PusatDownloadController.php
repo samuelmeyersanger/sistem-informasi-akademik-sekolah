@@ -63,7 +63,7 @@ class PusatDownloadController extends Controller
         
         $pdf = Pdf::loadView('pusat_download.exports.absensi', $data)
                   ->setPaper([0, 0, 612.00, 936.00], 'portrait'); 
-        return $pdf->stream($namaFile . '.pdf');
+        return $pdf->stream($namaFile . '.pdf', ['Attachment' => false]);
     }
 
     // =========================================================================
