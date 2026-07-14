@@ -38,7 +38,7 @@
                         </div>
                         <h4 class="font-bold text-gray-900 text-lg">Daftar Kode Guru</h4>
                         <p class="text-xs text-gray-500 mt-1 mb-5 h-10">Unduh daftar lengkap seluruh guru beserta kode mengajarnya.</p>
-                        <form action="{{ route('pusat_download.kode_guru') }}" method="POST" target="_blank" class="flex gap-2">
+                        <form action="{{ route('pusat_download.kode_guru') }}" method="GET" target="_blank" class="flex gap-2">
                             @csrf
                             <button type="submit" name="format" value="excel" class="flex-1 px-3 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-bold rounded-lg border border-emerald-200 transition-colors">📊 Excel</button>
                             <button type="submit" name="format" value="pdf" class="flex-1 px-3 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold rounded-lg border border-rose-200 transition-colors">📄 PDF</button>
@@ -52,7 +52,7 @@
                         </div>
                         <h4 class="font-bold text-gray-900 text-lg">Rekap Jumlah Siswa</h4>
                         <p class="text-xs text-gray-500 mt-1 mb-5 h-10">Data agregat total siswa per tingkat, jenis kelamin, dan kelas.</p>
-                        <form action="{{ route('pusat_download.rekap_siswa') }}" method="POST" target="_blank" class="flex gap-2">
+                        <form action="{{ route('pusat_download.rekap_siswa') }}" method="GET" target="_blank" class="flex gap-2">
                             @csrf
                             <button type="submit" name="format" value="excel" class="flex-1 px-3 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-bold rounded-lg border border-emerald-200 transition-colors">📊 Excel</button>
                             <button type="submit" name="format" value="pdf" class="flex-1 px-3 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold rounded-lg border border-rose-200 transition-colors">📄 PDF</button>
@@ -66,7 +66,7 @@
                         </div>
                         <h4 class="font-bold text-gray-900 text-lg">Jadwal Pelajaran Global</h4>
                         <p class="text-xs text-gray-500 mt-1 mb-5 h-10">Matriks jadwal pelajaran seluruh kelas dalam satu dokumen.</p>
-                        <form action="{{ route('pusat_download.jadwal_global') }}" method="POST" target="_blank" class="flex gap-2">
+                        <form action="{{ route('pusat_download.jadwal_global') }}" method="GET" target="_blank" class="flex gap-2">
                             @csrf
                             <button type="submit" name="format" value="excel" class="flex-1 px-3 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-bold rounded-lg border border-emerald-200 transition-colors">📊 Excel</button>
                             <button type="submit" name="format" value="pdf" class="flex-1 px-3 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold rounded-lg border border-rose-200 transition-colors">📄 PDF</button>
@@ -92,7 +92,7 @@
                             <h4 class="font-bold text-gray-900 text-lg">Daftar Hadir (Absensi) Kelas</h4>
                         </div>
                         <p class="text-xs text-gray-500 mb-4">Lembar absensi kosong untuk digunakan oleh guru mata pelajaran.</p>
-                        <form action="{{ route('pusat_download.absensi') }}" method="POST" target="_blank" class="space-y-3">
+                        <form action="{{ route('pusat_download.absensi') }}" method="GET" target="_blank" class="space-y-3">
                             @csrf
                             <select name="kelas_id" required class="w-full text-sm rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm bg-gray-50">
                                 <option value="">-- Pilih Ruang Kelas --</option>
@@ -114,7 +114,7 @@
                             <h4 class="font-bold text-gray-900 text-lg">Jadwal Pelajaran Kelas</h4>
                         </div>
                         <p class="text-xs text-gray-500 mb-4">Cetak jadwal pelajaran harian khusus untuk ditempel di kelas.</p>
-                        <form action="{{ route('pusat_download.jadwal') }}" method="POST" target="_blank" class="space-y-3">
+                        <form action="{{ route('pusat_download.jadwal') }}" method="GET" target="_blank" class="space-y-3">
                             @csrf
                             <select name="kelas_id" required class="w-full text-sm rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm bg-gray-50">
                                 <option value="">-- Pilih Ruang Kelas --</option>
@@ -148,7 +148,7 @@
                             <h4 class="font-bold text-gray-900 text-lg">Absensi Kelompok Wali</h4>
                         </div>
                         <p class="text-xs text-gray-500 mb-4">Unduh lembar absensi khusus siswa kelompok bimbingan Anda.</p>
-                        <form action="{{ route('pusat_download.data_kelas_wali') }}" method="POST" target="_blank" class="space-y-3">
+                        <form action="{{ route('pusat_download.data_kelas_wali') }}" method="GET" target="_blank" class="space-y-3">
                             @csrf
                             <select name="kelas_wali_id" required class="w-full text-sm rounded-lg border-gray-300 focus:border-teal-500 focus:ring-teal-500 shadow-sm bg-gray-50">
                                 <option value="">-- Pilih Kelompok Wali --</option>
