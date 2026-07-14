@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Http\Controllers;
-
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Siswa;
@@ -9,16 +7,23 @@ use App\Models\Pegawai;
 use App\Models\Kelas;
 use App\Models\MataPelajaran;
 use App\Models\Ekstrakurikuler;
-use App\Models\KodeGuru;         // 👈 Tambahkan ini
-use App\Models\JadwalPelajaran;  // 👈 Tambahkan ini
+use App\Models\KodeGuru;         
+use App\Models\JadwalPelajaran;  
 use Carbon\Carbon;
-
 class DashboardController extends Controller
 {
     public function index()
     {
         $user = Auth::user();
-
+        // =========================================================
+        // 🟢 TARUH KODE RONTGEN-NYA TEPAT DI SINI
+        // (Ini akan menghentikan proses ke bawah dan memunculkan layar hitam)
+        // =========================================================
+        dd([
+            'NAMA_AKUN' => $user->name ?? 'Tanpa Nama',
+            'ROLE_YANG_TERBACA_DI_PIVOT' => $user->roles()->with('permissions')->get()->toArray(),
+            'HASIL_CEK_IZIN_STAF' => method_exists($user, 'hasPermission') ? $user->hasPermission('view-dashboard-staf') : 'Error: Fungsi hasPermission tidak ada!',
+        ]);
         // =========================================================
         // 1. DASHBOARD ADMIN / PIMPINAN
         // =========================================================
