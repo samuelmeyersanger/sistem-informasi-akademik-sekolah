@@ -125,7 +125,7 @@ class PusatDownloadController extends Controller
         
         $pdf = Pdf::loadView('pusat_download.exports.jadwal', $data)
                   ->setPaper([0, 0, 612.00, 936.00], 'landscape'); 
-        return $pdf->stream($namaFile . '.pdf');
+        return $pdf->stream($namaFile . '.pdf', ['Attachment' => false]);
     }
 
     // =========================================================================
@@ -189,7 +189,7 @@ class PusatDownloadController extends Controller
         $pdf = Pdf::loadView('pusat_download.exports.data_kelas_wali', $data)
                   ->setPaper([0, 0, 612.00, 936.00], 'portrait'); 
                   
-        return $pdf->stream($namaFile . '.pdf');
+        return $pdf->stream($namaFile . '.pdf', ['Attachment' => false]);
     }
 
     // =========================================================================
@@ -213,7 +213,7 @@ class PusatDownloadController extends Controller
 
         // Jangan lupa buat file view 'pusat_download/exports/kode_guru.blade.php'
         $pdf = Pdf::loadView('pusat_download.exports.kode_guru', $data)->setPaper([0, 0, 612.00, 936.00], 'portrait'); 
-        return $pdf->stream('Daftar_Kode_Guru.pdf');
+        return $pdf->stream('Daftar_Kode_Guru.pdf', ['Attachment' => false]);
     }
 
     // =========================================================================
@@ -251,7 +251,7 @@ class PusatDownloadController extends Controller
         $pdf = Pdf::loadView('pusat_download.exports.rekap_siswa', $data)
           ->setPaper([0, 0, 612.00, 936.00], 'portrait'); 
           
-        return $pdf->stream('Rekap_Jumlah_Siswa.pdf');
+        return $pdf->stream('Rekap_Jumlah_Siswa.pdf', ['Attachment' => false]);
     }
 
     // =========================================================================
@@ -272,6 +272,6 @@ class PusatDownloadController extends Controller
 
         // Jangan lupa buat file view 'pusat_download/exports/jadwal_global.blade.php'
         $pdf = Pdf::loadView('pusat_download.exports.jadwal_global', $data)->setPaper([0, 0, 612.00, 936.00], 'landscape'); 
-        return $pdf->stream('Jadwal_Pelajaran_Global.pdf');
+        return $pdf->stream('Jadwal_Pelajaran_Global.pdf', ['Attachment' => false]);
     }
 }
