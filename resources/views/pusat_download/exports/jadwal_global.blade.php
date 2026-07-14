@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <title>Jadwal Pelajaran Global</title>
     <style>
+        /* KUNCI LANDSCAPE: Memaksa orientasi kertas menjadi mendatar saat di-print */
+        @page { size: 13in 8.5in landscape; margin: 1cm; }
+        
         body { font-family: Arial, sans-serif; font-size: 10px; }
         .header { text-align: center; margin-bottom: 15px; border-bottom: 2px solid #000; padding-bottom: 10px; }
         .header h2, .header h3 { margin: 2px 0; }
@@ -18,9 +21,19 @@
         
         .mapel-name { font-weight: bold; color: #111; }
         .guru-code { color: #d92626; font-weight: bold; font-size: 9px; }
+
+        /* Menyembunyikan tombol merah saat kertas dicetak */
+        @media print { .btn-print { display: none !important; } }
     </style>
 </head>
 <body>
+
+    <!-- Tombol Bantuan -->
+    <div class="btn-print" style="text-align: right; margin-bottom: 20px;">
+        <button onclick="window.print()" style="padding: 10px 18px; background: #dc2626; color: white; border: none; cursor: pointer; border-radius: 6px; font-weight: bold; font-size: 14px;">
+            📄 Cetak / Simpan PDF
+        </button>
+    </div>
 
     <div class="header">
         <h2>JADWAL PELAJARAN GLOBAL (SELURUH KELAS)</h2>
@@ -30,7 +43,6 @@
 
     @php
         // Mengelompokkan data jadwal berdasarkan Kelas
-        // Tujuannya agar kita bisa membuat baris per-kelas di dalam tabel
         $groupedByKelas = $jadwal_semua->groupBy(function($j) {
             return $j->kelas ? $j->kelas->tingkat . ' - ' . $j->kelas->nama_kelas : 'Tanpa Kelas';
         })->sortKeys();
@@ -55,7 +67,6 @@
                     @foreach($hari_aktif as $hari)
                         <td>
                             @php
-                                // Ambil jadwal khusus untuk kelas dan hari ini, lalu urutkan berdasarkan jam_ke
                                 $jadwalHariIni = $jadwals->where('hari', $hari)->sortBy(function($j) {
                                     return $j->waktuKbm ? $j->waktuKbm->jam_ke : 99;
                                 });
@@ -65,7 +76,6 @@
                                 <div class="jam-item">
                                     <span>Jam ke-{{ $j->waktuKbm ? $j->waktuKbm->jam_ke : '-' }}:</span><br>
                                     
-                                    {{-- Mengambil nama mapel (baik dari tabel jadwal langsung, atau dari relasi guru) --}}
                                     @php
                                         $nama_mapel = '-';
                                         if($j->mataPelajaran) {

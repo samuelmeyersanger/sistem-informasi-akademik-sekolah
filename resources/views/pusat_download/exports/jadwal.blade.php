@@ -11,9 +11,19 @@
         .text-center { text-align: center; }
         .text-bold { font-weight: bold; }
         .bg-gray { background-color: #f2f2f2; }
+
+        /* Menyembunyikan tombol merah saat kertas dicetak */
+        @media print { .btn-print { display: none !important; } }
     </style>
 </head>
 <body>
+
+    <!-- Tombol Bantuan -->
+    <div class="btn-print" style="text-align: right; margin-bottom: 20px;">
+        <button onclick="window.print()" style="padding: 10px 18px; background: #dc2626; color: white; border: none; cursor: pointer; border-radius: 6px; font-weight: bold; font-size: 14px;">
+            📄 Cetak / Simpan PDF
+        </button>
+    </div>
 
     <table>
         <!-- KOP SURAT / HEADER -->
