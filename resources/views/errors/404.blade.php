@@ -1,37 +1,83 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Halaman Tidak Ditemukan') }}
+        <h2 class="font-bold text-2xl text-gray-800 leading-tight flex items-center gap-2">
+            <span class="text-3xl">🧭</span> {{ __('Halaman Tidak Ditemukan') }}
         </h2>
     </x-slot>
 
-    <div class="py-16 min-h-[calc(100vh-65px)] flex items-center justify-center bg-gray-50/50">
-        <div class="max-w-xl mx-auto sm:px-6 lg:px-8 w-full">
-            <div class="bg-white overflow-hidden shadow-xl sm:rounded-2xl border-t-4 border-amber-500 transform transition-all duration-300 hover:shadow-2xl">
-                <div class="p-10 text-center flex flex-col items-center">
+    <div class="py-16 min-h-[calc(100vh-65px)] flex items-center justify-center bg-slate-50 relative overflow-hidden">
+        
+        {{-- Dekorasi Background Modern (Warna Amber/Kuning) --}}
+        <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-amber-400 rounded-full mix-blend-multiply filter blur-3xl opacity-15 animate-blob"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-orange-300 rounded-full mix-blend-multiply filter blur-3xl opacity-15 animate-blob animation-delay-2000"></div>
+
+        <div class="max-w-xl mx-auto sm:px-6 lg:px-8 w-full relative z-10">
+            <div class="bg-white overflow-hidden shadow-2xl shadow-amber-900/5 sm:rounded-[2rem] border border-gray-100 transform transition-all duration-500 hover:-translate-y-1 hover:shadow-amber-900/10 text-center relative">
+                
+                {{-- Aksen Garis Atas Tipis --}}
+                <div class="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-amber-500 to-orange-400"></div>
+
+                <div class="px-10 py-16 flex flex-col items-center">
                     
-                    <div class="mb-6 p-4 rounded-full bg-amber-50 border border-amber-100 text-amber-500 shadow-sm">
-                        <svg class="h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 15.75l-2.489-2.489m0 0a3.375 3.375 0 10-4.773-4.773 3.375 3.375 0 004.774 4.774zM21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
+                    {{-- Ikon Premium --}}
+                    <div class="mb-8 relative">
+                        <div class="absolute inset-0 bg-amber-100 rounded-full animate-ping opacity-75"></div>
+                        <div class="relative w-24 h-24 bg-amber-50 rounded-full border-2 border-amber-200 flex items-center justify-center shadow-inner">
+                            <span class="text-5xl">🛸</span>
+                        </div>
                     </div>
 
-                    <h1 class="text-7xl font-black text-amber-500 tracking-tight mb-2">404</h1>
-                    <h3 class="text-2xl font-bold text-gray-900 mb-3 tracking-wide">Halaman Hilang / Rusak</h3>
-                    <p class="text-gray-500 mb-8 max-w-md mx-auto leading-relaxed text-sm sm:text-base">
-                        Aduh! Alamat URL yang Anda tuju tidak ditemukan di sistem ERP Sekolah. Tautan mungkin sudah kedaluwarsa atau salah ketik.
+                    {{-- Teks 404 dengan Gradien --}}
+                    <h1 class="text-8xl font-black bg-clip-text text-transparent bg-gradient-to-br from-amber-500 to-orange-500 tracking-tighter mb-4 leading-none">
+                        404
+                    </h1>
+                    
+                    <h3 class="text-2xl font-black text-gray-900 mb-4 tracking-tight">Tersesat di Ruang Hampa</h3>
+                    
+                    <p class="text-gray-500 mb-10 max-w-md mx-auto leading-relaxed text-sm font-medium">
+                        Aduh! Alamat URL yang Anda tuju tidak ditemukan di sistem ERP Sekolah. Tautan mungkin sudah kedaluwarsa, dipindahkan, atau Anda salah mengetik alamat.
                     </p>
 
-                    <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-                        <button onclick="history.back()" class="inline-flex items-center px-6 py-3 bg-white border border-gray-300 rounded-xl font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50 active:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 transition ease-in-out duration-150 justify-center">
-                            Kembali
+                    {{-- Tombol Aksi Premium --}}
+                    <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto justify-center">
+                        <button onclick="history.back()" class="group relative inline-flex items-center justify-center px-8 py-3.5 text-sm font-bold text-gray-700 bg-white border-2 border-gray-200 rounded-2xl overflow-hidden transition-all hover:border-gray-300 hover:bg-gray-50 shadow-sm w-full sm:w-auto">
+                            <span class="relative flex items-center gap-2">
+                                <svg class="w-4 h-4 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                                Kembali
+                            </span>
                         </button>
-                        <a href="{{ url('/dashboard') }}" class="inline-flex items-center px-6 py-3 bg-amber-500 border border-transparent rounded-xl font-semibold text-xs text-white uppercase tracking-widest hover:bg-amber-600 active:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 transition ease-in-out duration-150 shadow-md hover:shadow-lg justify-center">
-                            Ke Beranda
+                        
+                        <a href="{{ url('/dashboard') }}" class="group relative inline-flex items-center justify-center px-8 py-3.5 text-sm font-bold text-white bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl overflow-hidden transition-all hover:from-amber-600 hover:to-orange-600 shadow-lg shadow-amber-500/30 w-full sm:w-auto transform hover:-translate-y-0.5">
+                            <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-56 group-hover:h-56 opacity-20"></span>
+                            <span class="relative flex items-center gap-2">
+                                Ke Beranda Utama
+                                <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                            </span>
                         </a>
                     </div>
+
                 </div>
+            </div>
+            
+            <div class="text-center mt-8">
+                <p class="text-xs font-semibold text-gray-400">Kode Error: HTTP 404 Not Found</p>
             </div>
         </div>
     </div>
+
+    <style>
+        /* Animasi Blob Background */
+        @keyframes blob {
+            0% { transform: translate(0px, 0px) scale(1); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+            100% { transform: translate(0px, 0px) scale(1); }
+        }
+        .animate-blob {
+            animation: blob 7s infinite;
+        }
+        .animation-delay-2000 {
+            animation-delay: 2s;
+        }
+    </style>
 </x-app-layout>

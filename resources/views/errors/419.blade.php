@@ -1,32 +1,74 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Gangguan Sistem') }}
+        <h2 class="font-bold text-2xl text-gray-800 leading-tight flex items-center gap-2">
+            <span class="text-3xl">🛠️</span> {{ __('Gangguan Sistem Server') }}
         </h2>
     </x-slot>
 
-    <div class="py-16 min-h-[calc(100vh-65px)] flex items-center justify-center bg-gray-50/50">
-        <div class="max-w-xl mx-auto sm:px-6 lg:px-8 w-full">
-            <div class="bg-white overflow-hidden shadow-xl sm:rounded-2xl border-t-4 border-rose-600 transform transition-all duration-300 hover:shadow-2xl">
-                <div class="p-10 text-center flex flex-col items-center">
+    <div class="py-16 min-h-[calc(100vh-65px)] flex items-center justify-center bg-slate-50 relative overflow-hidden">
+        
+        {{-- Dekorasi Background Modern (Warna Rose/Merah) --}}
+        <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-rose-400 rounded-full mix-blend-multiply filter blur-3xl opacity-15 animate-blob"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-red-400 rounded-full mix-blend-multiply filter blur-3xl opacity-15 animate-blob animation-delay-2000"></div>
+
+        <div class="max-w-xl mx-auto sm:px-6 lg:px-8 w-full relative z-10">
+            <div class="bg-white overflow-hidden shadow-2xl shadow-rose-900/5 sm:rounded-[2rem] border border-gray-100 transform transition-all duration-500 hover:-translate-y-1 hover:shadow-rose-900/10 text-center relative">
+                
+                {{-- Aksen Garis Atas Tipis --}}
+                <div class="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-rose-500 to-red-500"></div>
+
+                <div class="px-10 py-16 flex flex-col items-center">
                     
-                    <div class="mb-6 p-4 rounded-full bg-rose-50 border border-rose-100 text-rose-600 shadow-sm">
-                        <svg class="h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l-7.418 7.418a1.148 1.148 0 01-1.607-1.608l7.41-7.41m2.035 1.608a1.144 1.144 0 01-1.607-1.607m1.607 1.607v1.587m0-1.587l6.72-6.72m-6.72 6.72a3 3 0 000-4.242M11.42 10.93a3 3 0 014.242 0M11.42 10.93l-1.921-1.92mM19.5 4.5h.008v.008H19.5V4.5z" />
-                        </svg>
+                    {{-- Ikon Premium --}}
+                    <div class="mb-8 relative">
+                        <div class="absolute inset-0 bg-rose-100 rounded-full animate-ping opacity-75"></div>
+                        <div class="relative w-24 h-24 bg-rose-50 rounded-full border-2 border-rose-200 flex items-center justify-center shadow-inner">
+                            <span class="text-5xl">💥</span>
+                        </div>
                     </div>
 
-                    <h1 class="text-7xl font-black text-rose-600 tracking-tight mb-2">500</h1>
-                    <h3 class="text-2xl font-bold text-gray-900 mb-3 tracking-wide">Terjadi Kesalahan Server</h3>
-                    <p class="text-gray-500 mb-8 max-w-md mx-auto leading-relaxed text-sm sm:text-base">
-                        Ups! Server kami mendeteksi adanya *crash* logika tak terduga dalam memproses data. Tim pengembang IT sekolah telah dikirimi log laporan otomatis.
+                    {{-- Teks 500 dengan Gradien --}}
+                    <h1 class="text-8xl font-black bg-clip-text text-transparent bg-gradient-to-br from-rose-500 to-red-600 tracking-tighter mb-4 leading-none">
+                        500
+                    </h1>
+                    
+                    <h3 class="text-2xl font-black text-gray-900 mb-4 tracking-tight">Terjadi Kesalahan Internal</h3>
+                    
+                    <p class="text-gray-500 mb-10 max-w-md mx-auto leading-relaxed text-sm font-medium">
+                        Ups! Server kami mendeteksi adanya <em>crash</em> atau logika tak terduga dalam memproses data. Laporan log otomatis telah dikirim ke Tim Pengembang IT Sekolah untuk diperbaiki.
                     </p>
 
-                    <a href="{{ url('/dashboard') }}" class="inline-flex items-center px-6 py-3 bg-rose-600 border border-transparent rounded-xl font-semibold text-xs text-white uppercase tracking-widest hover:bg-rose-700 active:bg-rose-800 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2 transition ease-in-out duration-150 shadow-md hover:shadow-lg w-full sm:w-auto justify-center">
-                        Kembali ke Dashboard
+                    {{-- Tombol Aksi Premium --}}
+                    <a href="{{ url('/dashboard') }}" class="group relative inline-flex items-center justify-center px-8 py-3.5 text-sm font-bold text-white bg-gradient-to-r from-rose-600 to-red-600 rounded-2xl overflow-hidden transition-all hover:from-rose-700 hover:to-red-700 shadow-lg shadow-rose-500/30 w-full sm:w-auto transform hover:-translate-y-0.5">
+                        <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-56 group-hover:h-56 opacity-20"></span>
+                        <span class="relative flex items-center gap-2">
+                            Kembali ke Dashboard Aman
+                            <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                        </span>
                     </a>
+
                 </div>
+            </div>
+            
+            <div class="text-center mt-8">
+                <p class="text-xs font-semibold text-gray-400">Kode Error: HTTP 500 Internal Server Error</p>
             </div>
         </div>
     </div>
+
+    <style>
+        /* Animasi Blob Background */
+        @keyframes blob {
+            0% { transform: translate(0px, 0px) scale(1); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+            100% { transform: translate(0px, 0px) scale(1); }
+        }
+        .animate-blob {
+            animation: blob 7s infinite;
+        }
+        .animation-delay-2000 {
+            animation-delay: 2s;
+        }
+    </style>
 </x-app-layout>
