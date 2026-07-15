@@ -1,8 +1,13 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Manajemen Semester') }}
-        </h2>
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+                <h2 class="font-black text-2xl text-slate-800 leading-tight flex items-center gap-2">
+                    <span class="text-3xl">🗓️</span> {{ __('Manajemen Masa Semester') }}
+                </h2>
+                <p class="text-sm font-medium text-slate-500 mt-1">Atur pembagian waktu akademik siswa dalam satu tahun ajaran (Ganjil & Genap).</p>
+            </div>
+        </div>
     </x-slot>
 
     <div x-data="{
@@ -36,116 +41,150 @@
             this.deleteTargetName = semName;
             this.openDelete = true;
         }
-    }" class="py-12 bg-slate-900/10 min-h-screen">
-        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 space-y-6">
+    }" class="py-10 bg-slate-50/50 min-h-screen relative font-sans">
+        
+        <div class="max-w-5xl mx-auto sm:px-6 lg:px-8 space-y-6 relative z-10">
             
+            {{-- Notifikasi --}}
             @if(session('success'))
-                <div class="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm rounded-xl shadow-sm flex items-center gap-2">
-                    <span>✅</span> {{ session('success') }}
+                <div class="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm font-bold rounded-2xl shadow-sm flex items-center gap-3">
+                    <span class="text-2xl">✅</span> {{ session('success') }}
                 </div>
             @endif
 
             @if(session('error'))
-                <div class="p-4 bg-rose-50 border border-rose-200 text-rose-800 text-sm rounded-xl shadow-sm flex items-center gap-2">
-                    <span>⚠️</span> {{ session('error') }}
+                <div class="p-5 bg-rose-50 border border-rose-200 text-rose-800 text-sm font-bold rounded-2xl shadow-sm flex items-start gap-3">
+                    <span class="text-2xl">⚠️</span> 
+                    <div class="mt-1">{{ session('error') }}</div>
                 </div>
             @endif
 
             @if($errors->any())
-                <div class="p-4 bg-amber-50 border border-amber-200 text-amber-800 text-sm rounded-xl shadow-sm">
-                    <p class="font-bold mb-1 flex items-center gap-1">⚠️ Gagal menyimpan data:</p>
-                    <ul class="list-disc list-inside text-xs space-y-1 pl-1">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
+                <div class="p-5 bg-amber-50 border border-amber-200 text-amber-800 text-sm font-bold rounded-2xl shadow-sm flex items-start gap-3">
+                    <span class="text-2xl">🚧</span> 
+                    <div>
+                        <div class="mb-1 text-base font-black text-amber-900">Penyimpanan Ditolak!</div>
+                        <ul class="list-disc list-inside text-xs font-medium text-amber-700 space-y-1">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
                 </div>
             @endif
 
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-2xl border border-gray-100">
+            <div class="bg-white rounded-[2rem] shadow-xl shadow-slate-200/40 border border-slate-100 overflow-hidden relative">
                 
-                <div class="p-6 border-b border-gray-100 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 bg-gray-50/50">
+                {{-- Efek Latar Belakang Tabel --}}
+                <div class="absolute top-0 right-0 w-96 h-96 bg-indigo-50 rounded-full blur-3xl opacity-50 pointer-events-none -translate-y-1/2 translate-x-1/2"></div>
+
+                <div class="p-6 md:p-8 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-6 bg-white/50 backdrop-blur-sm relative z-10">
                     <div>
-                        <h3 class="text-base font-bold text-gray-900">Daftar Pembagian Semester</h3>
-                        <p class="text-xs text-gray-500">Manajemen masa berlaku penilaian dan KBM siswa. Pastikan tahun ajaran yang sesuai telah terikat.</p>
+                        <h3 class="text-lg font-black text-slate-800 tracking-tight">Katalog Siklus Belajar (Semester)</h3>
+                        <p class="text-xs font-medium text-slate-500 mt-1 max-w-lg leading-relaxed">Hanya boleh ada 1 semester "Aktif" pada satu waktu untuk menghindari disonansi pencatatan nilai & presensi.</p>
                     </div>
                     
-                    <div class="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-3">
-                        <form action="{{ route('master.semester.index') }}" method="GET" class="flex items-center gap-2 w-full sm:w-auto">
-                            <div class="relative flex items-center w-full sm:w-auto">
-                                <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari Semester / Tahun Ajaran..." class="text-xs rounded-lg border-gray-200 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm w-full sm:w-64 pr-8">
+                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto">
+                        <form action="{{ route('master.semester.index') }}" method="GET" class="flex items-stretch gap-2 w-full md:w-auto">
+                            <div class="relative flex items-center w-full sm:w-64 group">
+                                <input type="text" name="search" value="{{ request('search') }}" 
+                                       placeholder="Cari semester atau tahun..." 
+                                       class="w-full text-sm font-medium border-slate-200 bg-white rounded-xl shadow-sm py-2.5 pl-4 pr-10 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all placeholder-slate-400">
                                 
                                 @if(request('search'))
-                                    <a href="{{ route('master.semester.index') }}" class="absolute right-2.5 text-gray-400 hover:text-gray-600 font-bold text-sm" title="Clear Search">
-                                        &times;
+                                    <a href="{{ route('master.semester.index') }}" class="absolute right-3 text-slate-400 hover:text-rose-500 font-bold transition-colors cursor-pointer" title="Hapus Filter">
+                                        <svg class="w-5 h-5 bg-slate-100 rounded-full p-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
                                     </a>
                                 @endif
                             </div>
-                            <button type="submit" class="px-3 py-2 bg-gray-800 hover:bg-gray-700 text-white text-xs font-medium rounded-lg transition-colors cursor-pointer shrink-0">
+                            <button type="submit" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-900 text-white font-bold text-sm rounded-xl shadow-md shadow-slate-800/20 transition-all hover:-translate-y-0.5 cursor-pointer flex items-center gap-2 justify-center shrink-0">
                                 🔍
                             </button>
                         </form>
 
-                        <button @click="openCreate = true" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg shadow-sm transition-all flex items-center justify-center gap-1 cursor-pointer shrink-0">
-                            ➕ Tambah Semester
+                        <div class="hidden md:block w-px h-8 bg-slate-200"></div>
+
+                        <button @click="openCreate = true" 
+                                class="px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-700 hover:to-indigo-600 text-white font-black text-sm rounded-xl shadow-lg shadow-indigo-500/30 transition-all hover:-translate-y-0.5 cursor-pointer flex items-center justify-center gap-2 shrink-0 w-full sm:w-auto">
+                            <span>➕</span> Tambah Semester
                         </button>
                     </div>
                 </div>
 
-                <div class="overflow-x-auto">
+                <div class="overflow-x-auto relative z-10">
                     <table class="w-full text-left border-collapse text-sm">
                         <thead>
-                            <tr class="bg-gray-100/70 border-b border-gray-100 text-gray-600 font-semibold text-xs uppercase tracking-wider">
-                                <th class="p-4 pl-6">Nama / Periode</th>
-                                <th class="p-4 text-center">Semester Ke-</th>
-                                <th class="p-4">Tahun Ajaran Induk</th>
-                                <th class="p-4 text-center">Status Jalan</th>
-                                <th class="p-4 pr-6 text-center w-36">Aksi</th>
+                            <tr class="bg-slate-50 border-b-2 border-slate-100 text-slate-500 font-black text-xs uppercase tracking-widest">
+                                <th class="p-5 pl-8 w-60">Identitas Semester</th>
+                                <th class="p-5 text-center w-32">Fase Ke</th>
+                                <th class="p-5 w-56">Induk Tahun Ajaran</th>
+                                <th class="p-5 text-center w-40">Status Terkini</th>
+                                <th class="p-5 pr-8 text-center w-36">Kontrol Data</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-gray-100 text-gray-700 text-xs">
+                        <tbody class="divide-y divide-slate-100 text-slate-700 font-medium">
                             @forelse($semesters as $sem)
-                                <tr class="hover:bg-gray-50/80 transition-colors">
-                                    <td class="p-4 pl-6 font-medium text-gray-950">
-                                        📝 Semester {{ $sem->nama }}
+                                <tr class="hover:bg-indigo-50/30 transition-colors duration-200 group">
+                                    <td class="p-5 pl-8">
+                                        <div class="font-black text-slate-900 text-base flex items-center gap-2">
+                                            <span class="text-indigo-400">📝</span> Semester {{ $sem->nama }}
+                                        </div>
                                     </td>
-                                    <td class="p-4 text-center font-mono font-bold text-gray-600">
-                                        {{ $sem->semester_ke }}
+                                    <td class="p-5 text-center">
+                                        <div class="inline-flex items-center justify-center w-9 h-9 rounded-full bg-slate-100 border border-slate-200 font-black text-slate-500 shadow-inner group-hover:bg-indigo-100 group-hover:text-indigo-700 group-hover:border-indigo-200 transition-colors">
+                                            {{ $sem->semester_ke }}
+                                        </div>
                                     </td>
-                                    <td class="p-4 text-gray-600">
-                                        📅 {{ $sem->tahunAjaran->nama_tahun_ajaran ?? 'Tidak terikat Tahun Ajaran' }}
+                                    <td class="p-5">
+                                        <div class="inline-flex items-center gap-1.5 px-3 py-1.5 font-bold tracking-wider text-slate-600 bg-slate-50 border border-slate-200 rounded-lg shadow-sm">
+                                            <span>📅</span> {{ $sem->tahunAjaran->nama_tahun_ajaran ?? 'Tidak Terikat (Error)' }}
+                                        </div>
                                     </td>
-                                    <td class="p-4 text-center">
+                                    <td class="p-5 text-center">
                                         @if($sem->is_aktif)
-                                            <span class="px-2.5 py-1 bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] font-bold uppercase rounded-md shadow-sm">
-                                                🟢 Aktif Saat Ini
-                                            </span>
+                                            <div class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] font-black uppercase tracking-wider rounded-lg shadow-sm">
+                                                <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
+                                                Aktif Berjalan
+                                            </div>
                                         @else
-                                            <span class="px-2.5 py-1 bg-gray-50 border border-gray-200 text-gray-400 text-[10px] font-medium uppercase rounded-md">
+                                            <div class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 border border-slate-200 text-slate-400 text-[10px] font-black uppercase tracking-wider rounded-lg shadow-sm">
+                                                <span class="w-1.5 h-1.5 bg-slate-300 rounded-full"></span>
                                                 Arsip Lama
-                                            </span>
+                                            </div>
                                         @endif
                                     </td>
-                                    <td class="p-4 pr-6 text-center">
-                                        <div class="flex items-center justify-center gap-3">
-                                            <button @click="initEdit({{ json_encode($sem) }})" class="p-1 text-blue-600 hover:text-blue-800 hover:underline font-medium cursor-pointer transition-colors">
-                                                📝 Edit
+                                    <td class="p-5 pr-8 text-center">
+                                        <div class="flex items-center justify-center gap-2">
+                                            <button type="button" @click="initEdit({{ json_encode($sem) }})" 
+                                                    class="inline-flex items-center justify-center w-9 h-9 bg-white border border-slate-200 text-slate-500 hover:text-amber-600 hover:border-amber-300 hover:bg-amber-50 rounded-xl transition-all cursor-pointer shadow-sm hover:shadow-md" title="Koreksi Data Semester">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                                             </button>
 
-                                            <button @click="initDelete('{{ route('master.semester.destroy', $sem->id) }}', 'Semester {{ addslashes($sem->nama) }}')" type="button" class="p-1 text-rose-600 hover:text-rose-800 hover:underline font-medium cursor-pointer transition-colors">
-                                                🗑️ Hapus
+                                            <button type="button" @click="initDelete('{{ route('master.semester.destroy', $sem->id) }}', 'Semester {{ addslashes($sem->nama) }}')" 
+                                                    class="inline-flex items-center justify-center w-9 h-9 bg-white border border-slate-200 text-slate-500 hover:text-rose-600 hover:border-rose-300 hover:bg-rose-50 rounded-xl transition-all cursor-pointer shadow-sm hover:shadow-md" title="Hapus Permanen Semester">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                             </button>
                                         </div>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="p-12 text-center text-gray-400 italic bg-gray-50/30">
-                                        @if(request('search'))
-                                            ❌ Hasil pencarian dengan kata kunci "{{ request('search') }}" tidak ditemukan.
-                                        |@else
-                                            Belum ada data semester terdaftar.
-                                        @endif
+                                    <td colspan="5" class="p-16 text-center">
+                                        <div class="flex flex-col items-center justify-center text-slate-400">
+                                            <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center text-4xl mb-4 border border-slate-100">
+                                                @if(request('search')) 🔍 @else 🗓️ @endif
+                                            </div>
+                                            <h4 class="font-black text-slate-700 text-lg mb-1">
+                                                @if(request('search')) Data Nihil @else Ruang Semester Kosong @endif
+                                            </h4>
+                                            <span class="text-sm">
+                                                @if(request('search')) 
+                                                    Pencarian kata kunci "{{ request('search') }}" tidak menemukan semester apapun.
+                                                @else
+                                                    Belum ada rekam pembagian semester akademik di sistem.
+                                                @endif
+                                            </span>
+                                        </div>
                                     </td>
                                 </tr>
                             @endforelse
@@ -154,114 +193,161 @@
                 </div>
 
                 @if($semesters->hasPages())
-                    <div class="p-4 border-t border-gray-100 bg-gray-50/80">
+                    <div class="p-5 border-t border-slate-100 bg-slate-50">
                         {{ $semesters->links() }}
                     </div>
                 @endif
             </div>
         </div>
 
-        <div x-show="openCreate" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4" style="display: none;" x-transition>
-            <div class="bg-white rounded-2xl max-w-sm w-full shadow-2xl border border-gray-100 p-6 space-y-4" @click.away="openCreate = false">
-                <div class="flex justify-between items-center border-b border-gray-100 pb-3">
-                    <h3 class="text-sm font-bold text-gray-900 uppercase">Tambah Semester Baru</h3>
-                    <button @click="openCreate = false" class="text-gray-400 hover:text-gray-600 text-xl cursor-pointer">&times;</button>
+        {{-- MODAL CREATE SEMESTER --}}
+        <div x-show="openCreate" class="fixed inset-0 z-[100] overflow-y-auto bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 sm:p-6" style="display: none;" x-transition>
+            <div class="bg-white rounded-[2rem] max-w-sm w-full shadow-2xl border border-slate-100 overflow-hidden flex flex-col" @click.away="openCreate = false">
+                
+                <div class="px-6 py-5 border-b border-slate-100 bg-slate-50/80 flex justify-between items-center relative overflow-hidden">
+                    <div class="absolute right-0 top-0 w-32 h-32 bg-indigo-100 rounded-full blur-3xl opacity-50 -translate-y-1/2 translate-x-1/2"></div>
+                    <h3 class="text-lg font-black text-slate-800 uppercase tracking-wide flex items-center gap-2 relative z-10">
+                        <span class="text-2xl">✨</span> Input Semester
+                    </h3>
+                    <button type="button" @click="openCreate = false" class="text-slate-400 hover:text-rose-500 hover:bg-rose-50 p-2 rounded-xl transition-colors cursor-pointer border border-transparent hover:border-rose-100 relative z-10">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
                 </div>
-                <form action="{{ route('master.semester.store') }}" method="POST" class="space-y-4">
+                
+                <form action="{{ route('master.semester.store') }}" method="POST" class="p-6 md:p-8 space-y-6 bg-white relative z-10">
                     @csrf
+                    
                     <div>
-                        <label class="block text-xs font-semibold text-gray-600 mb-1">Nama Semester *</label>
-                        <input type="text" name="nama" value="{{ old('nama') }}" required placeholder="Contoh: Ganjil atau Genap" class="w-full text-xs rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
+                        <label class="block font-black text-slate-700 text-xs uppercase tracking-widest mb-2">Penamaan Siklus (Ganjil/Genap) <span class="text-rose-500">*</span></label>
+                        <input type="text" name="nama" value="{{ old('nama') }}" required 
+                               placeholder="Cth: Ganjil" 
+                               class="w-full rounded-xl border-slate-200 text-sm font-bold shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 py-3 px-4 placeholder-slate-300">
                     </div>
+
                     <div>
-                        <label class="block text-xs font-semibold text-gray-600 mb-1">Urutan Semester Ke- *</label>
-                        <input type="number" name="semester_ke" value="{{ old('semester_ke') }}" required min="1" max="12" placeholder="Misal: 1 atau 2" class="w-full text-xs rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
+                        <label class="block font-black text-slate-700 text-xs uppercase tracking-widest mb-2">Semester Fisik Ke- <span class="text-rose-500">*</span></label>
+                        <input type="number" name="semester_ke" value="{{ old('semester_ke') }}" required min="1" max="12" 
+                               placeholder="1 atau 2..." 
+                               class="w-full rounded-xl border-slate-200 text-sm font-bold shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 py-3 px-4 placeholder-slate-300 text-center font-mono">
                     </div>
+
                     <div>
-                        <label class="block text-xs font-semibold text-gray-600 mb-1">Hubungkan ke Tahun Ajaran *</label>
-                        <select name="tahun_ajaran_id" required class="w-full text-xs rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
-                            <option value="">-- Pilih Tahun Ajaran --</option>
+                        <label class="block font-black text-slate-700 text-xs uppercase tracking-widest mb-2">Relasikan ke Tahun Ajaran <span class="text-rose-500">*</span></label>
+                        <select name="tahun_ajaran_id" required 
+                                class="w-full rounded-xl border-slate-200 text-sm font-bold shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 py-3 px-4">
+                            <option value="">-- Silakan Pilih --</option>
                             @foreach($tahunAjarans as $ta)
                                 <option value="{{ $ta->id }}" {{ old('tahun_ajaran_id') == $ta->id ? 'selected' : '' }}>
-                                    {{ $ta->nama_tahun_ajaran }} @if($ta->is_aktif) (Aktif) @endif
+                                    {{ $ta->nama_tahun_ajaran }} @if($ta->is_aktif) (Saat ini Aktif) @endif
                                 </option>
                             @endforeach
                         </select>
                     </div>
+
                     <div>
-                        <label class="block text-xs font-semibold text-gray-600 mb-1">Status KBM *</label>
-                        <select name="is_aktif" required class="w-full text-xs rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
-                            <option value="0" {{ old('is_aktif') == '0' ? 'selected' : '' }}>Non-Aktif (Arsip)</option>
-                            <option value="1" {{ old('is_aktif') == '1' ? 'selected' : '' }}>Aktif (Gunakan Sekarang)</option>
+                        <label class="block font-black text-slate-700 text-xs uppercase tracking-widest mb-2">Atur Status Kepastian <span class="text-rose-500">*</span></label>
+                        <select name="is_aktif" required 
+                                class="w-full rounded-xl border-slate-200 text-sm font-bold shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 py-3 px-4">
+                            <option value="0" {{ old('is_aktif') == '0' ? 'selected' : '' }}>Sembunyikan (Arsip Lama)</option>
+                            <option value="1" {{ old('is_aktif') == '1' ? 'selected' : '' }}>Jalankan (Aktif Saat Ini)</option>
                         </select>
+                        <p class="text-[10px] font-bold text-amber-600 mt-2 bg-amber-50 p-2 rounded border border-amber-200">
+                            💡 Hanya disarankan 1 (satu) semester yang memiliki status Aktif!
+                        </p>
                     </div>
-                    <div class="pt-4 border-t border-gray-100 flex justify-end gap-2">
-                        <button type="button" @click="openCreate = false" class="px-4 py-2 bg-gray-100 text-gray-700 text-xs font-medium rounded-lg hover:bg-gray-200 cursor-pointer transition-colors">Batal</button>
-                        <button type="submit" class="px-4 py-2 bg-indigo-600 text-white text-xs font-semibold rounded-lg shadow-sm hover:bg-indigo-700 cursor-pointer transition-colors">Simpan Data</button>
+
+                    <div class="pt-2 border-t border-slate-100 flex flex-col sm:flex-row justify-end gap-3 mt-4">
+                        <button type="button" @click="openCreate = false" class="px-5 py-3 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold rounded-xl transition-colors cursor-pointer shadow-sm w-full sm:w-auto text-center">Tutup</button>
+                        <button type="submit" class="px-5 py-3 bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-700 hover:to-indigo-600 text-white font-black rounded-xl shadow-lg shadow-indigo-500/30 transition-all hover:-translate-y-0.5 cursor-pointer w-full sm:w-auto text-center flex items-center justify-center gap-2">
+                            <span>💾</span> Validasi Form
+                        </button>
                     </div>
                 </form>
             </div>
         </div>
 
-        <div x-show="openEdit" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4" style="display: none;" x-transition>
-            <div class="bg-white rounded-2xl max-w-sm w-full shadow-2xl border border-gray-100 p-6 space-y-4" @click.away="openEdit = false">
-                <div class="flex justify-between items-center border-b border-gray-100 pb-3">
-                    <h3 class="text-sm font-bold text-gray-900 uppercase">Edit Data Semester</h3>
-                    <button @click="openEdit = false" class="text-gray-400 hover:text-gray-600 text-xl cursor-pointer">&times;</button>
+        {{-- MODAL EDIT SEMESTER --}}
+        <div x-show="openEdit" class="fixed inset-0 z-[100] overflow-y-auto bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 sm:p-6" style="display: none;" x-transition>
+            <div class="bg-white rounded-[2rem] max-w-sm w-full shadow-2xl border border-slate-100 overflow-hidden flex flex-col" @click.away="openEdit = false">
+                
+                <div class="px-6 py-5 border-b border-slate-100 bg-amber-50/30 flex justify-between items-center relative overflow-hidden">
+                    <div class="absolute right-0 top-0 w-32 h-32 bg-amber-100 rounded-full blur-3xl opacity-50 -translate-y-1/2 translate-x-1/2"></div>
+                    <h3 class="text-lg font-black text-slate-800 uppercase tracking-wide flex items-center gap-2 relative z-10">
+                        <span class="text-2xl">📝</span> Penyesuaian Data
+                    </h3>
+                    <button type="button" @click="openEdit = false" class="text-slate-400 hover:text-rose-500 hover:bg-rose-50 p-2 rounded-xl transition-colors cursor-pointer border border-transparent hover:border-rose-100 relative z-10">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
                 </div>
-                <form :action="editActionUrl" method="POST" class="space-y-4">
+                
+                <form :action="editActionUrl" method="POST" class="p-6 md:p-8 space-y-6 bg-white relative z-10">
                     @csrf
                     @method('PATCH')
+                    
                     <div>
-                        <label class="block text-xs font-semibold text-gray-600 mb-1">Nama Semester *</label>
-                        <input type="text" x-model="editNama" name="nama" required class="w-full text-xs rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
+                        <label class="block font-black text-slate-700 text-xs uppercase tracking-widest mb-2">Penamaan Siklus (Ganjil/Genap) <span class="text-rose-500">*</span></label>
+                        <input type="text" x-model="editNama" name="nama" required 
+                               class="w-full rounded-xl border-slate-200 text-sm font-bold shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 py-3 px-4">
                     </div>
+
                     <div>
-                        <label class="block text-xs font-semibold text-gray-600 mb-1">Urutan Semester Ke- *</label>
-                        <input type="number" x-model="editSemesterKe" name="semester_ke" required min="1" max="12" class="w-full text-xs rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
+                        <label class="block font-black text-slate-700 text-xs uppercase tracking-widest mb-2">Semester Fisik Ke- <span class="text-rose-500">*</span></label>
+                        <input type="number" x-model="editSemesterKe" name="semester_ke" required min="1" max="12" 
+                               class="w-full rounded-xl border-slate-200 text-sm font-bold shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 py-3 px-4 text-center font-mono">
                     </div>
+
                     <div>
-                        <label class="block text-xs font-semibold text-gray-600 mb-1">Hubungkan ke Tahun Ajaran *</label>
-                        <select x-model="editTahunAjaranId" name="tahun_ajaran_id" required class="w-full text-xs rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
+                        <label class="block font-black text-slate-700 text-xs uppercase tracking-widest mb-2">Relasikan ke Tahun Ajaran <span class="text-rose-500">*</span></label>
+                        <select x-model="editTahunAjaranId" name="tahun_ajaran_id" required 
+                                class="w-full rounded-xl border-slate-200 text-sm font-bold shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 py-3 px-4">
                             @foreach($tahunAjarans as $ta)
                                 <option value="{{ $ta->id }}">{{ $ta->nama_tahun_ajaran }}</option>
                             @endforeach
                         </select>
                     </div>
+
                     <div>
-                        <label class="block text-xs font-semibold text-gray-600 mb-1">Status KBM *</label>
-                        <select x-model="editIsAktif" name="is_aktif" required class="w-full text-xs rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
-                            <option value="0">Non-Aktif (Arsip)</option>
-                            <option value="1">Aktif (Gunakan Sekarang)</option>
+                        <label class="block font-black text-slate-700 text-xs uppercase tracking-widest mb-2">Atur Status Kepastian <span class="text-rose-500">*</span></label>
+                        <select x-model="editIsAktif" name="is_aktif" required 
+                                class="w-full rounded-xl border-slate-200 text-sm font-bold shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 py-3 px-4">
+                            <option value="0">Sembunyikan (Arsip Lama)</option>
+                            <option value="1">Jalankan (Aktif Saat Ini)</option>
                         </select>
                     </div>
-                    <div class="pt-4 border-t border-gray-100 flex justify-end gap-2">
-                        <button type="button" @click="openEdit = false" class="px-4 py-2 bg-gray-100 text-gray-700 text-xs font-medium rounded-lg hover:bg-gray-200 cursor-pointer transition-colors">Batal</button>
-                        <button type="submit" class="px-4 py-2 bg-indigo-600 text-white text-xs font-semibold rounded-lg shadow-sm hover:bg-indigo-700 cursor-pointer transition-colors">Simpan Perubahan</button>
+
+                    <div class="pt-2 border-t border-slate-100 flex flex-col sm:flex-row justify-end gap-3 mt-4">
+                        <button type="button" @click="openEdit = false" class="px-5 py-3 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold rounded-xl transition-colors cursor-pointer shadow-sm w-full sm:w-auto text-center">Batal</button>
+                        <button type="submit" class="px-5 py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-black rounded-xl shadow-lg shadow-amber-500/30 transition-all hover:-translate-y-0.5 cursor-pointer w-full sm:w-auto text-center flex items-center justify-center gap-2">
+                            <span>🔄</span> Terapkan Revisi
+                        </button>
                     </div>
                 </form>
             </div>
         </div>
 
-        <div x-show="openDelete" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm" style="display: none;" x-transition>
-            <div class="bg-white rounded-2xl shadow-xl border border-gray-200 max-w-sm w-full p-6 text-center space-y-4" @click.away="openDelete = false">
-                <div class="w-12 h-12 bg-rose-50 text-rose-600 rounded-full flex items-center justify-center text-xl mx-auto border border-rose-100">
-                    ⚠️
+        {{-- MODAL DELETE SEMESTER --}}
+        <div x-show="openDelete" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md" style="display: none;" x-transition>
+            <div class="bg-white rounded-[2rem] shadow-2xl border border-slate-100 max-w-md w-full p-8 text-center space-y-6 relative overflow-hidden" @click.away="openDelete = false">
+                
+                <div class="w-24 h-24 bg-rose-50 text-rose-600 rounded-full flex items-center justify-center text-5xl mx-auto border border-rose-100 shadow-inner">
+                    🧨
                 </div>
+                
                 <div>
-                    <h4 class="text-sm font-bold text-gray-900">Hapus Semester Permanen?</h4>
-                    <p class="text-xs text-gray-500 mt-1">
-                        Apakah Anda yakin ingin menghapus data <span class="font-bold text-gray-800" x-text="deleteTargetName"></span>? Seluruh data KBM dan riwayat nilai yang terikat dengan semester ini akan ikut terpengaruh di sistem.
+                    <h4 class="text-xl font-black text-slate-900 tracking-tight mb-2">Vonis Hapus Semester?</h4>
+                    <p class="text-sm font-medium text-slate-500 leading-relaxed px-2">
+                        Anda bersiap menghapus secara masal catatan <strong class="text-slate-800" x-text="deleteTargetName"></strong>. Semua nilai akademik & KBM di semester ini rentan hilang. Yakin?
                     </p>
                 </div>
-                <form :action="deleteActionUrl" method="POST" class="flex justify-center gap-2 pt-2 m-0">
+                
+                <form :action="deleteActionUrl" method="POST" class="flex justify-center gap-3 w-full pt-2 m-0">
                     @csrf
                     @method('DELETE')
-                    <button type="button" @click="openDelete = false" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 font-semibold rounded-lg text-xs cursor-pointer border border-transparent">
-                        Batal
+                    <button type="button" @click="openDelete = false" class="flex-1 px-6 py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl cursor-pointer transition-colors">
+                        Urungkan
                     </button>
-                    <button type="submit" class="px-4 py-2 !bg-rose-600 hover:!bg-rose-700 !text-white font-bold rounded-lg text-xs cursor-pointer shadow-sm border border-transparent">
-                        Ya, Hapus
+                    <button type="submit" class="flex-1 px-6 py-3.5 bg-rose-600 hover:bg-rose-700 text-white font-black rounded-xl shadow-md cursor-pointer transition-colors border border-transparent flex items-center justify-center gap-2">
+                        Eksekusi
                     </button>
                 </form>
             </div>

@@ -1,8 +1,13 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Navigasi Tautan Teks Bawah (Footer Links)') }}
-        </h2>
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+                <h2 class="font-black text-2xl text-slate-800 leading-tight flex items-center gap-2">
+                    <span class="text-3xl">🔗</span> {{ __('Navigasi Footer & Tautan') }}
+                </h2>
+                <p class="text-sm font-medium text-slate-500 mt-1">Kelola direktori tautan cepat untuk diletakkan di bagian paling bawah website utama.</p>
+            </div>
+        </div>
     </x-slot>
 
     <div x-data="{ 
@@ -16,27 +21,36 @@
         // Custom Delete Confirmation State
         deleteAction: '',
         deleteTargetTitle: ''
-    }" class="py-12 bg-slate-900/10 min-h-screen relative">
+    }" class="py-10 bg-slate-50/50 min-h-screen relative font-sans">
         
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-4">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
             
+            {{-- Notifikasi --}}
             @if(session('success'))
-                <div class="p-4 mb-2 text-xs font-medium text-emerald-700 bg-emerald-50 rounded-xl border border-emerald-200">
-                    ✅ {{ session('success') }}
+                <div class="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm font-bold rounded-2xl shadow-sm flex items-center gap-3">
+                    <span class="text-2xl">✅</span> {{ session('success') }}
                 </div>
             @endif
 
             @if($errors->any())
-                <div class="p-4 mb-2 text-xs font-medium text-rose-700 bg-rose-50 rounded-xl border border-rose-200">
-                    ⚠️ Gagal memproses data. Silakan cek kembali inputan form modal Anda.
+                <div class="p-5 bg-rose-50 border border-rose-200 text-rose-800 text-sm font-bold rounded-2xl shadow-sm flex items-start gap-3">
+                    <span class="text-2xl">⚠️</span> 
+                    <div>
+                        <div class="mb-1 text-base">Gagal memproses data tautan!</div>
+                        <p class="text-xs font-medium text-rose-600">Mohon periksa kembali inputan form Anda. Pastikan semua kolom wajib diisi.</p>
+                    </div>
                 </div>
             @endif
 
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-2xl border border-gray-100">
-                <div class="p-6 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-gray-50/50">
+            <div class="bg-white rounded-[2rem] shadow-xl shadow-slate-200/40 border border-slate-100 overflow-hidden relative">
+                
+                {{-- Efek Latar Belakang Tabel --}}
+                <div class="absolute top-0 right-0 w-96 h-96 bg-indigo-50 rounded-full blur-3xl opacity-50 pointer-events-none -translate-y-1/2 translate-x-1/2"></div>
+
+                <div class="p-6 md:p-8 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 bg-white/50 backdrop-blur-sm relative z-10">
                     <div>
-                        <h3 class="text-base font-bold text-gray-900">Daftar Link Informasi Footer</h3>
-                        <p class="text-xs text-gray-500">Kelola tautan cepat internal maupun eksternal untuk dipajang pada kolom informasi bawah website utama.</p>
+                        <h3 class="text-lg font-black text-slate-800 tracking-tight">Katalog Menu Footer</h3>
+                        <p class="text-xs font-medium text-slate-500 mt-1">Struktur tautan pendukung (Link Terkait, Bantuan, dll).</p>
                     </div>
                     
                     <button type="button" 
@@ -44,49 +58,61 @@
                                 id = ''; group = ''; judul = ''; url = ''; urutan = 1; status = true;
                                 openCreate = true;
                             " 
-                            class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg shadow-sm transition-all cursor-pointer">
-                        ➕ Tambah Link Footer
+                            class="px-5 py-3 bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-700 hover:to-indigo-600 text-white text-sm font-black rounded-xl shadow-lg shadow-indigo-500/30 transition-all hover:-translate-y-0.5 cursor-pointer flex items-center justify-center gap-2 w-full sm:w-auto">
+                        <span>➕</span> Tambah Tautan Baru
                     </button>
                 </div>
 
-                <div class="overflow-x-auto">
+                <div class="overflow-x-auto relative z-10">
                     <table class="w-full text-left border-collapse text-sm">
                         <thead>
-                            <tr class="bg-gray-100/70 border-b border-gray-100 text-gray-600 font-semibold text-xs uppercase tracking-wider">
-                                <th class="p-4 pl-6 w-16 text-center">No</th>
-                                <th class="p-4 w-48">Kelompok (Group)</th>
-                                <th class="p-4">Label Judul</th>
-                                <th class="p-4">Alamat URL</th>
-                                <th class="p-4 text-center w-24">Urutan</th>
-                                <th class="p-4 text-center w-32">Status</th>
-                                <th class="p-4 pr-6 text-center w-36">Aksi</th>
+                            <tr class="bg-slate-50 border-b-2 border-slate-100 text-slate-500 font-black text-xs uppercase tracking-widest">
+                                <th class="p-5 pl-6 w-16 text-center">No</th>
+                                <th class="p-5 w-56">Kategori Grup</th>
+                                <th class="p-5">Label Teks (Judul)</th>
+                                <th class="p-5 text-center w-24">Urutan</th>
+                                <th class="p-5 text-center w-36">Visibilitas</th>
+                                <th class="p-5 pr-6 text-center w-40">Modifikasi</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-gray-100 text-gray-700 text-xs">
+                        <tbody class="divide-y divide-slate-100 text-slate-700 font-medium">
                             @forelse($links as $index => $link)
-                                <tr class="hover:bg-gray-50/80 transition-colors">
-                                    <td class="p-4 text-center font-mono text-gray-400">
-                                        {{ $links instanceof \Illuminate\Pagination\LengthAwarePaginator ? ($links->firstItem() + $index) : ($index + 1) }}
+                                <tr class="hover:bg-indigo-50/30 transition-colors duration-200 group">
+                                    <td class="p-5 pl-6 text-center font-mono font-bold text-slate-400">
+                                        {{ str_pad($links instanceof \Illuminate\Pagination\LengthAwarePaginator ? ($links->firstItem() + $index) : ($index + 1), 2, '0', STR_PAD_LEFT) }}
                                     </td>
-                                    <td class="p-4 pl-4">
-                                        <span class="px-2 py-1 bg-indigo-50 border border-indigo-100 text-indigo-700 rounded-md font-bold text-[10px] uppercase">
-                                            📁 {{ $link->group }}
+                                    <td class="p-5">
+                                        <div class="inline-flex items-center gap-2 px-3 py-1.5 bg-indigo-50 border border-indigo-100 text-indigo-700 rounded-lg font-black text-[10px] uppercase tracking-wider shadow-sm">
+                                            <span>📁</span> {{ $link->group }}
+                                        </div>
+                                    </td>
+                                    <td class="p-5">
+                                        <div class="font-black text-slate-900 text-base mb-1">{{ $link->judul }}</div>
+                                        <div class="font-mono text-slate-400 text-[11px] font-bold flex items-center gap-2">
+                                            <span class="p-1 bg-slate-100 rounded text-slate-500">🔗</span>
+                                            <a href="{{ $link->url }}" target="_blank" class="hover:text-indigo-600 truncate max-w-[200px] sm:max-w-xs transition-colors">{{ $link->url }}</a>
+                                        </div>
+                                    </td>
+                                    <td class="p-5 text-center">
+                                        <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-slate-100 border border-slate-200 text-slate-700 font-black text-xs shadow-inner">
+                                            {{ $link->urutan }}
                                         </span>
                                     </td>
-                                    <td class="p-4 font-bold text-gray-900 text-sm">🔗 {{ $link->judul }}</td>
-                                    <td class="p-4 font-mono text-gray-500 text-[11px] max-w-xs truncate" title="{{ $link->url }}">
-                                        {{ $link->url }}
-                                    </td>
-                                    <td class="p-4 text-center font-mono font-bold text-gray-600">{{ $link->urutan }}</td>
-                                    <td class="p-4 text-center">
+                                    <td class="p-5 text-center whitespace-nowrap">
                                         @if($link->status)
-                                            <span class="px-2 py-0.5 bg-green-50 border border-green-200 text-green-700 text-[10px] font-bold rounded shadow-sm">AKTIF</span>
+                                            <div class="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] font-black uppercase tracking-wider rounded-lg shadow-sm">
+                                                <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+                                                AKTIF TAMPIL
+                                            </div>
                                         @else
-                                            <span class="px-2 py-0.5 bg-gray-50 border border-gray-200 text-gray-400 text-[10px] font-medium rounded">NON-AKTIF</span>
+                                            <div class="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-100 border border-slate-200 text-slate-500 text-[10px] font-black uppercase tracking-wider rounded-lg shadow-sm">
+                                                <span class="w-1.5 h-1.5 bg-slate-400 rounded-full"></span>
+                                                DISEMBUNYIKAN
+                                            </div>
                                         @endif
                                     </td>
-                                    <td class="p-4 pr-6 text-center">
-                                        <div class="flex items-center justify-center gap-3">
+                                    <td class="p-5 pr-6 text-center">
+                                        <div class="flex items-center justify-center gap-2">
                                             <button type="button" 
                                                     @click="
                                                         id = '{{ $link->id }}';
@@ -97,8 +123,8 @@
                                                         status = {{ $link->status ? 'true' : 'false' }};
                                                         openEdit = true;
                                                     "
-                                                    class="text-amber-600 hover:underline font-semibold cursor-pointer text-xs">
-                                                📝 Edit
+                                                    class="inline-flex items-center justify-center w-9 h-9 bg-white border border-slate-200 text-slate-500 hover:text-amber-600 hover:border-amber-300 hover:bg-amber-50 rounded-xl transition-all cursor-pointer shadow-sm hover:shadow-md" title="Ubah Link">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                                             </button>
 
                                             <button type="button"
@@ -107,15 +133,23 @@
                                                         deleteTargetTitle = '{{ addslashes($link->judul) }}';
                                                         openDelete = true;
                                                     "
-                                                    class="text-rose-600 hover:underline font-semibold cursor-pointer text-xs">
-                                                🗑️ Hapus
+                                                    class="inline-flex items-center justify-center w-9 h-9 bg-white border border-slate-200 text-slate-500 hover:text-rose-600 hover:border-rose-300 hover:bg-rose-50 rounded-xl transition-all cursor-pointer shadow-sm hover:shadow-md" title="Hapus Link">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                             </button>
                                         </div>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="7" class="p-8 text-center text-gray-400 italic bg-gray-50/30">Belum ada tautan footer yang terdaftar.</td>
+                                    <td colspan="6" class="p-16 text-center">
+                                        <div class="flex flex-col items-center justify-center text-slate-400">
+                                            <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center text-4xl mb-4 border border-slate-100">
+                                                🕸️
+                                            </div>
+                                            <h4 class="font-black text-slate-700 text-lg mb-1">Belum Ada Tautan</h4>
+                                            <span class="text-sm">Silakan tambah tautan footer pertama Anda.</span>
+                                        </div>
+                                    </td>
                                 </tr>
                             @endforelse
                         </tbody>
@@ -123,102 +157,155 @@
                 </div>
                 
                 @if(method_exists($links, 'hasPages') && $links->hasPages())
-                    <div class="p-4 border-t border-gray-100 bg-gray-50/80">
+                    <div class="p-5 border-t border-slate-100 bg-slate-50">
                         {{ $links->links() }}
                     </div>
                 @endif
             </div>
         </div>
 
-        <div x-show="openCreate" class="fixed inset-0 z-50 overflow-y-auto bg-gray-900/60 backdrop-blur-sm flex items-center justify-center p-4" style="display: none;" x-transition>
-            <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl border border-gray-100 overflow-hidden" @click.away="openCreate = false">
-                <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
-                    <h3 class="text-sm font-bold text-gray-900 uppercase">Tambah Tautan Footer</h3>
-                    <button type="button" @click="openCreate = false" class="text-gray-400 hover:text-gray-600 text-lg font-bold cursor-pointer">&times;</button>
+        {{-- MODAL CREATE --}}
+        <div x-show="openCreate" class="fixed inset-0 z-[100] overflow-y-auto bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 sm:p-6" style="display: none;" x-transition>
+            <div class="bg-white rounded-[2rem] max-w-lg w-full shadow-2xl border border-slate-100 overflow-hidden flex flex-col max-h-[90vh]" @click.away="openCreate = false">
+                
+                <div class="px-6 py-5 border-b border-slate-100 bg-slate-50/80 flex justify-between items-center">
+                    <h3 class="text-lg font-black text-slate-800 uppercase tracking-wide flex items-center gap-2">
+                        <span class="text-2xl">🌍</span> Tambah Menu Footer
+                    </h3>
+                    <button type="button" @click="openCreate = false" class="text-slate-400 hover:text-rose-500 hover:bg-rose-50 p-2 rounded-xl transition-colors cursor-pointer border border-transparent hover:border-rose-100">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
                 </div>
-                <form action="{{ route('master.footer-link.store') }}" method="POST" class="p-6 space-y-4 text-xs">
+                
+                <form action="{{ route('master.footer-link.store') }}" method="POST" class="p-6 md:p-8 space-y-5 flex-1 overflow-y-auto bg-white">
                     @csrf
+                    
                     <div>
-                        <label class="block font-semibold text-gray-700 mb-1">Kelompok Menu / Group <span class="text-rose-500">*</span></label>
-                        <input type="text" name="group" required placeholder="Contoh: Aplikasi Sekolah, Link Terkait" class="w-full text-xs rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
+                        <label class="block font-black text-slate-700 text-sm mb-2">Grup Menu <span class="text-rose-500">*</span></label>
+                        <input type="text" name="group" required placeholder="Contoh: Aplikasi Sekolah, Link Terkait" class="w-full rounded-xl border-slate-200 text-sm font-bold shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 py-3 px-4 placeholder-slate-400">
                     </div>
+                    
                     <div>
-                        <label class="block font-semibold text-gray-700 mb-1">Label Teks Tautan / Judul <span class="text-rose-500">*</span></label>
-                        <input type="text" name="judul" required placeholder="Contoh: Portal SIMPKB atau Kelulusan" class="w-full text-xs rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
+                        <label class="block font-black text-slate-700 text-sm mb-2">Label Teks Tautan <span class="text-rose-500">*</span></label>
+                        <input type="text" name="judul" required placeholder="Contoh: Portal E-Rapor" class="w-full rounded-xl border-slate-200 text-sm font-bold shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 py-3 px-4 placeholder-slate-400">
                     </div>
+                    
                     <div>
-                        <label class="block font-semibold text-gray-700 mb-1">Target Alamat URL <span class="text-rose-500">*</span></label>
-                        <input type="text" name="url" required placeholder="Contoh: https://ppdb.sekolah.sch.id atau /page/visi-misi" class="w-full text-xs rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
+                        <label class="block font-black text-slate-700 text-sm mb-2">Target Alamat URL <span class="text-rose-500">*</span></label>
+                        <input type="text" name="url" required placeholder="Contoh: https://erapor.sekolah.sch.id" class="w-full rounded-xl border-slate-200 text-sm font-bold font-mono shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 py-3 px-4 text-indigo-700 placeholder-slate-400">
                     </div>
+                    
                     <div>
-                        <label class="block font-semibold text-gray-700 mb-1">Nomor Urut Tampilan / Urutan <span class="text-rose-500">*</span></label>
-                        <input type="number" name="urutan" required min="0" value="1" class="w-full text-xs rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
+                        <label class="block font-black text-slate-700 text-sm mb-2">Urutan Tampil <span class="text-rose-500">*</span></label>
+                        <input type="number" name="urutan" required min="1" value="1" class="w-full rounded-xl border-slate-200 text-sm font-bold shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 py-3 px-4">
                     </div>
-                    <div class="flex items-center gap-2 pt-2">
-                        <input type="checkbox" id="status_create" name="status" value="1" checked class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 shadow-sm">
-                        <label for="status_create" class="font-semibold text-gray-700 cursor-pointer select-none">Aktifkan dan tampilkan langsung di web.</label>
+                    
+                    <div class="bg-indigo-50/50 border border-indigo-100 rounded-xl p-4 flex items-center gap-3">
+                        <div class="relative flex items-start">
+                            <div class="flex items-center h-5">
+                                <input id="status_create" name="status" type="checkbox" value="1" checked class="w-5 h-5 text-indigo-600 bg-white border-slate-300 rounded focus:ring-indigo-500 focus:ring-2 cursor-pointer">
+                            </div>
+                            <div class="ml-3 text-sm">
+                                <label for="status_create" class="font-black text-slate-700 cursor-pointer">Aktifkan & Tampilkan</label>
+                                <p class="text-[10px] text-slate-500 font-bold mt-0.5">Tautan akan langsung muncul di footer website.</p>
+                            </div>
+                        </div>
                     </div>
-                    <div class="pt-4 border-t border-gray-100 flex justify-end gap-2">
-                        <button type="button" @click="openCreate = false" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition-colors cursor-pointer">Batal</button>
-                        <button type="submit" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg shadow-sm transition-colors cursor-pointer">Simpan Data</button>
+                    
+                    <div class="pt-6 border-t border-slate-100 flex flex-col sm:flex-row justify-end gap-3 mt-8">
+                        <button type="button" @click="openCreate = false" class="px-6 py-3 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold rounded-xl transition-colors cursor-pointer shadow-sm w-full sm:w-auto text-center">Batalkan</button>
+                        <button type="submit" class="px-6 py-3 bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-700 hover:to-indigo-600 text-white font-black rounded-xl shadow-lg shadow-indigo-500/30 transition-all hover:-translate-y-0.5 cursor-pointer w-full sm:w-auto text-center">Simpan Tautan</button>
                     </div>
                 </form>
             </div>
         </div>
 
-        <div x-show="openEdit" class="fixed inset-0 z-50 overflow-y-auto bg-gray-900/60 backdrop-blur-sm flex items-center justify-center p-4" style="display: none;" x-transition>
-            <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl border border-gray-100 overflow-hidden" @click.away="openEdit = false">
-                <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
-                    <h3 class="text-sm font-bold text-gray-900 uppercase">Edit Tautan Footer</h3>
-                    <button type="button" @click="openEdit = false" class="text-gray-400 hover:text-gray-600 text-lg font-bold cursor-pointer">&times;</button>
+        {{-- MODAL EDIT --}}
+        <div x-show="openEdit" class="fixed inset-0 z-[100] overflow-y-auto bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 sm:p-6" style="display: none;" x-transition>
+            <div class="bg-white rounded-[2rem] max-w-lg w-full shadow-2xl border border-slate-100 overflow-hidden flex flex-col max-h-[90vh]" @click.away="openEdit = false">
+                
+                <div class="px-6 py-5 border-b border-slate-100 bg-amber-50/30 flex justify-between items-center">
+                    <h3 class="text-lg font-black text-slate-800 uppercase tracking-wide flex items-center gap-2">
+                        <span class="text-2xl">📝</span> Edit Tautan Footer
+                    </h3>
+                    <button type="button" @click="openEdit = false" class="text-slate-400 hover:text-rose-500 hover:bg-rose-50 p-2 rounded-xl transition-colors cursor-pointer border border-transparent hover:border-rose-100">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
                 </div>
-                <form :action="'{{ route('master.footer-link.index') }}/' + id" method="POST" class="p-6 space-y-4 text-xs">
+                
+                <form :action="'{{ route('master.footer-link.index') }}/' + id" method="POST" class="p-6 md:p-8 space-y-5 flex-1 overflow-y-auto bg-white">
                     @csrf
                     @method('PUT')
+                    
                     <div>
-                        <label class="block font-semibold text-gray-600 mb-1">Kelompok Menu / Group <span class="text-rose-500">*</span></label>
-                        <input type="text" name="group" x-model="group" required class="w-full text-xs rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
+                        <label class="block font-black text-slate-700 text-sm mb-2">Grup Menu <span class="text-rose-500">*</span></label>
+                        <input type="text" name="group" x-model="group" required class="w-full rounded-xl border-slate-200 text-sm font-bold shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 py-3 px-4">
                     </div>
+                    
                     <div>
-                        <label class="block font-semibold text-gray-600 mb-1">Label Teks Tautan / Judul <span class="text-rose-500">*</span></label>
-                        <input type="text" name="judul" x-model="judul" required class="w-full text-xs rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
+                        <label class="block font-black text-slate-700 text-sm mb-2">Label Teks Tautan <span class="text-rose-500">*</span></label>
+                        <input type="text" name="judul" x-model="judul" required class="w-full rounded-xl border-slate-200 text-sm font-bold shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 py-3 px-4">
                     </div>
+                    
                     <div>
-                        <label class="block font-semibold text-gray-600 mb-1">Target Alamat URL <span class="text-rose-500">*</span></label>
-                        <input type="text" name="url" x-model="url" required class="w-full text-xs rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
+                        <label class="block font-black text-slate-700 text-sm mb-2">Target Alamat URL <span class="text-rose-500">*</span></label>
+                        <input type="text" name="url" x-model="url" required class="w-full rounded-xl border-slate-200 text-sm font-bold font-mono shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 py-3 px-4 text-indigo-700">
                     </div>
+                    
                     <div>
-                        <label class="block font-semibold text-gray-600 mb-1">Nomor Urut Tampilan / Urutan <span class="text-rose-500">*</span></label>
-                        <input type="number" name="urutan" x-model="urutan" required min="0" class="w-full text-xs rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
+                        <label class="block font-black text-slate-700 text-sm mb-2">Urutan Tampil <span class="text-rose-500">*</span></label>
+                        <input type="number" name="urutan" x-model="urutan" required min="1" class="w-full rounded-xl border-slate-200 text-sm font-bold shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 py-3 px-4">
                     </div>
-                    <div class="flex items-center gap-2 pt-2">
-                        <input type="checkbox" id="edit_status" name="status" value="1" x-model="status" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 shadow-sm">
-                        <label for="edit_status" class="font-semibold text-gray-700 cursor-pointer select-none">Tautan ini aktif digunakan.</label>
+                    
+                    <div class="bg-amber-50/30 border border-amber-100 rounded-xl p-4 flex items-center gap-3">
+                        <div class="relative flex items-start">
+                            <div class="flex items-center h-5">
+                                <input id="edit_status" name="status" type="checkbox" value="1" x-model="status" class="w-5 h-5 text-amber-500 bg-white border-slate-300 rounded focus:ring-amber-500 focus:ring-2 cursor-pointer">
+                            </div>
+                            <div class="ml-3 text-sm">
+                                <label for="edit_status" class="font-black text-slate-700 cursor-pointer">Status Tautan Aktif</label>
+                                <p class="text-[10px] text-slate-500 font-bold mt-0.5">Hilangkan centang untuk menyembunyikan tautan ini.</p>
+                            </div>
+                        </div>
                     </div>
-                    <div class="pt-4 border-t border-gray-100 flex justify-end gap-2">
-                        <button type="button" @click="openEdit = false" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition-colors cursor-pointer">Batal</button>
-                        <button type="submit" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg shadow-sm transition-colors cursor-pointer">Simpan Perubahan</button>
+                    
+                    <div class="pt-6 border-t border-slate-100 flex flex-col sm:flex-row justify-end gap-3 mt-8">
+                        <button type="button" @click="openEdit = false" class="px-6 py-3 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold rounded-xl transition-colors cursor-pointer shadow-sm w-full sm:w-auto text-center">Batal</button>
+                        <button type="submit" class="px-6 py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-black rounded-xl shadow-lg shadow-amber-500/30 transition-all hover:-translate-y-0.5 cursor-pointer flex items-center justify-center gap-2 w-full sm:w-auto">
+                            <span>💾</span> Perbarui
+                        </button>
                     </div>
                 </form>
             </div>
         </div>
 
-        <div x-show="openDelete" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm" style="display: none;" x-transition>
-            <div class="bg-white rounded-xl shadow-xl border border-gray-200 max-w-sm w-full p-6 text-center space-y-4" @click.away="openDelete = false">
-                <div class="w-12 h-12 bg-rose-50 text-rose-600 rounded-full flex items-center justify-center text-xl mx-auto border border-rose-100">
-                    ⚠️
+        {{-- MODAL DELETE --}}
+        <div x-show="openDelete" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md" style="display: none;" x-transition>
+            <div class="bg-white rounded-[2rem] shadow-2xl border border-slate-100 max-w-md w-full p-8 text-center space-y-6 relative overflow-hidden" @click.away="openDelete = false">
+                
+                <div class="w-24 h-24 bg-rose-50 text-rose-600 rounded-full flex items-center justify-center text-5xl mx-auto border border-rose-100 shadow-inner">
+                    ✂️
                 </div>
+                
                 <div>
-                    <h4 class="text-sm font-bold text-gray-900">Konfirmasi Hapus Link</h4>
-                    <p class="text-xs text-gray-500 mt-1">
-                        Apakah Anda yakin ingin menghapus tautan <span class="font-bold text-gray-800" x-text="deleteTargetTitle"></span> dari susunan menu bawah website?
+                    <h4 class="text-xl font-black text-slate-900 tracking-tight mb-2">Hapus Tautan?</h4>
+                    <p class="text-sm font-medium text-slate-500 leading-relaxed px-2">
+                        Anda yakin ingin membuang link:
                     </p>
+                    <div class="mt-3 p-3 bg-rose-50/50 border border-rose-100 rounded-xl text-rose-700 font-bold italic text-sm break-all">
+                        "<span x-text="deleteTargetTitle"></span>"
+                    </div>
                 </div>
-                <form :action="deleteAction" method="POST" class="flex justify-center gap-2 pt-2">
+                
+                <form :action="deleteAction" method="POST" class="flex justify-center gap-3 w-full pt-2">
                     @csrf
                     @method('DELETE')
-                    <button type="button" @click="openDelete = false" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 font-semibold rounded-lg text-xs cursor-pointer">Batal</button>
-                    <button type="submit" class="px-4 py-2 !bg-rose-600 hover:!bg-rose-700 !text-white font-bold rounded-lg text-xs cursor-pointer shadow-sm border border-transparent">Ya, Hapus</button>
+                    <button type="button" @click="openDelete = false" class="flex-1 px-6 py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl cursor-pointer transition-colors">
+                        Batal
+                    </button>
+                    <button type="submit" class="flex-1 px-6 py-3.5 bg-rose-600 hover:bg-rose-700 text-white font-black rounded-xl shadow-md cursor-pointer transition-colors border border-transparent flex items-center justify-center gap-2">
+                        Ya, Hapus
+                    </button>
                 </form>
             </div>
         </div>

@@ -31,7 +31,7 @@
             this.openEdit = false;
             this.currentStep = 1;
         }
-    }" class="py-12 bg-slate-900/10 min-h-screen font-sans">
+    }" class="py-12 bg-slate-50/50 min-h-screen font-sans relative overflow-hidden">
         
         <div class="max-w-6xl mx-auto sm:px-6 lg:px-8 space-y-6">
             
@@ -57,7 +57,7 @@
                 </div>
             @endif
 
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-2xl border border-gray-100">
+            <div class="bg-white/80 backdrop-blur-xl overflow-hidden shadow-2xl shadow-indigo-200/40 sm:rounded-[2rem] border border-white/50 transition-all">
                 
                 <div class="p-6 border-b border-gray-100 bg-gray-50/50 space-y-4">
                     <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
@@ -68,7 +68,7 @@
                         
                         <!-- 👇 BUKA GEMBOK 1: Tombol Tambah Siswa -->
                         @if(auth()->user()->hasPermission('kesiswaan.siswa.store'))
-                        <button @click="openCreate = true" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg shadow-sm transition-all flex items-center justify-center gap-1 cursor-pointer whitespace-nowrap">
+                        <button @click="openCreate = true" class="px-4 py-2.5 bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-700 hover:to-indigo-600 text-white text-[11px] font-black uppercase tracking-widest rounded-xl shadow-lg shadow-indigo-500/30 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-1 cursor-pointer whitespace-nowrap">
                             ➕ Tambah Siswa Baru
                         </button>
                         @endif
@@ -92,8 +92,8 @@
                             <option value="Keluar" {{ request('status') == 'Keluar' ? 'selected' : '' }}>🔴 Keluar / DO</option>
                         </select>
                         <div class="flex gap-2">
-                            <button type="submit" class="w-full bg-gray-800 hover:bg-gray-700 text-white text-xs font-medium rounded-lg transition-colors cursor-pointer">Filter</button>
-                            <a href="{{ route('kesiswaan.siswa') }}" class="w-1/2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-medium rounded-lg flex items-center justify-center transition-colors">Reset</a>
+                            <button type="submit" class="w-full bg-gradient-to-r from-gray-800 to-gray-600 hover:from-gray-700 hover:to-gray-500 text-white text-[11px] font-black uppercase tracking-widest rounded-xl shadow-lg shadow-gray-500/30 hover:-translate-y-0.5 transition-all cursor-pointer">Filter</button>
+                            <a href="{{ route('kesiswaan.siswa') }}" class="w-1/2 bg-gradient-to-r from-gray-100 to-gray-200 hover:from-gray-200 hover:to-gray-300 text-gray-700 text-[11px] font-black uppercase tracking-widest rounded-xl shadow-lg shadow-gray-500/30 hover:-translate-y-0.5 transition-all flex items-center justify-center">Reset</a>
                         </div>
                     </form>
                     <!-- 👇 BUKA GEMBOK 2: Seluruh Fitur Import dan Generate Akun -->
@@ -129,7 +129,7 @@
                                             file:cursor-pointer cursor-pointer
                                             bg-white border border-gray-200 rounded-xl p-1 shadow-sm focus:outline-none" />
                             </div>
-                            <button type="submit" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-black font-semibold rounded-xl shadow-sm transition-all flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap">
+                            <button type="submit" class="px-5 py-2 bg-gradient-to-r from-emerald-500 to-emerald-400 hover:from-emerald-600 hover:to-emerald-500 text-white font-black uppercase tracking-widest text-[10px] rounded-xl shadow-lg shadow-emerald-500/30 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap">
                                 📥 Mulai Import
                             </button>
                         </form>
@@ -147,7 +147,7 @@
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse text-sm">
                         <thead>
-                            <tr class="bg-gray-100/70 border-b border-gray-100 text-gray-600 font-semibold text-xs uppercase tracking-wider">
+                            <tr class="bg-slate-50 border-b border-slate-100 text-slate-500 font-black text-[10px] uppercase tracking-widest">
                                 <th class="p-4 pl-6">Nama Lengkap / NIPD</th>
                                 <th class="p-4">NISN / NIK</th>
                                 <th class="p-4">Tingkat & Ruang Kelas</th>
@@ -238,7 +238,7 @@
         </div>
 
         <div x-show="openCreate" class="fixed inset-0 z-50 overflow-y-auto bg-gray-900/60 backdrop-blur-sm flex items-center justify-center p-4" style="display: none;" x-transition>
-            <div class="bg-white rounded-2xl max-w-4xl w-full shadow-2xl border border-gray-100 flex flex-col max-h-[90vh]" @click.away="resetWizard()">
+            <div class="bg-white/95 backdrop-blur-xl rounded-[2.5rem] max-w-4xl w-full shadow-2xl border border-white/50 flex flex-col max-h-[90vh]" @click.away="resetWizard()">
                 
                 <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50">
                     <div>
@@ -261,30 +261,30 @@
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
                                 <label class="block font-semibold text-gray-600 mb-1">Nama Lengkap Sesuai Dokumen Resmi *</label>
-                                <input type="text" name="nama_lengkap" required class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 shadow-sm">
+                                <input type="text" name="nama_lengkap" required class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                             </div>
                             <div>
                                 <label class="block font-semibold text-gray-600 mb-1">NIK (Nomor Induk Kependudukan) *</label>
-                                <input type="text" name="nik" required maxlength="16" class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 shadow-sm">
+                                <input type="text" name="nik" required maxlength="16" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                             </div>
                             <div>
                                 <label class="block font-semibold text-gray-600 mb-1">Anak Ke *</label>
-                                <input type="text" name="anak_ke" required maxlength="2" class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 shadow-sm">
+                                <input type="text" name="anak_ke" required maxlength="2" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                             </div>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
                                 <label class="block font-semibold text-gray-600 mb-1">NIPD *</label>
-                                <input type="text" name="nipd" required class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 shadow-sm">
+                                <input type="text" name="nipd" required class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                             </div>
                             <div>
                                 <label class="block font-semibold text-gray-600 mb-1">NISN (Opsional)</label>
-                                <input type="text" name="nisn" class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 shadow-sm">
+                                <input type="text" name="nisn" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                             </div>
                             <div>
                                 <label class="block font-semibold text-gray-600 mb-1">Jenis Kelamin *</label>
-                                <select name="jenis_kelamin" required class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 shadow-sm">
+                                <select name="jenis_kelamin" required class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                     <option value="Laki-laki">Laki-laki</option>
                                     <option value="Perempuan">Perempuan</option>
                                 </select>
@@ -294,15 +294,15 @@
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
                                 <label class="block font-semibold text-gray-600 mb-1">Tempat Lahir *</label>
-                                <input type="text" name="tempat_lahir" required class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 shadow-sm">
+                                <input type="text" name="tempat_lahir" required class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                             </div>
                             <div>
                                 <label class="block font-semibold text-gray-600 mb-1">Tanggal Lahir *</label>
-                                <input type="date" name="tanggal_lahir" required class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 shadow-sm">
+                                <input type="date" name="tanggal_lahir" required class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                             </div>
                             <div>
                                 <label class="block font-semibold text-gray-600 mb-1">Agama *</label>
-                                <select name="agama" required class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 shadow-sm">
+                                <select name="agama" required class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                     <option value="Islam">Islam</option>
                                     <option value="Kristen">Kristen</option>
                                     <option value="Katholik">Katholik</option>
@@ -315,15 +315,15 @@
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
                                 <label class="block font-semibold text-gray-600 mb-1">Nomor Handphone / WhatsApp *</label>
-                                <input type="text" name="nomor_hp" required class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 shadow-sm">
+                                <input type="text" name="nomor_hp" required class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                             </div>
                             <div>
                                 <label class="block font-semibold text-gray-600 mb-1">Asal Sekolah Dasar (SD/MI) *</label>
-                                <input type="text" name="asal_sekolah" required class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm">
+                                <input type="text" name="asal_sekolah" required class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                             </div>
                             <div>
                                 <label class="block font-semibold text-gray-600 mb-1">No Peserta UN *</label>
-                                <input type="text" name="no_peserta_un" required class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm">
+                                <input type="text" name="no_peserta_un" required class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                             </div>
                         </div>
                     </div>
@@ -332,13 +332,13 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label class="block font-semibold text-gray-600 mb-1">Provinsi *</label>
-                                <select id="siswa_provinsi" name="provinsi" data-current="{{ old('provinsi') }}" required class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 shadow-sm">
+                                <select id="siswa_provinsi" name="provinsi" data-current="{{ old('provinsi') }}" required class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                     <option value="">-- Pilih Provinsi --</option>
                                 </select>
                             </div>
                             <div>
                                 <label class="block font-semibold text-gray-600 mb-1">Kabupaten / Kota *</label>
-                                <select id="siswa_kota" name="kota" data-current="{{ old('kota') }}" required class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 shadow-sm">
+                                <select id="siswa_kota" name="kota" data-current="{{ old('kota') }}" required class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                     <option value="">-- Pilih Kota/Kabupaten --</option>
                                 </select>
                             </div>
@@ -347,13 +347,13 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label class="block font-semibold text-gray-600 mb-1">Kecamatan *</label>
-                                <select id="siswa_kecamatan" name="kecamatan" data-current="{{ old('kecamatan') }}" required class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 shadow-sm">
+                                <select id="siswa_kecamatan" name="kecamatan" data-current="{{ old('kecamatan') }}" required class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                     <option value="">-- Pilih Kecamatan --</option>
                                 </select>
                             </div>
                             <div>
                                 <label class="block font-semibold text-gray-600 mb-1">Kelurahan / Desa *</label>
-                                <select id="siswa_kelurahan" name="kelurahan_desa" data-current="{{ old('kelurahan_desa') }}" required class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 shadow-sm">
+                                <select id="siswa_kelurahan" name="kelurahan_desa" data-current="{{ old('kelurahan_desa') }}" required class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                     <option value="">-- Pilih Kelurahan/Desa --</option>
                                 </select>
                             </div>
@@ -362,22 +362,22 @@
                         <div class="grid grid-cols-1 gap-4">
                             <div>
                                 <label class="block font-semibold text-gray-600 mb-1">Alamat Jalan / Blok / Kampung *</label>
-                                <input type="text" name="alamat_lengkap" required placeholder="Nama jalan, RT/RW, nomor rumah..." class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 shadow-sm">
+                                <input type="text" name="alamat_lengkap" required placeholder="Nama jalan, RT/RW, nomor rumah..." class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                             </div>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
                                 <label class="block font-semibold text-gray-600 mb-1">RT *</label>
-                                <input type="text" name="rt" required class="w-full text-xs rounded-lg border-gray-300 shadow-sm">
+                                <input type="text" name="rt" required class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                             </div>
                             <div>
                                 <label class="block font-semibold text-gray-600 mb-1">RW *</label>
-                                <input type="text" name="rw" required class="w-full text-xs rounded-lg border-gray-300 shadow-sm">
+                                <input type="text" name="rw" required class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                             </div>
                             <div>
                                 <label class="block font-semibold text-gray-600 mb-1">Kode Pos *</label>
-                                <input type="text" name="kode_pos" required class="w-full text-xs rounded-lg border-gray-300 shadow-sm">
+                                <input type="text" name="kode_pos" required class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                             </div>
                         </div>
 
@@ -386,7 +386,7 @@
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
                                 <label class="block font-semibold text-gray-600 mb-1">Tingkat Kelas Masuk *</label>
-                                <select name="tingkat" class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 shadow-sm">
+                                <select name="tingkat" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                     <option value="7">Tingkat 7</option>
                                     <option value="8">Tingkat 8</option>
                                     <option value="9">Tingkat 9</option>
@@ -394,7 +394,7 @@
                             </div>
                             <div>
                                 <label class="block font-semibold text-gray-600 mb-1">Daftar Semester Masuk *</label>
-                                <select name="semester_id" class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 shadow-sm">
+                                <select name="semester_id" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                     @foreach($semester_list as $sem)
                                         <option value="{{ $sem->id }}">{{ $sem->nama_semester }} ({{ $sem->tahunAjaran->nama_tahun_ajaran ?? '' }})</option>
                                     @endforeach
@@ -402,7 +402,7 @@
                             </div>
                             <div>
                                 <label class="block font-semibold text-gray-600 mb-1">Tanggal Diterima Masuk *</label>
-                                <input type="date" name="diterima_pada_tanggal" value="{{ date('Y-m-d') }}" required class="w-full text-xs rounded-lg border-gray-300 shadow-sm">
+                                <input type="date" name="diterima_pada_tanggal" value="{{ date('Y-m-d') }}" required class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                             </div>
                         </div>
                     </div>
@@ -419,15 +419,15 @@
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div>
                                     <label class="block font-semibold text-gray-600 mb-1">Nama Lengkap Ayah *</label>
-                                    <input type="text" name="wali[0][nama_lengkap]" required class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    <input type="text" name="wali[0][nama_lengkap]" required class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                 </div>
                                 <div>
                                     <label class="block font-semibold text-gray-600 mb-1">NIK Ayah</label>
-                                    <input type="text" name="wali[0][nik]" maxlength="16" placeholder="16 Digit NIK" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    <input type="text" name="wali[0][nik]" maxlength="16" placeholder="16 Digit NIK" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                 </div>
                                 <div>
                                     <label class="block font-semibold text-gray-600 mb-1">Jenis Kelamin</label>
-                                    <select name="wali[0][jenis_kelamin]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    <select name="wali[0][jenis_kelamin]" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                         <option value="Laki-laki" selected>Laki-laki</option>
                                         <option value="Perempuan">Perempuan</option>
                                     </select>
@@ -437,15 +437,15 @@
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div>
                                     <label class="block font-semibold text-gray-600 mb-1">Tempat Lahir</label>
-                                    <input type="text" name="wali[0][tempat_lahir]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    <input type="text" name="wali[0][tempat_lahir]" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                 </div>
                                 <div>
                                     <label class="block font-semibold text-gray-600 mb-1">Tanggal Lahir</label>
-                                    <input type="date" name="wali[0][tanggal_lahir]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    <input type="date" name="wali[0][tanggal_lahir]" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                 </div>
                                 <div>
                                     <label class="block font-semibold text-gray-600 mb-1">Agama</label>
-                                    <select name="wali[0][agama]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    <select name="wali[0][agama]" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                         <option value="">-- Pilih Agama --</option>
                                         <option value="Islam">Islam</option>
                                         <option value="Kristen">Kristen</option>
@@ -459,7 +459,7 @@
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div>
                                     <label class="block font-semibold text-gray-600 mb-1">Pendidikan Terakhir</label>
-                                    <select name="wali[0][pendidikan_terakhir]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    <select name="wali[0][pendidikan_terakhir]" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                         <option value="">-- Pilih Pendidikan --</option>
                                         <option value="Tidak Sekolah">Tidak Sekolah</option>
                                         <option value="Putus SD">Putus SD</option>
@@ -476,7 +476,7 @@
                                 </div>
                                 <div>
                                     <label class="block font-semibold text-gray-600 mb-1">Pekerjaan</label>
-                                    <select name="wali[0][pekerjaan]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    <select name="wali[0][pekerjaan]" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                         <option value="">-- Pilih Pekerjaan --</option>
                                         <option value="Tidak Bekerja">Tidak Bekerja</option>
                                         <option value="Nelayan">Nelayan</option>
@@ -496,7 +496,7 @@
                                 </div>
                                 <div>
                                     <label class="block font-semibold text-gray-600 mb-1">Penghasilan Bulanan</label>
-                                    <input type="number" step="0.01" name="wali[0][penghasilan_bulanan]" placeholder="Contoh: 3500000" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    <input type="number" step="0.01" name="wali[0][penghasilan_bulanan]" placeholder="Contoh: 3500000" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                 </div>
                             </div>
 
@@ -504,21 +504,21 @@
                             <div class="grid grid-cols-3 gap-4">
                                 <div class="md:col-span-2">
                                     <label class="block font-semibold text-gray-600 mb-1">Alamat Lengkap Rumah Jalan/Kampung *</label>
-                                    <input type="text" name="wali[0][alamat_lengkap]" required placeholder="Nama jalan, RT/RW, nomor rumah" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    <input type="text" name="wali[0][alamat_lengkap]" required placeholder="Nama jalan, RT/RW, nomor rumah" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                 </div>
                             </div>
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div>
                                     <label class="block font-semibold text-gray-600 mb-1">RT</label>
-                                    <input type="text" name="wali[0][rt]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    <input type="text" name="wali[0][rt]" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                 </div>
                                 <div>
                                     <label class="block font-semibold text-gray-600 mb-1">RW</label>
-                                    <input type="text" name="wali[0][rw]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    <input type="text" name="wali[0][rw]" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                 </div>
                                 <div>
                                     <label class="block font-semibold text-gray-600 mb-1">Kode Pos</label>
-                                    <input type="text" name="wali[0][kode_pos]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    <input type="text" name="wali[0][kode_pos]" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                 </div>
                             </div>
 
@@ -526,25 +526,25 @@
                             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                                 <div>
                                     <label class="block font-semibold text-gray-600 mb-1">Provinsi</label>
-                                    <select id="ayah_provinsi" name="wali[0][provinsi]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm focus:ring-indigo-500">
+                                    <select id="ayah_provinsi" name="wali[0][provinsi]" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                         <option value="">-- Pilih Provinsi --</option>
                                     </select>
                                 </div>
                                 <div>
                                     <label class="block font-semibold text-gray-600 mb-1">Kota / Kabupaten</label>
-                                    <select id="ayah_kota" name="wali[0][kota]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm focus:ring-indigo-500">
+                                    <select id="ayah_kota" name="wali[0][kota]" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                         <option value="">-- Pilih Kota/Kabupaten --</option>
                                     </select>
                                 </div>
                                 <div>
                                     <label class="block font-semibold text-gray-600 mb-1">Kecamatan</label>
-                                    <select id="ayah_kecamatan" name="wali[0][kecamatan]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm focus:ring-indigo-500">
+                                    <select id="ayah_kecamatan" name="wali[0][kecamatan]" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                         <option value="">-- Pilih Kecamatan --</option>
                                     </select>
                                 </div>
                                 <div>
                                     <label class="block font-semibold text-gray-600 mb-1">Kelurahan / Desa</label>
-                                    <select id="ayah_kelurahan" name="wali[0][kelurahan_desa]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm focus:ring-indigo-500">
+                                    <select id="ayah_kelurahan" name="wali[0][kelurahan_desa]" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                         <option value="">-- Pilih Kelurahan/Desa --</option>
                                     </select>
                                 </div>
@@ -553,21 +553,21 @@
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div>
                                     <label class="block font-semibold text-gray-600 mb-1">Nomor Handphone / WA</label>
-                                    <input type="text" name="wali[0][nomor_hp]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    <input type="text" name="wali[0][nomor_hp]" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                 </div>
                                 <div>
                                     <label class="block font-semibold text-gray-600 mb-1">Email Aktif</label>
-                                    <input type="email" name="wali[0][email]" placeholder="contoh@gmail.com" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    <input type="email" name="wali[0][email]" placeholder="contoh@gmail.com" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                 </div>
                                 <div>
                                     <label class="block font-semibold text-gray-600 mb-1">No. HP Darurat</label>
-                                    <input type="text" name="wali[0][nomor_hp_darurat]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    <input type="text" name="wali[0][nomor_hp_darurat]" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                 </div>
                             </div>
 
                             <div>
                                 <label class="block font-semibold text-gray-600 mb-1">Catatan Khusus Mengenai Ayah</label>
-                                <textarea name="wali[0][catatan]" rows="1" placeholder="Informasi tambahan jika diperlukan..." class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm"></textarea>
+                                <textarea name="wali[0][catatan]" rows="1" placeholder="Informasi tambahan jika diperlukan..." class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold"></textarea>
                             </div>
                         </div>
 
@@ -581,15 +581,15 @@
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div>
                                     <label class="block font-semibold text-gray-600 mb-1">Nama Lengkap Ibu *</label>
-                                    <input type="text" name="wali[1][nama_lengkap]" required class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    <input type="text" name="wali[1][nama_lengkap]" required class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                 </div>
                                 <div>
                                     <label class="block font-semibold text-gray-600 mb-1">NIK Ibu</label>
-                                    <input type="text" name="wali[1][nik]" maxlength="16" placeholder="16 Digit NIK" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    <input type="text" name="wali[1][nik]" maxlength="16" placeholder="16 Digit NIK" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                 </div>
                                 <div>
                                     <label class="block font-semibold text-gray-600 mb-1">Jenis Kelamin</label>
-                                    <select name="wali[1][jenis_kelamin]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    <select name="wali[1][jenis_kelamin]" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                         <option value="Laki-laki">Laki-laki</option>
                                         <option value="Perempuan" selected>Perempuan</option>
                                     </select>
@@ -599,15 +599,15 @@
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div>
                                     <label class="block font-semibold text-gray-600 mb-1">Tempat Lahir</label>
-                                    <input type="text" name="wali[1][tempat_lahir]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    <input type="text" name="wali[1][tempat_lahir]" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                 </div>
                                 <div>
                                     <label class="block font-semibold text-gray-600 mb-1">Tanggal Lahir</label>
-                                    <input type="date" name="wali[1][tanggal_lahir]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    <input type="date" name="wali[1][tanggal_lahir]" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                 </div>
                                 <div>
                                     <label class="block font-semibold text-gray-600 mb-1">Agama</label>
-                                    <select name="wali[1][agama]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    <select name="wali[1][agama]" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                         <option value="">-- Pilih Agama --</option>
                                         <option value="Islam">Islam</option>
                                         <option value="Kristen">Kristen</option>
@@ -621,7 +621,7 @@
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div>
                                     <label class="block font-semibold text-gray-600 mb-1">Pendidikan Terakhir</label>
-                                    <select name="wali[1][pendidikan_terakhir]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    <select name="wali[1][pendidikan_terakhir]" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                         <option value="">-- Pilih Pendidikan --</option>
                                         <option value="Tidak Sekolah">Tidak Sekolah</option>
                                         <option value="Putus SD">Putus SD</option>
@@ -638,7 +638,7 @@
                                 </div>
                                 <div>
                                     <label class="block font-semibold text-gray-600 mb-1">Pekerjaan</label>
-                                    <select name="wali[1][pekerjaan]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    <select name="wali[1][pekerjaan]" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                         <option value="">-- Pilih Pekerjaan --</option>
                                         <option value="Tidak Bekerja">Tidak Bekerja</option>
                                         <option value="Nelayan">Nelayan</option>
@@ -658,7 +658,7 @@
                                 </div>
                                 <div>
                                     <label class="block font-semibold text-gray-600 mb-1">Penghasilan Bulanan</label>
-                                    <input type="number" step="0.01" name="wali[1][penghasilan_bulanan]" placeholder="0" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    <input type="number" step="0.01" name="wali[1][penghasilan_bulanan]" placeholder="0" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                 </div>
                             </div>
 
@@ -666,21 +666,21 @@
                             <div class="grid grid-cols-3 gap-4">
                                 <div class="md:col-span-2">
                                     <label class="block font-semibold text-gray-600 mb-1">Alamat Lengkap Rumah Jalan/Kampung *</label>
-                                    <input type="text" name="wali[1][alamat_lengkap]" required placeholder="Nama jalan, RT/RW, nomor rumah" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    <input type="text" name="wali[1][alamat_lengkap]" required placeholder="Nama jalan, RT/RW, nomor rumah" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                 </div>
                             </div>
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div>
                                     <label class="block font-semibold text-gray-600 mb-1">RT</label>
-                                    <input type="text" name="wali[1][rt]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    <input type="text" name="wali[1][rt]" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                 </div>
                                 <div>
                                     <label class="block font-semibold text-gray-600 mb-1">RW</label>
-                                    <input type="text" name="wali[1][rw]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    <input type="text" name="wali[1][rw]" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                 </div>
                                 <div>
                                     <label class="block font-semibold text-gray-600 mb-1">Kode Pos</label>
-                                    <input type="text" name="wali[1][kode_pos]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    <input type="text" name="wali[1][kode_pos]" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                 </div>
                             </div>
 
@@ -688,25 +688,25 @@
                             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                                 <div>
                                     <label class="block font-semibold text-gray-600 mb-1">Provinsi</label>
-                                    <select id="ibu_provinsi" name="wali[1][provinsi]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm focus:ring-indigo-500">
+                                    <select id="ibu_provinsi" name="wali[1][provinsi]" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                         <option value="">-- Pilih Provinsi --</option>
                                     </select>
                                 </div>
                                 <div>
                                     <label class="block font-semibold text-gray-600 mb-1">Kota / Kabupaten</label>
-                                    <select id="ibu_kota" name="wali[1][kota]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm focus:ring-indigo-500">
+                                    <select id="ibu_kota" name="wali[1][kota]" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                         <option value="">-- Pilih Kota/Kabupaten --</option>
                                     </select>
                                 </div>
                                 <div>
                                     <label class="block font-semibold text-gray-600 mb-1">Kecamatan</label>
-                                    <select id="ibu_kecamatan" name="wali[1][kecamatan]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm focus:ring-indigo-500">
+                                    <select id="ibu_kecamatan" name="wali[1][kecamatan]" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                         <option value="">-- Pilih Kecamatan --</option>
                                     </select>
                                 </div>
                                 <div>
                                     <label class="block font-semibold text-gray-600 mb-1">Kelurahan / Desa</label>
-                                    <select id="ibu_kelurahan" name="wali[1][kelurahan_desa]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm focus:ring-indigo-500">
+                                    <select id="ibu_kelurahan" name="wali[1][kelurahan_desa]" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                         <option value="">-- Pilih Kelurahan/Desa --</option>
                                     </select>
                                 </div>
@@ -715,21 +715,21 @@
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div>
                                     <label class="block font-semibold text-gray-600 mb-1">Nomor Handphone / WA</label>
-                                    <input type="text" name="wali[1][nomor_hp]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    <input type="text" name="wali[1][nomor_hp]" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                 </div>
                                 <div>
                                     <label class="block font-semibold text-gray-600 mb-1">Email Aktif</label>
-                                    <input type="email" name="wali[1][email]" placeholder="contoh@gmail.com" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    <input type="email" name="wali[1][email]" placeholder="contoh@gmail.com" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                 </div>
                                 <div>
                                     <label class="block font-semibold text-gray-600 mb-1">No. HP Darurat</label>
-                                    <input type="text" name="wali[1][nomor_hp_darurat]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    <input type="text" name="wali[1][nomor_hp_darurat]" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                 </div>
                             </div>
 
                             <div>
                                 <label class="block font-semibold text-gray-600 mb-1">Catatan Khusus Mengenai Ibu</label>
-                                <textarea name="wali[1][catatan]" rows="1" placeholder="Informasi tambahan jika diperlukan..." class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm"></textarea>
+                                <textarea name="wali[1][catatan]" rows="1" placeholder="Informasi tambahan jika diperlukan..." class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold"></textarea>
                             </div>
                         </div>
 
@@ -744,15 +744,15 @@
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div>
                                     <label class="block font-semibold text-gray-600 mb-1">Nama Lengkap Wali</label>
-                                    <input type="text" name="wali[2][nama_lengkap]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    <input type="text" name="wali[2][nama_lengkap]" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                 </div>
                                 <div>
                                     <label class="block font-semibold text-gray-600 mb-1">NIK Wali</label>
-                                    <input type="text" name="wali[2][nik]" maxlength="16" placeholder="16 Digit NIK" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    <input type="text" name="wali[2][nik]" maxlength="16" placeholder="16 Digit NIK" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                 </div>
                                 <div>
                                     <label class="block font-semibold text-gray-600 mb-1">Jenis Kelamin</label>
-                                    <select name="wali[2][jenis_kelamin]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    <select name="wali[2][jenis_kelamin]" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                         <option value="Laki-laki">Laki-laki</option>
                                         <option value="Perempuan">Perempuan</option>
                                     </select>
@@ -762,15 +762,15 @@
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div>
                                     <label class="block font-semibold text-gray-600 mb-1">Tempat Lahir</label>
-                                    <input type="text" name="wali[2][tempat_lahir]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    <input type="text" name="wali[2][tempat_lahir]" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                 </div>
                                 <div>
                                     <label class="block font-semibold text-gray-600 mb-1">Tanggal Lahir</label>
-                                    <input type="date" name="wali[2][tanggal_lahir]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    <input type="date" name="wali[2][tanggal_lahir]" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                 </div>
                                 <div>
                                     <label class="block font-semibold text-gray-600 mb-1">Agama</label>
-                                    <select name="wali[2][agama]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    <select name="wali[2][agama]" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                         <option value="">-- Pilih Agama --</option>
                                         <option value="Islam">Islam</option>
                                         <option value="Kristen">Kristen</option>
@@ -784,7 +784,7 @@
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div>
                                     <label class="block font-semibold text-gray-600 mb-1">Pendidikan Terakhir</label>
-                                    <select name="wali[2][pendidikan_terakhir]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    <select name="wali[2][pendidikan_terakhir]" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                         <option value="">-- Pilih Pendidikan --</option>
                                         <option value="Tidak Sekolah">Tidak Sekolah</option>
                                         <option value="Putus SD">Putus SD</option>
@@ -801,7 +801,7 @@
                                 </div>
                                 <div>
                                     <label class="block font-semibold text-gray-600 mb-1">Pekerjaan</label>
-                                    <select name="wali[2][pekerjaan]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    <select name="wali[2][pekerjaan]" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                         <option value="">-- Pilih Pekerjaan --</option>
                                         <option value="Tidak Bekerja">Tidak Bekerja</option>
                                         <option value="Nelayan">Nelayan</option>
@@ -821,7 +821,7 @@
                                 </div>
                                 <div>
                                     <label class="block font-semibold text-gray-600 mb-1">Penghasilan Bulanan</label>
-                                    <input type="number" step="0.01" name="wali[2][penghasilan_bulanan]" placeholder="0" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    <input type="number" step="0.01" name="wali[2][penghasilan_bulanan]" placeholder="0" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                 </div>
                             </div>
 
@@ -829,21 +829,21 @@
                             <div class="grid grid-cols-3 gap-4">
                                 <div class="md:col-span-2">
                                     <label class="block font-semibold text-gray-600 mb-1">Alamat Lengkap Rumah Jalan/Kampung *</label>
-                                    <input type="text" name="wali[2][alamat_lengkap]" placeholder="Nama jalan, RT/RW, nomor rumah" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    <input type="text" name="wali[2][alamat_lengkap]" placeholder="Nama jalan, RT/RW, nomor rumah" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                 </div>
                             </div>
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div>
                                     <label class="block font-semibold text-gray-600 mb-1">RT</label>
-                                    <input type="text" name="wali[2][rt]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    <input type="text" name="wali[2][rt]" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                 </div>
                                 <div>
                                     <label class="block font-semibold text-gray-600 mb-1">RW</label>
-                                    <input type="text" name="wali[2][rw]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    <input type="text" name="wali[2][rw]" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                 </div>
                                 <div>
                                     <label class="block font-semibold text-gray-600 mb-1">Kode Pos</label>
-                                    <input type="text" name="wali[2][kode_pos]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    <input type="text" name="wali[2][kode_pos]" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                 </div>
                             </div>
 
@@ -851,25 +851,25 @@
                             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                                 <div>
                                     <label class="block font-semibold text-gray-600 mb-1">Provinsi</label>
-                                    <select id="wali_provinsi" name="wali[2][provinsi]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm focus:ring-indigo-500">
+                                    <select id="wali_provinsi" name="wali[2][provinsi]" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                         <option value="">-- Pilih Provinsi --</option>
                                     </select>
                                 </div>
                                 <div>
                                     <label class="block font-semibold text-gray-600 mb-1">Kota / Kabupaten</label>
-                                    <select id="wali_kota" name="wali[2][kota]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm focus:ring-indigo-500">
+                                    <select id="wali_kota" name="wali[2][kota]" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                         <option value="">-- Pilih Kota/Kabupaten --</option>
                                     </select>
                                 </div>
                                 <div>
                                     <label class="block font-semibold text-gray-600 mb-1">Kecamatan</label>
-                                    <select id="wali_kecamatan" name="wali[2][kecamatan]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm focus:ring-indigo-500">
+                                    <select id="wali_kecamatan" name="wali[2][kecamatan]" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                         <option value="">-- Pilih Kecamatan --</option>
                                     </select>
                                 </div>
                                 <div>
                                     <label class="block font-semibold text-gray-600 mb-1">Kelurahan / Desa</label>
-                                    <select id="wali_kelurahan" name="wali[2][kelurahan_desa]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm focus:ring-indigo-500">
+                                    <select id="wali_kelurahan" name="wali[2][kelurahan_desa]" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                         <option value="">-- Pilih Kelurahan/Desa --</option>
                                     </select>
                                 </div>
@@ -878,21 +878,21 @@
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div>
                                     <label class="block font-semibold text-gray-600 mb-1">Nomor Handphone / WA</label>
-                                    <input type="text" name="wali[2][nomor_hp]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    <input type="text" name="wali[2][nomor_hp]" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                 </div>
                                 <div>
                                     <label class="block font-semibold text-gray-600 mb-1">Email Aktif</label>
-                                    <input type="email" name="wali[2][email]" placeholder="contoh@gmail.com" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    <input type="email" name="wali[2][email]" placeholder="contoh@gmail.com" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                 </div>
                                 <div>
                                     <label class="block font-semibold text-gray-600 mb-1">No. HP Darurat</label>
-                                    <input type="text" name="wali[2][nomor_hp_darurat]" class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm">
+                                    <input type="text" name="wali[2][nomor_hp_darurat]" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                 </div>
                             </div>
 
                             <div>
                                 <label class="block font-semibold text-gray-600 mb-1">Catatan Khusus Mengenai Wali</label>
-                                <textarea name="wali[2][catatan]" rows="1" placeholder="Informasi tambahan jika diperlukan..." class="w-full text-xs rounded-lg border-gray-300 bg-white shadow-sm"></textarea>
+                                <textarea name="wali[2][catatan]" rows="1" placeholder="Informasi tambahan jika diperlukan..." class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold"></textarea>
                             </div>
                         </div>
                     </div>
@@ -917,7 +917,7 @@
         </div>
 
         <div x-show="openEdit" class="fixed inset-0 z-50 overflow-y-auto bg-gray-900/60 backdrop-blur-sm flex items-center justify-center p-4" style="display: none;" x-transition>
-            <div class="bg-white rounded-2xl max-w-4xl w-full shadow-2xl border border-gray-100 flex flex-col max-h-[90vh]" @click.away="resetWizard()">
+            <div class="bg-white/95 backdrop-blur-xl rounded-[2.5rem] max-w-4xl w-full shadow-2xl shadow-indigo-200/40 border border-white/50 flex flex-col max-h-[90vh]" @click.away="resetWizard()">
                 
                 <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50">
                     <div>
@@ -940,30 +940,30 @@
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
                                 <label class="block font-semibold text-gray-600 mb-1">Nama Lengkap Sesuai Dokumen Resmi *</label>
-                                <input type="text" name="nama_lengkap" required class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 shadow-sm">
+                                <input type="text" name="nama_lengkap" required class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                             </div>
                             <div>
                                 <label class="block font-semibold text-gray-600 mb-1">NIK (Nomor Induk Kependudukan) *</label>
-                                <input type="text" name="nik" required maxlength="16" class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 shadow-sm">
+                                <input type="text" name="nik" required maxlength="16" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                             </div>
                             <div>
                                 <label class="block font-semibold text-gray-600 mb-1">Anak Ke *</label>
-                                <input type="text" name="anak_ke" required maxlength="2" class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 shadow-sm">
+                                <input type="text" name="anak_ke" required maxlength="2" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                             </div>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
                                 <label class="block font-semibold text-gray-600 mb-1">NIPD *</label>
-                                <input type="text" name="nipd" required class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 shadow-sm">
+                                <input type="text" name="nipd" required class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                             </div>
                             <div>
                                 <label class="block font-semibold text-gray-600 mb-1">NISN (Opsional)</label>
-                                <input type="text" name="nisn" class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 shadow-sm">
+                                <input type="text" name="nisn" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                             </div>
                             <div>
                                 <label class="block font-semibold text-gray-600 mb-1">Jenis Kelamin *</label>
-                                <select name="jenis_kelamin" required class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 shadow-sm">
+                                <select name="jenis_kelamin" required class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                     <option value="Laki-laki">Laki-laki</option>
                                     <option value="Perempuan">Perempuan</option>
                                 </select>
@@ -973,15 +973,15 @@
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
                                 <label class="block font-semibold text-gray-600 mb-1">Tempat Lahir *</label>
-                                <input type="text" name="tempat_lahir" required class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 shadow-sm">
+                                <input type="text" name="tempat_lahir" required class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                             </div>
                             <div>
                                 <label class="block font-semibold text-gray-600 mb-1">Tanggal Lahir *</label>
-                                <input type="date" name="tanggal_lahir" required class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 shadow-sm">
+                                <input type="date" name="tanggal_lahir" required class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                             </div>
                             <div>
                                 <label class="block font-semibold text-gray-600 mb-1">Agama *</label>
-                                <select name="agama" required class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 shadow-sm">
+                                <select name="agama" required class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                     <option value="Islam">Islam</option>
                                     <option value="Kristen">Kristen</option>
                                     <option value="Katholik">Katholik</option>
@@ -994,15 +994,15 @@
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
                                 <label class="block font-semibold text-gray-600 mb-1">Nomor Handphone / WhatsApp *</label>
-                                <input type="text" name="nomor_hp" required class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 shadow-sm">
+                                <input type="text" name="nomor_hp" required class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                             </div>
                             <div>
                                 <label class="block font-semibold text-gray-600 mb-1">Asal Sekolah Dasar (SD/MI) *</label>
-                                <input type="text" name="asal_sekolah" required class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm">
+                                <input type="text" name="asal_sekolah" required class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                             </div>
                             <div>
                                 <label class="block font-semibold text-gray-600 mb-1">No Peserta UN *</label>
-                                <input type="text" name="no_peserta_un" required class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm">
+                                <input type="text" name="no_peserta_un" required class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                             </div>
                         </div>
                     </div>
@@ -1011,13 +1011,13 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label class="block font-semibold text-gray-600 mb-1">Provinsi *</label>
-                                <select id="edit_siswa_provinsi" name="provinsi" data-current="{{ old('provinsi') }}" class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 shadow-sm">
+                                <select id="edit_siswa_provinsi" name="provinsi" data-current="{{ old('provinsi') }}" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                     <option value="">-- Pilih Provinsi --</option>
                                 </select>
                             </div>
                             <div>
                                 <label class="block font-semibold text-gray-600 mb-1">Kabupaten / Kota *</label>
-                                <select id="edit_siswa_kota" name="kota" data-current="{{ old('kota') }}" class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 shadow-sm">
+                                <select id="edit_siswa_kota" name="kota" data-current="{{ old('kota') }}" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                     <option value="">-- Pilih Kota/Kabupaten --</option>
                                 </select>
                             </div>
@@ -1026,13 +1026,13 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label class="block font-semibold text-gray-600 mb-1">Kecamatan *</label>
-                                <select id="edit_siswa_kecamatan" name="kecamatan" data-current="{{ old('kecamatan') }}" class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 shadow-sm">
+                                <select id="edit_siswa_kecamatan" name="kecamatan" data-current="{{ old('kecamatan') }}" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                     <option value="">-- Pilih Kecamatan --</option>
                                 </select>
                             </div>
                             <div>
                                 <label class="block font-semibold text-gray-600 mb-1">Kelurahan / Desa *</label>
-                                <select id="edit_siswa_kelurahan" name="kelurahan_desa" data-current="{{ old('kelurahan_desa') }}" class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 shadow-sm">
+                                <select id="edit_siswa_kelurahan" name="kelurahan_desa" data-current="{{ old('kelurahan_desa') }}" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                     <option value="">-- Pilih Kelurahan/Desa --</option>
                                 </select>
                             </div>
@@ -1041,22 +1041,22 @@
                         <div class="grid grid-cols-1 gap-4">
                             <div>
                                 <label class="block font-semibold text-gray-600 mb-1">Alamat Jalan / Blok / Kampung *</label>
-                                <input type="text" name="alamat_lengkap" required placeholder="Nama jalan, RT/RW, nomor rumah..." class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 shadow-sm">
+                                <input type="text" name="alamat_lengkap" required placeholder="Nama jalan, RT/RW, nomor rumah..." class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                             </div>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
                                 <label class="block font-semibold text-gray-600 mb-1">RT *</label>
-                                <input type="text" name="rt" required class="w-full text-xs rounded-lg border-gray-300 shadow-sm">
+                                <input type="text" name="rt" required class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                             </div>
                             <div>
                                 <label class="block font-semibold text-gray-600 mb-1">RW *</label>
-                                <input type="text" name="rw" required class="w-full text-xs rounded-lg border-gray-300 shadow-sm">
+                                <input type="text" name="rw" required class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                             </div>
                             <div>
                                 <label class="block font-semibold text-gray-600 mb-1">Kode Pos *</label>
-                                <input type="text" name="kode_pos" required class="w-full text-xs rounded-lg border-gray-300 shadow-sm">
+                                <input type="text" name="kode_pos" required class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                             </div>
                         </div>
 
@@ -1065,7 +1065,7 @@
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
                                 <label class="block font-semibold text-gray-600 mb-1">Tingkat Kelas Masuk *</label>
-                                <select name="tingkat" class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 shadow-sm">
+                                <select name="tingkat" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                     <option value="7">Tingkat 7</option>
                                     <option value="8">Tingkat 8</option>
                                     <option value="9">Tingkat 9</option>
@@ -1073,7 +1073,7 @@
                             </div>
                             <div>
                                 <label class="block font-semibold text-gray-600 mb-1">Daftar Semester Masuk *</label>
-                                <select name="semester_id" class="w-full text-xs rounded-lg border-gray-300 focus:ring-indigo-500 shadow-sm">
+                                <select name="semester_id" class="w-full text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 shadow-sm bg-slate-50 transition-all font-semibold">
                                     @foreach($semester_list as $sem)
                                         <option value="{{ $sem->id }}">{{ $sem->nama_semester }} ({{ $sem->tahunAjaran->nama_tahun_ajaran ?? '' }})</option>
                                     @endforeach
