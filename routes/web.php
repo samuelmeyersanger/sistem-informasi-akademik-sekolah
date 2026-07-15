@@ -511,6 +511,7 @@ Route::middleware(['auth', CheckApproval::class])->group(function () {
         Route::post('gaya-belajar/soal', [\App\Http\Controllers\BK\GayaBelajarController::class, 'storeSoal'])->name('gaya_belajar.store_soal');
         Route::put('gaya-belajar/soal/{id}', [\App\Http\Controllers\BK\GayaBelajarController::class, 'updateSoal'])->name('gaya_belajar.update_soal');
         Route::delete('gaya-belajar/soal/{id}', [\App\Http\Controllers\BK\GayaBelajarController::class, 'destroySoal'])->name('gaya_belajar.destroy_soal');
+        Route::delete('gaya-belajar/hasil/{id}', [\App\Http\Controllers\BK\GayaBelajarController::class, 'destroyHasil'])->name('gaya_belajar.destroy_hasil');
     });
 
     /*
