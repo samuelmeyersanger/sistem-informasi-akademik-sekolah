@@ -84,14 +84,16 @@
                     <h3 class="text-xl font-bold text-gray-800">Data Akademik (Berdasarkan Kelas)</h3>
                 </div>
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- UBAH: grid-cols diubah jadi 3 agar muat Form Daftar Nilai -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    
                     <!-- Card: Absensi Kelas -->
                     <div class="bg-white border-l-4 border-indigo-500 rounded-r-2xl rounded-l-md p-6 shadow-sm hover:shadow-md transition-shadow">
                         <div class="flex items-center gap-3 mb-3">
                             <span class="text-2xl">📝</span>
                             <h4 class="font-bold text-gray-900 text-lg">Daftar Hadir (Absensi) Kelas</h4>
                         </div>
-                        <p class="text-xs text-gray-500 mb-4">Lembar absensi kosong untuk digunakan oleh guru mata pelajaran.</p>
+                        <p class="text-xs text-gray-500 mb-4 h-8">Lembar absensi kosong untuk digunakan oleh guru mata pelajaran.</p>
                         <form action="{{ route('pusat_download.absensi') }}" method="GET" target="_blank" class="space-y-3">
                             @csrf
                             <select name="kelas_id" required class="w-full text-sm rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm bg-gray-50">
@@ -106,14 +108,13 @@
                             </div>
                         </form>
                     </div>
-
                     <!-- Card: Jadwal Perkelas -->
                     <div class="bg-white border-l-4 border-indigo-500 rounded-r-2xl rounded-l-md p-6 shadow-sm hover:shadow-md transition-shadow">
                         <div class="flex items-center gap-3 mb-3">
                             <span class="text-2xl">📅</span>
                             <h4 class="font-bold text-gray-900 text-lg">Jadwal Pelajaran Kelas</h4>
                         </div>
-                        <p class="text-xs text-gray-500 mb-4">Cetak jadwal pelajaran harian khusus untuk ditempel di kelas.</p>
+                        <p class="text-xs text-gray-500 mb-4 h-8">Cetak jadwal pelajaran harian khusus untuk ditempel di kelas.</p>
                         <form action="{{ route('pusat_download.jadwal') }}" method="GET" target="_blank" class="space-y-3">
                             @csrf
                             <select name="kelas_id" required class="w-full text-sm rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm bg-gray-50">
@@ -126,6 +127,26 @@
                                 <button type="submit" name="format" value="excel" class="flex-1 px-3 py-2.5 bg-gray-900 hover:bg-gray-800 text-white text-xs font-bold rounded-lg transition-colors">Unduh Excel</button>
                                 <button type="submit" name="format" value="pdf" class="flex-1 px-3 py-2.5 bg-gray-900 hover:bg-gray-800 text-white text-xs font-bold rounded-lg transition-colors">Unduh PDF</button>
                             </div>
+                        </form>
+                    </div>
+                    <!-- Card BARU: Daftar Nilai Kelas -->
+                    <div class="bg-white border-l-4 border-amber-500 rounded-r-2xl rounded-l-md p-6 shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center gap-3 mb-3">
+                            <span class="text-2xl">💯</span>
+                            <h4 class="font-bold text-gray-900 text-lg">Daftar Nilai Kelas</h4>
+                        </div>
+                        <p class="text-xs text-gray-500 mb-4 h-8">Cetak format lembar daftar nilai kosong untuk kelas.</p>
+                        <form action="{{ route('download.daftar-nilai') }}" method="GET" target="_blank" class="space-y-3">
+                            <select name="kelas_id" required class="w-full text-sm rounded-lg border-gray-300 focus:border-amber-500 focus:ring-amber-500 shadow-sm bg-gray-50">
+                                <option value="">-- Pilih Ruang Kelas --</option>
+                                @foreach($daftarKelas as $kelas)
+                                    <option value="{{ $kelas->id }}">{{ $kelas->tingkat }} - {{ $kelas->nama_kelas }}</option>
+                                @endforeach
+                            </select>
+                            <!-- Tombol satu kolom penuh karena hanya ada 1 format cetakan (PDF/HTML) -->
+                            <button type="submit" class="w-full px-3 py-2.5 bg-gray-900 hover:bg-gray-800 text-white text-xs font-bold rounded-lg transition-colors">
+                                🖨️ Unduh PDF / Cetak
+                            </button>
                         </form>
                     </div>
                 </div>

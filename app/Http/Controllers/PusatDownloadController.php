@@ -33,13 +33,14 @@ class PusatDownloadController extends Controller
         ]);
         $kelas = Kelas::with('waliKelas')->findOrFail($request->kelas_id);
         $semesterAktif = Semester::with('tahunAjaran')->where('is_aktif', true)->first();
+        
+        // 🟢 PERBAIKAN: Hapus sortBy() dan ganti dengan orderBy('id', 'asc') 
+        // agar sesuai urutan input (murni berdasar ID).
         $anggota = AnggotaKelas::with('siswa')
             ->where('kelas_id', $kelas->id)
             ->where('semester_id', $semesterAktif->id ?? null)
-            ->get()
-            ->sortBy(function ($item) {
-                return $item->siswa->nama_lengkap;
-            });
+            ->orderBy('id', 'asc') 
+            ->get();
             
         $profil = null; 
         $nama_sekolah = $profil ? $profil->nama_sekolah : 'SMPN 4 CIBITUNG'; 
@@ -61,7 +62,6 @@ class PusatDownloadController extends Controller
             return Excel::download(new AbsensiKelasExport($data), $namaFile . '.xlsx');
         }
         
-        // 🟢 INI YANG DIGANTI:
         // Kita tidak lagi menggunakan DOMPDF, melainkan langsung menampilkan View HTML-nya.
         return view('pusat_download.exports.absensi', $data);
     }
@@ -260,5 +260,34 @@ class PusatDownloadController extends Controller
         }
         // 🟢 HANYA MENYISAKAN BARIS INI:
         return view('pusat_download.exports.jadwal_global', $data);
+    }
+
+    // =========================================================================
+    // FITUR 8: Daftar Nilai Kelas Biasa
+    // =========================================================================
+
+    public function downloadDaftarNilai(Request $request)
+    {
+        $request->validate([
+            'kelas_id' => 'required|exists:kelas,id',
+        ]);
+        
+        $kelas = \App\Models\Kelas::with('waliKelas')->findOrFail($request->kelas_id);
+        $semesterAktif = \App\Models\Semester::with('tahunAjaran')->where('is_aktif', true)->first();
+        
+        // 👇 PERUBAHAN DI SINI: orderBy('id', 'asc') agar berurut sesuai urutan masuk (input)
+        $siswaList = \App\Models\Siswa::where('kelas_id', $kelas->id)
+            ->where('status_siswa', 'Aktif')
+            ->orderBy('id', 'asc') 
+            ->get();
+            
+        $nama_sekolah = 'SMPN 4 CIBITUNG'; 
+        $tahun_ajaran = $semesterAktif && $semesterAktif->tahunAjaran 
+                        ? $semesterAktif->tahunAjaran->nama_tahun_ajaran 
+                        : '2025/2026';
+                        
+        return view('pusat_download.exports.daftar_nilai', compact(
+            'kelas', 'siswaList', 'nama_sekolah', 'tahun_ajaran'
+        ));
     }
 }
