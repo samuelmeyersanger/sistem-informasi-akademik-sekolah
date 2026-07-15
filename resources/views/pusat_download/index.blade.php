@@ -136,7 +136,7 @@
                             <h4 class="font-bold text-gray-900 text-lg">Daftar Nilai Kelas</h4>
                         </div>
                         <p class="text-xs text-gray-500 mb-4 h-8">Cetak format lembar daftar nilai kosong untuk kelas.</p>
-                        <form action="{{ route('download.daftar-nilai') }}" method="GET" target="_blank" class="space-y-3">
+                        <form action="{{ route('pusat_download.daftar-nilai') }}" method="GET" target="_blank" class="space-y-3">
                             <select name="kelas_id" required class="w-full text-sm rounded-lg border-gray-300 focus:border-amber-500 focus:ring-amber-500 shadow-sm bg-gray-50">
                                 <option value="">-- Pilih Ruang Kelas --</option>
                                 @foreach($daftarKelas as $kelas)
