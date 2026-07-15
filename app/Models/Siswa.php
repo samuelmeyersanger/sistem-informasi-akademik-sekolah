@@ -218,4 +218,12 @@ class Siswa extends Model
     {
         return $this->hasMany(AnggotaKelasWali::class, 'siswa_id', 'id');
     }
+
+        /**
+     * Relasi ke hasil tes Gaya Belajar (VAK)
+     */
+    public function hasilGayaBelajar()
+    {
+        return $this->hasOne(GayaBelajarHasil::class, 'siswa_id');
+    }
 }
