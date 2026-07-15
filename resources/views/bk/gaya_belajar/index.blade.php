@@ -48,6 +48,7 @@
                                 <th class="px-6 py-4 text-center text-emerald-600">Kinesthetic (K)</th>
                                 <th class="px-6 py-4">Gaya Dominan</th>
                                 <th class="px-6 py-4">Waktu Isi</th>
+                                <th class="px-6 py-4 text-center">Aksi</th> <!-- 🟢 INI -->
                             </tr>
                         </thead>
                         <tbody>
@@ -65,6 +66,15 @@
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 text-xs">{{ $h->updated_at->format('d M Y - H:i') }}</td>
+                                    <!-- 🟢 TOMBOL RESET -->
+                                    <td class="px-6 py-4 text-center">
+                                        <form action="{{ route('bk.gaya_belajar.destroy_hasil', $h->id) }}" method="POST" onsubmit="return confirm('Yakin ingin mereset data siswa ini? Namanya akan muncul kembali di form dan dia harus mengisi kuesioner dari awal.');">
+                                            @csrf @method('DELETE')
+                                            <button type="submit" class="text-rose-600 hover:text-white bg-rose-50 hover:bg-rose-600 p-2 rounded-lg font-bold text-xs transition-colors shadow-sm border border-rose-200">
+                                                🔄 Reset
+                                            </button>
+                                        </form>
+                                    </td>
                                 </tr>
                             @empty
                                 <tr>

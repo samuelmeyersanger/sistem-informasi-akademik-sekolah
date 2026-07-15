@@ -70,6 +70,18 @@ class GayaBelajarController extends Controller
         return redirect()->back()->with('success', 'Pertanyaan berhasil dihapus!');
     }
 
+    // Guru BK: Mereset/Menghapus Hasil Kuesioner Siswa Tertentu
+    public function destroyHasil($id)
+    {
+        $hasil = GayaBelajarHasil::findOrFail($id);
+        
+        // Simpan nama untuk notifikasi sebelum datanya dihapus
+        $namaSiswa = $hasil->siswa->nama_lengkap ?? 'Siswa';
+        
+        $hasil->delete();
+        return redirect()->back()->with('success', "Data gaya belajar atas nama $namaSiswa berhasil di-reset. Siswa tersebut kini bisa mengisi ulang kuesioner!");
+    }
+
 
     /**
      * =========================================================================
