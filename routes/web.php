@@ -485,29 +485,33 @@ Route::middleware(['auth', CheckApproval::class])->group(function () {
     |--------------------------------------------------------------------------
     | Modul Manajemen bk (SIAS Back-Office)
     |--------------------------------------------------------------------------
-    | 🔐 Dikunci menggunakan middleware 'permission' secara tersinkronisasi.
-    | Prefix 'bk.' akan melekat otomatis pada setiap komponen rute di dalam grup.
-    |
     */
-
     Route::prefix('bk')->name('bk.')->middleware(['permission'])->group(function () {
         // 1. Route Jurnal Harian
         Route::resource('jurnal', JurnalBkController::class)->except(['create', 'edit']);
-
         // 2. Route Kedisiplinan (Pelanggaran & Terlambat)
         Route::get('kedisiplinan', [KedisiplinanSiswaController::class, 'index'])->name('kedisiplinan.index');
         Route::post('kedisiplinan/pelanggaran', [KedisiplinanSiswaController::class, 'storePelanggaran'])->name('kedisiplinan.storePelanggaran');
         Route::post('kedisiplinan/terlambat', [KedisiplinanSiswaController::class, 'storeTerlambat'])->name('kedisiplinan.storeTerlambat');
         Route::delete('kedisiplinan/pelanggaran/{pelanggaran}', [KedisiplinanSiswaController::class, 'destroyPelanggaran'])->name('kedisiplinan.destroyPelanggaran');
         Route::delete('kedisiplinan/terlambat/{terlambat}', [KedisiplinanSiswaController::class, 'destroyTerlambat'])->name('kedisiplinan.destroyTerlambat');
-
         // 3. Route Penanganan Kasus (Panggilan & Alih Kasus)
         Route::get('penanganan', [PenangananKasusController::class, 'index'])->name('penanganan.index');
         Route::post('penanganan/panggilan', [PenangananKasusController::class, 'storePanggilan'])->name('penanganan.storePanggilan');
         Route::post('penanganan/alih', [PenangananKasusController::class, 'storeAlihKasus'])->name('penanganan.storeAlih');
         Route::delete('penanganan/panggilan/{panggilan}', [PenangananKasusController::class, 'destroyPanggilan'])->name('penanganan.destroyPanggilan');
         Route::delete('penanganan/alih/{alih}', [PenangananKasusController::class, 'destroyAlih'])->name('penanganan.destroyAlih');
+        // 👇 4. [BARU] Route Gaya Belajar VAK (Akses Guru BK)
+        Route::get('gaya-belajar', [\App\Http\Controllers\BK\GayaBelajarController::class, 'index'])->name('gaya_belajar.index');
+        Route::post('gaya-belajar/soal', [\App\Http\Controllers\BK\GayaBelajarController::class, 'storeSoal'])->name('gaya_belajar.store_soal');
+        Route::put('gaya-belajar/soal/{id}', [\App\Http\Controllers\BK\GayaBelajarController::class, 'updateSoal'])->name('gaya_belajar.update_soal');
+        Route::delete('gaya-belajar/soal/{id}', [\App\Http\Controllers\BK\GayaBelajarController::class, 'destroySoal'])->name('gaya_belajar.destroy_soal');
     });
+    // 👇 5. [BARU] Route Gaya Belajar VAK (Akses Formulir Siswa)
+    // Diletakkan DI LUAR grup BK karena ini form yang diisi oleh siswa.
+    Route::get('/kuesioner-gaya-belajar', [\App\Http\Controllers\BK\GayaBelajarController::class, 'formSiswa'])->name('siswa.gaya_belajar.form');
+    Route::post('/kuesioner-gaya-belajar/submit', [\App\Http\Controllers\BK\GayaBelajarController::class, 'submitSiswa'])->name('siswa.gaya_belajar.submit');
+    Route::get('/api/siswa-by-kelas/{kelas_id}', [\App\Http\Controllers\BK\GayaBelajarController::class, 'getSiswaByKelas'])->name('siswa.gaya_belajar.getSiswaByKelas');
 
     /*
     |--------------------------------------------------------------------------
