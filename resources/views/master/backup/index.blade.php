@@ -5,7 +5,6 @@
                 <h2 class="font-black text-2xl text-slate-800 leading-tight flex items-center gap-2">
                     <span class="text-3xl">🗄️</span> {{ __('Backup & Restore Data') }}
                 </h2>
-                <p class="text-sm font-medium text-slate-500 mt-1">Pusat kendali pencadangan dan pemulihan data sistem secara menyeluruh.</p>
             </div>
         </div>
     </x-slot>

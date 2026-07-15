@@ -3,9 +3,8 @@
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
                 <h2 class="font-black text-2xl text-slate-800 leading-tight flex items-center gap-2">
-                    <span class="text-3xl">💬</span> {{ __('Moderasi Komentar Blog') }}
+                    <span class="text-3xl">💬</span> {{ __('Komentar Blog') }}
                 </h2>
-                <p class="text-sm font-medium text-slate-500 mt-1">Saring tanggapan masuk dan kelola interaksi pembaca untuk menjaga kualitas publikasi.</p>
             </div>
         </div>
     </x-slot>

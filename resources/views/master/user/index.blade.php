@@ -5,7 +5,6 @@
                 <h2 class="font-black text-2xl text-slate-800 leading-tight flex items-center gap-2">
                     <span class="text-3xl">👥</span> {{ __('Kontrol Akses Pengguna') }}
                 </h2>
-                <p class="text-sm font-medium text-slate-500 mt-1">Audit, plotting jabatan, dan persetujuan akun masuk (login) ke dalam sistem.</p>
             </div>
         </div>
     </x-slot>

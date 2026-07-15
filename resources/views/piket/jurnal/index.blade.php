@@ -3,9 +3,8 @@
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
                 <h2 class="font-black text-2xl text-slate-800 leading-tight flex items-center gap-2">
-                    <span class="text-3xl">📓</span> {{ __('Kendali Operasional Piket') }}
+                    <span class="text-3xl">📓</span> {{ __('Operasional Piket') }}
                 </h2>
-                <p class="text-sm font-medium text-slate-500 mt-1">Sistem pencatatan harian untuk izin keluar, presensi, dan kejadian insidental sekolah.</p>
             </div>
             
             {{-- Navigasi Tanggal --}}

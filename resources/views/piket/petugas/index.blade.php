@@ -3,7 +3,7 @@
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-5">
             <div>
                 <h2 class="font-black text-2xl text-slate-800 leading-tight flex items-center gap-2">
-                    <span class="text-3xl">⚙️</span> {{ __('Konfigurasi Matriks Piket') }}
+                    <span class="text-3xl">⚙️</span> {{ __('Piket') }}
                 </h2>
                 <div class="flex flex-wrap items-center gap-3 mt-2 text-xs font-bold">
                     <span class="bg-indigo-50 text-indigo-700 px-3 py-1.5 rounded-lg border border-indigo-100 flex items-center gap-1.5 shadow-sm">
