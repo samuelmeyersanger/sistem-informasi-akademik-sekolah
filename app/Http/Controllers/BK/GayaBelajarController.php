@@ -92,8 +92,12 @@ class GayaBelajarController extends Controller
     // AJAX Endpoint: Mengambil daftar siswa berdasarkan Kelas yang dipilih
     public function getSiswaByKelas($kelas_id)
     {
-        $siswa = Siswa::where('kelas_id', $kelas_id)
+        // Cari ID siswa-siswa yang sudah pernah mengisi kuesioner
+        $siswaSudahIsi = \App\Models\GayaBelajarHasil::pluck('siswa_id')->toArray();
+        // Tarik data siswa yang aktif, dan KECUALIKAN nama yang sudah pernah mengisi
+        $siswa = \App\Models\Siswa::where('kelas_id', $kelas_id)
                       ->where('status_siswa', 'Aktif')
+                      ->whereNotIn('id', $siswaSudahIsi) // 🟢 Baris ini yang akan menyembunyikan nama mereka
                       ->orderBy('nama_lengkap', 'asc')
                       ->select('id', 'nama_lengkap', 'nipd')
                       ->get();
@@ -104,46 +108,35 @@ class GayaBelajarController extends Controller
     // Memproses Jawaban Siswa & Menentukan Gaya Belajar Dominan
     public function submitSiswa(Request $request)
     {
+        // 🟢 Tambahkan 'unique:gaya_belajar_hasil,siswa_id' untuk benteng keamanan ekstra
         $request->validate([
-            'siswa_id' => 'required|exists:siswa,id',
-            'jawaban' => 'required|array', // Jawaban berupa array ID_Soal => Tipe (V/A/K)
+            'siswa_id' => 'required|exists:siswa,id|unique:gaya_belajar_hasil,siswa_id',
+            'jawaban' => 'required|array',
+        ], [
+            'siswa_id.unique' => 'Kamu sudah pernah mengisi kuesioner ini sebelumnya!'
         ]);
-
         $skor_visual = 0;
         $skor_auditory = 0;
         $skor_kinesthetic = 0;
-
-        // Hitung total jawaban per tipe
         foreach ($request->jawaban as $soal_id => $tipe) {
             if ($tipe === 'V') $skor_visual++;
             elseif ($tipe === 'A') $skor_auditory++;
             elseif ($tipe === 'K') $skor_kinesthetic++;
         }
-
-        // Tentukan Gaya Belajar Dominan
         $skorTertinggi = max($skor_visual, $skor_auditory, $skor_kinesthetic);
         $gayaDominan = [];
-
         if ($skor_visual == $skorTertinggi) $gayaDominan[] = 'Visual';
         if ($skor_auditory == $skorTertinggi) $gayaDominan[] = 'Auditory';
         if ($skor_kinesthetic == $skorTertinggi) $gayaDominan[] = 'Kinesthetic';
-
-        // Gabungkan jika seri (contoh: "Visual & Auditory")
         $hasilDominan = implode(' & ', $gayaDominan);
-
-        // Simpan Hasil ke Database (Gunakan updateOrCreate agar jika mengisi ulang, datanya tertimpa)
-        GayaBelajarHasil::updateOrCreate(
-            ['siswa_id' => $request->siswa_id],
-            [
-                'skor_visual' => $skor_visual,
-                'skor_auditory' => $skor_auditory,
-                'skor_kinesthetic' => $skor_kinesthetic,
-                'gaya_dominan' => $hasilDominan,
-                'updated_at' => now(), // Memaksa timestamp berubah meskipun nilainya sama
-            ]
-        );
-
-        // Lempar kembali ke halaman sukses
+        // 🟢 Ubah dari updateOrCreate menjadi create biasa
+        GayaBelajarHasil::create([
+            'siswa_id' => $request->siswa_id,
+            'skor_visual' => $skor_visual,
+            'skor_auditory' => $skor_auditory,
+            'skor_kinesthetic' => $skor_kinesthetic,
+            'gaya_dominan' => $hasilDominan,
+        ]);
         return redirect()->back()->with('success', 'Kuesioner berhasil dikirim! Gaya belajar dominan kamu adalah: ' . $hasilDominan);
     }
 }
