@@ -90,7 +90,7 @@
 
                 <!-- Daftar Pertanyaan -->
                 @if($soal->count() > 0)
-                    <div class="space-y-8">
+                    <div class="space-y-8" x-show="siswa_id" x-transition.opacity style="display: none;">
                         @foreach($soal as $index => $s)
                             <div class="p-6 border-2 border-gray-100 rounded-2xl hover:border-indigo-200 transition-colors">
                                 <div class="font-bold text-gray-800 text-lg mb-4">
@@ -121,7 +121,7 @@
                         @endforeach
                     </div>
 
-                    <div class="mt-10 pt-6 border-t border-gray-200">
+                    <div class="mt-10 pt-6 border-t border-gray-200" x-show="siswa_id" x-transition.opacity style="display: none;">
                         <button type="submit" class="w-full bg-indigo-900 hover:bg-black text-white font-black text-lg py-4 rounded-2xl shadow-xl transition-all transform hover:-translate-y-1">
                             KIRIM JAWABAN SAYA 🚀
                         </button>
