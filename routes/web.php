@@ -570,6 +570,7 @@ Route::middleware(['auth', CheckApproval::class])->group(function () {
         Route::get('/kode-guru', [\App\Http\Controllers\PusatDownloadController::class, 'downloadKodeGuru'])->name('kode_guru');
         Route::get('/rekap-siswa', [\App\Http\Controllers\PusatDownloadController::class, 'downloadRekapSiswa'])->name('rekap_siswa');
         Route::get('/jadwal-global', [\App\Http\Controllers\PusatDownloadController::class, 'downloadJadwalGlobal'])->name('jadwal_global');
+        Route::get('/daftar-nilai', [\App\Http\Controllers\PusatDownloadController::class, 'downloadDaftarNilai'])->name('daftar-nilai');
     });
     
     /*
