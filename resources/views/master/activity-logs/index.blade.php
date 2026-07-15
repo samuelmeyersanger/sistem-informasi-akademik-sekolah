@@ -3,9 +3,8 @@
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
                 <h2 class="font-black text-2xl text-slate-800 leading-tight flex items-center gap-2">
-                    <span class="text-3xl">📡</span> {{ __('Log Aktivitas & Audit Trail') }}
+                    <span class="text-3xl">📡</span> {{ __('Log Aktivitas') }}
                 </h2>
-                <p class="text-sm font-medium text-slate-500 mt-1">Pantau seluruh jejak rekam, perubahan data, dan akses sistem secara real-time.</p>
             </div>
             
             <form action="{{ route('master.activity-logs') }}" method="GET" class="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">

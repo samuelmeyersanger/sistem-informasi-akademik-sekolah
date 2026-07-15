@@ -3,9 +3,8 @@
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
                 <h2 class="font-black text-2xl text-slate-800 leading-tight flex items-center gap-2">
-                    <span class="text-3xl">🗓️</span> {{ __('Kalender Tahun Ajaran') }}
+                    <span class="text-3xl">🗓️</span> {{ __('Tahun Ajaran') }}
                 </h2>
-                <p class="text-sm font-medium text-slate-500 mt-1">Registrasi dan aktivasi siklus tahunan akademik sekolah.</p>
             </div>
         </div>
     </x-slot>

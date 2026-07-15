@@ -8,7 +8,6 @@
                 <h2 class="font-black text-2xl text-slate-800 leading-tight flex items-center gap-2">
                     <span class="text-3xl">📄</span> {{ __('Manajemen Halaman Statis') }}
                 </h2>
-                <p class="text-sm font-medium text-slate-500 mt-1">Susun dan kelola halaman informasi tetap seperti Tentang Kami, Kebijakan Privasi, atau Syarat Ketentuan.</p>
             </div>
         </div>
     </x-slot>

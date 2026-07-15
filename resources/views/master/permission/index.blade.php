@@ -5,7 +5,6 @@
                 <h2 class="font-black text-2xl text-slate-800 leading-tight flex items-center gap-2">
                     <span class="text-3xl">🔑</span> {{ __('Manajemen Hak Akses') }}
                 </h2>
-                <p class="text-sm font-medium text-slate-500 mt-1">Buat daftar kunci izin aplikasi dan atur batasan fitur untuk masing-masing jabatan.</p>
             </div>
         </div>
     </x-slot>
