@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-guest-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-2xl text-gray-800 leading-tight">
             🎯 {{ __('Tes Gaya Belajar (VAK)') }}
@@ -137,4 +137,4 @@
 
         </div>
     </div>
-</x-app-layout>
+</x-guest-layout>

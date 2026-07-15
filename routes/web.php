@@ -81,6 +81,11 @@ Route::get('/pages/{slug}', [PageController::class, 'show'])->name('publik.page.
 Route::get('/contact', [KontakPublikController::class, 'index'])->name('publik.kontak.index');
 Route::post('/contact', [KontakPublikController::class, 'store'])->name('publik.kontak.store');
 
+// Diletakkan DI LUAR grup BK karena ini form yang diisi oleh siswa.
+Route::get('/kuesioner-gaya-belajar', [\App\Http\Controllers\BK\GayaBelajarController::class, 'formSiswa'])->name('siswa.gaya_belajar.form');
+Route::post('/kuesioner-gaya-belajar/submit', [\App\Http\Controllers\BK\GayaBelajarController::class, 'submitSiswa'])->name('siswa.gaya_belajar.submit');
+Route::get('/api/siswa-by-kelas/{kelas_id}', [\App\Http\Controllers\BK\GayaBelajarController::class, 'getSiswaByKelas'])->name('siswa.gaya_belajar.getSiswaByKelas');
+
 
 /*
 |--------------------------------------------------------------------------
@@ -507,11 +512,6 @@ Route::middleware(['auth', CheckApproval::class])->group(function () {
         Route::put('gaya-belajar/soal/{id}', [\App\Http\Controllers\BK\GayaBelajarController::class, 'updateSoal'])->name('gaya_belajar.update_soal');
         Route::delete('gaya-belajar/soal/{id}', [\App\Http\Controllers\BK\GayaBelajarController::class, 'destroySoal'])->name('gaya_belajar.destroy_soal');
     });
-    // 👇 5. [BARU] Route Gaya Belajar VAK (Akses Formulir Siswa)
-    // Diletakkan DI LUAR grup BK karena ini form yang diisi oleh siswa.
-    Route::get('/kuesioner-gaya-belajar', [\App\Http\Controllers\BK\GayaBelajarController::class, 'formSiswa'])->name('siswa.gaya_belajar.form');
-    Route::post('/kuesioner-gaya-belajar/submit', [\App\Http\Controllers\BK\GayaBelajarController::class, 'submitSiswa'])->name('siswa.gaya_belajar.submit');
-    Route::get('/api/siswa-by-kelas/{kelas_id}', [\App\Http\Controllers\BK\GayaBelajarController::class, 'getSiswaByKelas'])->name('siswa.gaya_belajar.getSiswaByKelas');
 
     /*
     |--------------------------------------------------------------------------
