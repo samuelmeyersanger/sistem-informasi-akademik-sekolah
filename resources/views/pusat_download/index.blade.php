@@ -1,207 +1,245 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-2xl text-gray-800 leading-tight flex items-center gap-2">
-            🗂️ {{ __('Pusat Download Terpadu') }}
-        </h2>
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+                <h2 class="font-black text-2xl text-slate-800 leading-tight flex items-center gap-2">
+                    <span class="text-3xl">🗂️</span> {{ __('Pusat Cetak & Unduhan') }}
+                </h2>
+                <p class="text-sm font-medium text-slate-500 mt-1">Sistem pencetakan dokumen administratif, daftar hadir, dan pelaporan terpadu.</p>
+            </div>
+        </div>
     </x-slot>
 
-    <div class="py-10 bg-slate-50 min-h-screen">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-10">
+    <div class="py-10 bg-slate-50/50 min-h-screen relative font-sans">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-12 relative z-10">
 
-            <!-- Banner Penjelasan -->
-            <div class="bg-gradient-to-r from-indigo-900 to-indigo-700 rounded-2xl shadow-lg p-8 text-white flex items-center justify-between">
-                <div>
-                    <h3 class="text-2xl font-bold mb-2">Portal Cetak Dokumen Sekolah</h3>
-                    <p class="text-indigo-100 text-sm max-w-2xl leading-relaxed">
-                        Selamat datang di Pusat Download. Semua dokumen laporan administratif, jadwal pelajaran, hingga daftar hadir (absensi) dapat Anda unduh secara <em>real-time</em> dalam format PDF maupun Excel.
+            {{-- BANNER UTAMA --}}
+            <div class="relative overflow-hidden bg-slate-900 rounded-[2rem] shadow-2xl p-8 md:p-10 flex flex-col md:flex-row items-center justify-between gap-8 border border-slate-800 group">
+                <div class="absolute inset-0 bg-gradient-to-br from-indigo-900/50 via-slate-900 to-slate-900"></div>
+                <div class="absolute top-0 right-0 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:scale-110 transition-transform duration-700 pointer-events-none"></div>
+                <div class="absolute bottom-0 left-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none"></div>
+                
+                <div class="relative z-10 text-center md:text-left flex-1 max-w-2xl">
+                    <span class="inline-flex items-center gap-2 bg-indigo-500/20 border border-indigo-400/30 px-3 py-1.5 rounded-full text-[10px] font-black text-indigo-200 uppercase tracking-widest mb-4">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        Generator Berkas
+                    </span>
+                    <h3 class="text-3xl md:text-4xl font-black text-white tracking-tight mb-3">Portal Dokumen Resmi</h3>
+                    <p class="text-sm text-slate-400 leading-relaxed font-medium">
+                        Selamat datang di Pusat Unduhan. Seluruh berkas laporan administratif, matriks jadwal, hingga formulir absensi kosong dapat Anda ekstrak secara <em class="text-indigo-300">real-time</em> dalam format PDF (cetak langsung) maupun MS. Excel (olahan data).
                     </p>
                 </div>
-                <div class="hidden md:block text-6xl opacity-80">
-                    🖨️
+                <div class="relative z-10 hidden md:flex items-center justify-center w-32 h-32 bg-white/5 backdrop-blur-md rounded-[2rem] border border-white/10 shadow-2xl rotate-12 hover:rotate-0 transition-transform duration-500">
+                    <span class="text-6xl">🖨️</span>
                 </div>
             </div>
 
-            <!-- ========================================== -->
-            <!-- KATEGORI 1: LAPORAN GLOBAL & MASTER DATA -->
-            <!-- ========================================== -->
-            <div>
-                <div class="flex items-center gap-3 mb-4">
-                    <span class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center font-bold">1</span>
-                    <h3 class="text-xl font-bold text-gray-800">Laporan Global & Master Data</h3>
+            {{-- KATEGORI 1: LAPORAN GLOBAL --}}
+            <div class="space-y-6">
+                <div class="flex items-center gap-4 border-b border-slate-200/60 pb-3">
+                    <div class="px-4 py-2 bg-indigo-100 text-indigo-700 rounded-xl font-black text-sm uppercase tracking-widest flex items-center gap-2 shadow-sm border border-indigo-200">
+                        <span class="text-lg">🌐</span> Laporan Global & Master Data
+                    </div>
                 </div>
                 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <!-- Card: Kode Guru -->
-                    <div class="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow group">
-                        <div class="flex justify-between items-start mb-4">
-                            <div class="w-12 h-12 rounded-full bg-cyan-50 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">👩‍🏫</div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    {{-- Card: Kode Guru --}}
+                    <div class="bg-white rounded-[2rem] p-6 shadow-xl shadow-slate-200/40 border border-slate-100 flex flex-col justify-between hover:-translate-y-1 hover:shadow-2xl hover:shadow-indigo-200/40 transition-all duration-300 group relative overflow-hidden">
+                        <div class="absolute right-0 top-0 w-32 h-32 bg-sky-50 rounded-full blur-3xl opacity-60 -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+                        <div>
+                            <div class="w-14 h-14 rounded-[1rem] bg-gradient-to-br from-sky-100 to-sky-50 flex items-center justify-center text-3xl mb-5 shadow-sm border border-sky-100 group-hover:scale-110 transition-transform">👩‍🏫</div>
+                            <h4 class="font-black text-slate-900 text-lg tracking-tight mb-2">Daftar Kode Guru</h4>
+                            <p class="text-xs font-medium text-slate-500 leading-relaxed h-12">Unduh daftar lengkap seluruh guru pendidik beserta kode mengajarnya untuk validasi akademik.</p>
                         </div>
-                        <h4 class="font-bold text-gray-900 text-lg">Daftar Kode Guru</h4>
-                        <p class="text-xs text-gray-500 mt-1 mb-5 h-10">Unduh daftar lengkap seluruh guru beserta kode mengajarnya.</p>
-                        <form action="{{ route('pusat_download.kode_guru') }}" method="GET" target="_blank" class="flex gap-2">
+                        <form action="{{ route('pusat_download.kode_guru') }}" method="GET" target="_blank" class="flex gap-3 mt-6 pt-6 border-t border-slate-100">
                             @csrf
-                            <button type="submit" name="format" value="excel" class="flex-1 px-3 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-bold rounded-lg border border-emerald-200 transition-colors">📊 Excel</button>
-                            <button type="submit" name="format" value="pdf" class="flex-1 px-3 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold rounded-lg border border-rose-200 transition-colors">📄 PDF</button>
+                            <button type="submit" name="format" value="excel" class="flex-1 px-4 py-3 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-[11px] font-black uppercase tracking-wider rounded-xl border border-emerald-200 transition-colors shadow-sm text-center">📊 Excel</button>
+                            <button type="submit" name="format" value="pdf" class="flex-1 px-4 py-3 bg-rose-50 hover:bg-rose-100 text-rose-700 text-[11px] font-black uppercase tracking-wider rounded-xl border border-rose-200 transition-colors shadow-sm text-center">📄 PDF</button>
                         </form>
                     </div>
 
-                    <!-- Card: Rekap Jumlah Siswa -->
-                    <div class="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow group">
-                        <div class="flex justify-between items-start mb-4">
-                            <div class="w-12 h-12 rounded-full bg-purple-50 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">📈</div>
+                    {{-- Card: Rekap Jumlah Siswa --}}
+                    <div class="bg-white rounded-[2rem] p-6 shadow-xl shadow-slate-200/40 border border-slate-100 flex flex-col justify-between hover:-translate-y-1 hover:shadow-2xl hover:shadow-indigo-200/40 transition-all duration-300 group relative overflow-hidden">
+                        <div class="absolute right-0 top-0 w-32 h-32 bg-purple-50 rounded-full blur-3xl opacity-60 -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+                        <div>
+                            <div class="w-14 h-14 rounded-[1rem] bg-gradient-to-br from-purple-100 to-purple-50 flex items-center justify-center text-3xl mb-5 shadow-sm border border-purple-100 group-hover:scale-110 transition-transform">📈</div>
+                            <h4 class="font-black text-slate-900 text-lg tracking-tight mb-2">Rekap Statistik Siswa</h4>
+                            <p class="text-xs font-medium text-slate-500 leading-relaxed h-12">Data agregat total siswa secara keseluruhan per tingkat, jenis kelamin, dan distribusi kelas.</p>
                         </div>
-                        <h4 class="font-bold text-gray-900 text-lg">Rekap Jumlah Siswa</h4>
-                        <p class="text-xs text-gray-500 mt-1 mb-5 h-10">Data agregat total siswa per tingkat, jenis kelamin, dan kelas.</p>
-                        <form action="{{ route('pusat_download.rekap_siswa') }}" method="GET" target="_blank" class="flex gap-2">
+                        <form action="{{ route('pusat_download.rekap_siswa') }}" method="GET" target="_blank" class="flex gap-3 mt-6 pt-6 border-t border-slate-100">
                             @csrf
-                            <button type="submit" name="format" value="excel" class="flex-1 px-3 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-bold rounded-lg border border-emerald-200 transition-colors">📊 Excel</button>
-                            <button type="submit" name="format" value="pdf" class="flex-1 px-3 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold rounded-lg border border-rose-200 transition-colors">📄 PDF</button>
+                            <button type="submit" name="format" value="excel" class="flex-1 px-4 py-3 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-[11px] font-black uppercase tracking-wider rounded-xl border border-emerald-200 transition-colors shadow-sm text-center">📊 Excel</button>
+                            <button type="submit" name="format" value="pdf" class="flex-1 px-4 py-3 bg-rose-50 hover:bg-rose-100 text-rose-700 text-[11px] font-black uppercase tracking-wider rounded-xl border border-rose-200 transition-colors shadow-sm text-center">📄 PDF</button>
                         </form>
                     </div>
 
-                    <!-- Card: Jadwal Global -->
-                    <div class="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow group">
-                        <div class="flex justify-between items-start mb-4">
-                            <div class="w-12 h-12 rounded-full bg-amber-50 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">🗓️</div>
+                    {{-- Card: Jadwal Global --}}
+                    <div class="bg-white rounded-[2rem] p-6 shadow-xl shadow-slate-200/40 border border-slate-100 flex flex-col justify-between hover:-translate-y-1 hover:shadow-2xl hover:shadow-indigo-200/40 transition-all duration-300 group relative overflow-hidden">
+                        <div class="absolute right-0 top-0 w-32 h-32 bg-amber-50 rounded-full blur-3xl opacity-60 -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+                        <div>
+                            <div class="w-14 h-14 rounded-[1rem] bg-gradient-to-br from-amber-100 to-amber-50 flex items-center justify-center text-3xl mb-5 shadow-sm border border-amber-100 group-hover:scale-110 transition-transform">🗓️</div>
+                            <h4 class="font-black text-slate-900 text-lg tracking-tight mb-2">Matriks Jadwal Global</h4>
+                            <p class="text-xs font-medium text-slate-500 leading-relaxed h-12">Peta matriks jam pelajaran untuk seluruh rombel/kelas dalam satu dokumen terpadu.</p>
                         </div>
-                        <h4 class="font-bold text-gray-900 text-lg">Jadwal Pelajaran Global</h4>
-                        <p class="text-xs text-gray-500 mt-1 mb-5 h-10">Matriks jadwal pelajaran seluruh kelas dalam satu dokumen.</p>
-                        <form action="{{ route('pusat_download.jadwal_global') }}" method="GET" target="_blank" class="flex gap-2">
+                        <form action="{{ route('pusat_download.jadwal_global') }}" method="GET" target="_blank" class="flex gap-3 mt-6 pt-6 border-t border-slate-100">
                             @csrf
-                            <button type="submit" name="format" value="excel" class="flex-1 px-3 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-bold rounded-lg border border-emerald-200 transition-colors">📊 Excel</button>
-                            <button type="submit" name="format" value="pdf" class="flex-1 px-3 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold rounded-lg border border-rose-200 transition-colors">📄 PDF</button>
+                            <button type="submit" name="format" value="excel" class="flex-1 px-4 py-3 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-[11px] font-black uppercase tracking-wider rounded-xl border border-emerald-200 transition-colors shadow-sm text-center">📊 Excel</button>
+                            <button type="submit" name="format" value="pdf" class="flex-1 px-4 py-3 bg-rose-50 hover:bg-rose-100 text-rose-700 text-[11px] font-black uppercase tracking-wider rounded-xl border border-rose-200 transition-colors shadow-sm text-center">📄 PDF</button>
                         </form>
                     </div>
                 </div>
             </div>
 
-            <!-- ========================================== -->
-            <!-- KATEGORI 2: DATA AKADEMIK (PER-KELAS)    -->
-            <!-- ========================================== -->
-            <div class="border-t border-gray-200 pt-8">
-                <div class="flex items-center gap-3 mb-4">
-                    <span class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold">2</span>
-                    <h3 class="text-xl font-bold text-gray-800">Data Akademik (Berdasarkan Kelas)</h3>
+            {{-- KATEGORI 2: DATA AKADEMIK KELAS --}}
+            <div class="space-y-6 pt-6">
+                <div class="flex items-center gap-4 border-b border-slate-200/60 pb-3">
+                    <div class="px-4 py-2 bg-emerald-100 text-emerald-800 rounded-xl font-black text-sm uppercase tracking-widest flex items-center gap-2 shadow-sm border border-emerald-200">
+                        <span class="text-lg">🏫</span> Berkas Akademik Kelas (Rombel)
+                    </div>
                 </div>
                 
-                <!-- UBAH: grid-cols diubah jadi 3 agar muat Form Daftar Nilai -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                     
-                    <!-- Card: Absensi Kelas -->
-                    <div class="bg-white border-l-4 border-indigo-500 rounded-r-2xl rounded-l-md p-6 shadow-sm hover:shadow-md transition-shadow">
-                        <div class="flex items-center gap-3 mb-3">
-                            <span class="text-2xl">📝</span>
-                            <h4 class="font-bold text-gray-900 text-lg">Daftar Hadir (Absensi) Kelas</h4>
-                        </div>
-                        <p class="text-xs text-gray-500 mb-4 h-8">Lembar absensi kosong untuk digunakan oleh guru mata pelajaran.</p>
-                        <form action="{{ route('pusat_download.absensi') }}" method="GET" target="_blank" class="space-y-3">
-                            @csrf
-                            <select name="kelas_id" required class="w-full text-sm rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm bg-gray-50">
-                                <option value="">-- Pilih Ruang Kelas --</option>
-                                @foreach($daftarKelas as $kelas)
-                                    <option value="{{ $kelas->id }}">{{ $kelas->tingkat }} - {{ $kelas->nama_kelas }}</option>
-                                @endforeach
-                            </select>
-                            <div class="flex gap-2">
-                                <button type="submit" name="format" value="excel" class="flex-1 px-3 py-2.5 bg-gray-900 hover:bg-gray-800 text-white text-xs font-bold rounded-lg transition-colors">Unduh Excel</button>
-                                <button type="submit" name="format" value="pdf" class="flex-1 px-3 py-2.5 bg-gray-900 hover:bg-gray-800 text-white text-xs font-bold rounded-lg transition-colors">Unduh PDF</button>
+                    {{-- Card: Absensi Kelas --}}
+                    <div class="bg-white rounded-[2rem] p-6 shadow-xl shadow-slate-200/40 border border-slate-100 flex flex-col justify-between hover:-translate-y-1 hover:shadow-2xl hover:shadow-emerald-200/30 transition-all duration-300 relative overflow-hidden group">
+                        <div class="absolute left-0 top-0 bottom-0 w-2 bg-emerald-400"></div>
+                        <div class="pl-2">
+                            <div class="flex items-center gap-3 mb-4">
+                                <span class="text-3xl">📝</span>
+                                <h4 class="font-black text-slate-900 text-base leading-tight">Daftar Hadir (Absensi) Kelas</h4>
                             </div>
-                        </form>
-                    </div>
-                    <!-- Card: Jadwal Perkelas -->
-                    <div class="bg-white border-l-4 border-indigo-500 rounded-r-2xl rounded-l-md p-6 shadow-sm hover:shadow-md transition-shadow">
-                        <div class="flex items-center gap-3 mb-3">
-                            <span class="text-2xl">📅</span>
-                            <h4 class="font-bold text-gray-900 text-lg">Jadwal Pelajaran Kelas</h4>
+                            <p class="text-[11px] font-medium text-slate-500 leading-relaxed mb-6 h-8">Cetak lembar rekapitulasi absensi harian kosong untuk guru pengampu.</p>
+                            
+                            <form action="{{ route('pusat_download.absensi') }}" method="GET" target="_blank" class="space-y-4">
+                                @csrf
+                                <select name="kelas_id" required class="w-full text-sm font-bold text-slate-700 rounded-xl border-slate-200 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 bg-slate-50 py-3 shadow-inner">
+                                    <option value="">-- Pilih Ruang Kelas --</option>
+                                    @foreach($daftarKelas as $kelas)
+                                        <option value="{{ $kelas->id }}">{{ $kelas->tingkat }} - {{ $kelas->nama_kelas }}</option>
+                                    @endforeach
+                                </select>
+                                <div class="flex gap-2">
+                                    <button type="submit" name="format" value="excel" class="flex-1 px-3 py-3 bg-slate-800 hover:bg-slate-900 text-white text-[10px] font-black uppercase tracking-wider rounded-xl transition-colors shadow-md">📊 Excel</button>
+                                    <button type="submit" name="format" value="pdf" class="flex-1 px-3 py-3 bg-slate-800 hover:bg-slate-900 text-white text-[10px] font-black uppercase tracking-wider rounded-xl transition-colors shadow-md">📄 PDF</button>
+                                </div>
+                            </form>
                         </div>
-                        <p class="text-xs text-gray-500 mb-4 h-8">Cetak jadwal pelajaran harian khusus untuk ditempel di kelas.</p>
-                        <form action="{{ route('pusat_download.jadwal') }}" method="GET" target="_blank" class="space-y-3">
-                            @csrf
-                            <select name="kelas_id" required class="w-full text-sm rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm bg-gray-50">
-                                <option value="">-- Pilih Ruang Kelas --</option>
-                                @foreach($daftarKelas as $kelas)
-                                    <option value="{{ $kelas->id }}">{{ $kelas->tingkat }} - {{ $kelas->nama_kelas }}</option>
-                                @endforeach
-                            </select>
-                            <div class="flex gap-2">
-                                <button type="submit" name="format" value="excel" class="flex-1 px-3 py-2.5 bg-gray-900 hover:bg-gray-800 text-white text-xs font-bold rounded-lg transition-colors">Unduh Excel</button>
-                                <button type="submit" name="format" value="pdf" class="flex-1 px-3 py-2.5 bg-gray-900 hover:bg-gray-800 text-white text-xs font-bold rounded-lg transition-colors">Unduh PDF</button>
+                    </div>
+
+                    {{-- Card: Jadwal Perkelas --}}
+                    <div class="bg-white rounded-[2rem] p-6 shadow-xl shadow-slate-200/40 border border-slate-100 flex flex-col justify-between hover:-translate-y-1 hover:shadow-2xl hover:shadow-emerald-200/30 transition-all duration-300 relative overflow-hidden group">
+                        <div class="absolute left-0 top-0 bottom-0 w-2 bg-emerald-400"></div>
+                        <div class="pl-2">
+                            <div class="flex items-center gap-3 mb-4">
+                                <span class="text-3xl">📅</span>
+                                <h4 class="font-black text-slate-900 text-base leading-tight">Jadwal Pelajaran Kelas</h4>
                             </div>
-                        </form>
-                    </div>
-                    <!-- Card BARU: Daftar Nilai Kelas -->
-                    <div class="bg-white border-l-4 border-amber-500 rounded-r-2xl rounded-l-md p-6 shadow-sm hover:shadow-md transition-shadow">
-                        <div class="flex items-center gap-3 mb-3">
-                            <span class="text-2xl">💯</span>
-                            <h4 class="font-bold text-gray-900 text-lg">Daftar Nilai Kelas</h4>
+                            <p class="text-[11px] font-medium text-slate-500 leading-relaxed mb-6 h-8">Ekstrak jadwal mata pelajaran mingguan khusus untuk ditempel di ruang kelas.</p>
+                            
+                            <form action="{{ route('pusat_download.jadwal') }}" method="GET" target="_blank" class="space-y-4">
+                                @csrf
+                                <select name="kelas_id" required class="w-full text-sm font-bold text-slate-700 rounded-xl border-slate-200 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 bg-slate-50 py-3 shadow-inner">
+                                    <option value="">-- Pilih Ruang Kelas --</option>
+                                    @foreach($daftarKelas as $kelas)
+                                        <option value="{{ $kelas->id }}">{{ $kelas->tingkat }} - {{ $kelas->nama_kelas }}</option>
+                                    @endforeach
+                                </select>
+                                <div class="flex gap-2">
+                                    <button type="submit" name="format" value="excel" class="flex-1 px-3 py-3 bg-slate-800 hover:bg-slate-900 text-white text-[10px] font-black uppercase tracking-wider rounded-xl transition-colors shadow-md">📊 Excel</button>
+                                    <button type="submit" name="format" value="pdf" class="flex-1 px-3 py-3 bg-slate-800 hover:bg-slate-900 text-white text-[10px] font-black uppercase tracking-wider rounded-xl transition-colors shadow-md">📄 PDF</button>
+                                </div>
+                            </form>
                         </div>
-                        <p class="text-xs text-gray-500 mb-4 h-8">Cetak format lembar daftar nilai kosong untuk kelas.</p>
-                        <form action="{{ route('pusat_download.daftar-nilai') }}" method="GET" target="_blank" class="space-y-3">
-                            <select name="kelas_id" required class="w-full text-sm rounded-lg border-gray-300 focus:border-amber-500 focus:ring-amber-500 shadow-sm bg-gray-50">
-                                <option value="">-- Pilih Ruang Kelas --</option>
-                                @foreach($daftarKelas as $kelas)
-                                    <option value="{{ $kelas->id }}">{{ $kelas->tingkat }} - {{ $kelas->nama_kelas }}</option>
-                                @endforeach
-                            </select>
-                            <!-- Tombol satu kolom penuh karena hanya ada 1 format cetakan (PDF/HTML) -->
-                            <button type="submit" class="w-full px-3 py-2.5 bg-gray-900 hover:bg-gray-800 text-white text-xs font-bold rounded-lg transition-colors">
-                                🖨️ Unduh PDF / Cetak
-                            </button>
-                        </form>
                     </div>
+
+                    {{-- Card: Daftar Nilai Kelas --}}
+                    <div class="bg-white rounded-[2rem] p-6 shadow-xl shadow-slate-200/40 border border-slate-100 flex flex-col justify-between hover:-translate-y-1 hover:shadow-2xl hover:shadow-emerald-200/30 transition-all duration-300 relative overflow-hidden group">
+                        <div class="absolute left-0 top-0 bottom-0 w-2 bg-emerald-500"></div>
+                        <div class="pl-2">
+                            <div class="flex items-center gap-3 mb-4">
+                                <span class="text-3xl">💯</span>
+                                <h4 class="font-black text-slate-900 text-base leading-tight">Format Daftar Nilai Kelas</h4>
+                            </div>
+                            <p class="text-[11px] font-medium text-slate-500 leading-relaxed mb-6 h-8">Cetak blangko format lembar penilaian sumatif/formatif harian untuk guru.</p>
+                            
+                            <form action="{{ route('pusat_download.daftar-nilai') }}" method="GET" target="_blank" class="space-y-4">
+                                @csrf
+                                <select name="kelas_id" required class="w-full text-sm font-bold text-slate-700 rounded-xl border-slate-200 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 bg-slate-50 py-3 shadow-inner">
+                                    <option value="">-- Pilih Ruang Kelas --</option>
+                                    @foreach($daftarKelas as $kelas)
+                                        <option value="{{ $kelas->id }}">{{ $kelas->tingkat }} - {{ $kelas->nama_kelas }}</option>
+                                    @endforeach
+                                </select>
+                                <button type="submit" class="w-full px-3 py-3 bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-black uppercase tracking-widest rounded-xl transition-all shadow-lg shadow-emerald-500/30 hover:-translate-y-0.5 flex justify-center items-center gap-2">
+                                    <span>🖨️</span> Buka Lembar Cetak
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
-            <!-- ========================================== -->
-            <!-- KATEGORI 3: BIMBINGAN & EKSKUL           -->
-            <!-- ========================================== -->
-            <div class="border-t border-gray-200 pt-8">
-                <div class="flex items-center gap-3 mb-4">
-                    <span class="w-8 h-8 rounded-lg bg-teal-100 text-teal-600 flex items-center justify-center font-bold">3</span>
-                    <h3 class="text-xl font-bold text-gray-800">Bimbingan Wali & Ekstrakurikuler</h3>
+            {{-- KATEGORI 3: EKSKUL & WALI --}}
+            <div class="space-y-6 pt-6">
+                <div class="flex items-center gap-4 border-b border-slate-200/60 pb-3">
+                    <div class="px-4 py-2 bg-teal-100 text-teal-800 rounded-xl font-black text-sm uppercase tracking-widest flex items-center gap-2 shadow-sm border border-teal-200">
+                        <span class="text-lg">🎯</span> Bimbingan & Ekstrakurikuler
+                    </div>
                 </div>
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Card: Daftar Hadir Kelas Wali -->
-                    <div class="bg-white border-l-4 border-teal-500 rounded-r-2xl rounded-l-md p-6 shadow-sm hover:shadow-md transition-shadow">
-                        <div class="flex items-center gap-3 mb-3">
-                            <span class="text-2xl">👨‍🏫</span>
-                            <h4 class="font-bold text-gray-900 text-lg">Absensi Kelompok Wali</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    
+                    {{-- Card: Absensi Kelompok Wali --}}
+                    <div class="bg-white rounded-[2rem] p-6 shadow-xl shadow-slate-200/40 border border-slate-100 flex flex-col justify-between hover:-translate-y-1 hover:shadow-2xl hover:shadow-teal-200/30 transition-all duration-300 relative overflow-hidden group">
+                        <div class="absolute left-0 top-0 bottom-0 w-2 bg-teal-400"></div>
+                        <div class="pl-2">
+                            <div class="flex items-center gap-3 mb-4">
+                                <span class="text-3xl">👨‍🏫</span>
+                                <h4 class="font-black text-slate-900 text-lg leading-tight">Absensi Kelompok Perwalian</h4>
+                            </div>
+                            <p class="text-[11px] font-medium text-slate-500 leading-relaxed mb-6">Unduh format presensi khusus daftar siswa per kelompok bimbingan asuhan wali kelas.</p>
+                            
+                            <form action="{{ route('pusat_download.data_kelas_wali') }}" method="GET" target="_blank" class="space-y-4">
+                                @csrf
+                                <select name="kelas_wali_id" required class="w-full text-sm font-bold text-slate-700 rounded-xl border-slate-200 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10 bg-slate-50 py-3 shadow-inner">
+                                    <option value="">-- Pilih Kelompok Bimbingan Wali --</option>
+                                    @foreach($daftarKelasWali as $kw)
+                                        <option value="{{ $kw->id }}">{{ $kw->tingkat }} - {{ $kw->nama_kelas }}</option>
+                                    @endforeach
+                                </select>
+                                <button type="submit" class="w-full px-4 py-3.5 bg-gradient-to-r from-teal-500 to-teal-400 hover:from-teal-600 hover:to-teal-500 text-white text-[11px] font-black uppercase tracking-widest rounded-xl transition-all shadow-lg shadow-teal-500/30 hover:-translate-y-0.5 flex justify-center items-center gap-2">
+                                    <span>📄</span> Ekstrak PDF Dokumen
+                                </button>
+                            </form>
                         </div>
-                        <p class="text-xs text-gray-500 mb-4">Unduh lembar absensi khusus siswa kelompok bimbingan Anda.</p>
-                        <form action="{{ route('pusat_download.data_kelas_wali') }}" method="GET" target="_blank" class="space-y-3">
-                            @csrf
-                            <select name="kelas_wali_id" required class="w-full text-sm rounded-lg border-gray-300 focus:border-teal-500 focus:ring-teal-500 shadow-sm bg-gray-50">
-                                <option value="">-- Pilih Kelompok Wali --</option>
-                                @foreach($daftarKelasWali as $kw)
-                                    <option value="{{ $kw->id }}">{{ $kw->tingkat }} - {{ $kw->nama_kelas }}</option>
-                                @endforeach
-                            </select>
-                            <button type="submit" class="w-full px-3 py-2.5 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold rounded-lg transition-colors flex justify-center items-center gap-2">
-                                📄 Buka & Unduh PDF
-                            </button>
-                        </form>
                     </div>
 
-                    <!-- Card: Absensi Ekskul -->
-                    <div class="bg-white border-l-4 border-teal-500 rounded-r-2xl rounded-l-md p-6 shadow-sm hover:shadow-md transition-shadow">
-                        <div class="flex items-center gap-3 mb-3">
-                            <span class="text-2xl">🎯</span>
-                            <h4 class="font-bold text-gray-900 text-lg">Daftar Hadir Ekstrakurikuler</h4>
+                    {{-- Card: Absensi Ekskul --}}
+                    <div class="bg-white rounded-[2rem] p-6 shadow-xl shadow-slate-200/40 border border-slate-100 flex flex-col justify-between hover:-translate-y-1 hover:shadow-2xl hover:shadow-teal-200/30 transition-all duration-300 relative overflow-hidden group">
+                        <div class="absolute left-0 top-0 bottom-0 w-2 bg-teal-400"></div>
+                        <div class="pl-2">
+                            <div class="flex items-center gap-3 mb-4">
+                                <span class="text-3xl">🏅</span>
+                                <h4 class="font-black text-slate-900 text-lg leading-tight">Daftar Hadir Ekstrakurikuler</h4>
+                            </div>
+                            <p class="text-[11px] font-medium text-slate-500 leading-relaxed mb-6">Berkas formulir pencatatan absensi harian dan mingguan khusus kegiatan pengembangan minat bakat.</p>
+                            
+                            <form action="{{ route('pusat_download.cetak_absensi_ekskul') }}" method="GET" target="_blank" class="space-y-4">
+                                @csrf
+                                <select name="ekskul_id" required class="w-full text-sm font-bold text-slate-700 rounded-xl border-slate-200 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10 bg-slate-50 py-3 shadow-inner">
+                                    <option value="">-- Pilih Program Ekstrakurikuler --</option>
+                                    @foreach($daftarEkskul as $ekskul)
+                                        <option value="{{ $ekskul->id }}">{{ $ekskul->nama_ekskul }}</option>
+                                    @endforeach
+                                </select>
+                                <button type="submit" class="w-full px-4 py-3.5 bg-gradient-to-r from-teal-500 to-teal-400 hover:from-teal-600 hover:to-teal-500 text-white text-[11px] font-black uppercase tracking-widest rounded-xl transition-all shadow-lg shadow-teal-500/30 hover:-translate-y-0.5 flex justify-center items-center gap-2">
+                                    <span>📄</span> Ekstrak PDF Dokumen
+                                </button>
+                            </form>
                         </div>
-                        <p class="text-xs text-gray-500 mb-4">Lembar absensi harian untuk kegiatan ekstrakurikuler siswa.</p>
-                        <form action="{{ route('pusat_download.cetak_absensi_ekskul') }}" method="GET" target="_blank" class="space-y-3">
-                            <select name="ekskul_id" required class="w-full text-sm rounded-lg border-gray-300 focus:border-teal-500 focus:ring-teal-500 shadow-sm bg-gray-50">
-                                <option value="">-- Pilih Ekstrakurikuler --</option>
-                                @foreach($daftarEkskul as $ekskul)
-                                    <option value="{{ $ekskul->id }}">{{ $ekskul->nama_ekskul }}</option>
-                                @endforeach
-                            </select>
-                            <button type="submit" class="w-full px-3 py-2.5 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold rounded-lg transition-colors flex justify-center items-center gap-2">
-                                📄 Buka & Unduh PDF
-                            </button>
-                        </form>
                     </div>
+
                 </div>
             </div>
 

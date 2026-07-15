@@ -3,149 +3,223 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
 
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Identitas Resmi & Lokasi Sekolah') }}
-        </h2>
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+                <h2 class="font-black text-2xl text-slate-800 leading-tight flex items-center gap-2">
+                    <span class="text-3xl">🏢</span> {{ __('Profil & Lokasi Institusi') }}
+                </h2>
+                <p class="text-sm font-medium text-slate-500 mt-1">Data master identitas resmi sekolah dan pemetaan koordinat geografis kewilayahan.</p>
+            </div>
+        </div>
     </x-slot>
 
-    <div class="py-12 bg-slate-900/10 min-h-screen">
-        <div class="max-w-6xl mx-auto sm:px-6 lg:px-8 space-y-6">
+    <div class="py-10 bg-slate-50/50 min-h-screen relative font-sans">
+        <div class="max-w-6xl mx-auto sm:px-6 lg:px-8 space-y-6 relative z-10">
             
+            {{-- Notifikasi --}}
             @if(session('success'))
-                <div class="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm rounded-xl shadow-sm flex items-center gap-2">
-                    <span>✅</span> {{ session('success') }}
+                <div class="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm font-bold rounded-2xl shadow-sm flex items-center gap-3">
+                    <span class="text-2xl">✅</span> {{ session('success') }}
                 </div>
             @endif
 
             @if($errors->any())
-                <div class="p-4 bg-rose-50 border border-rose-200 text-rose-800 text-sm rounded-xl shadow-sm space-y-1">
-                    <span class="font-bold flex items-center gap-1">⚠️ Terjadi Kesalahan Validasi:</span>
-                    <ul class="list-disc list-inside text-xs pl-2">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
+                <div class="p-5 bg-rose-50 border border-rose-200 text-rose-800 text-sm font-bold rounded-2xl shadow-sm flex items-start gap-3">
+                    <span class="text-2xl">⚠️</span> 
+                    <div>
+                        <div class="mb-2 text-base font-black">Gagal menyimpan data profil!</div>
+                        <ul class="list-disc list-inside text-xs font-medium text-rose-700 space-y-1 bg-rose-100/50 p-3 rounded-xl border border-rose-200/50">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
                 </div>
             @endif
 
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-2xl border border-gray-100">
-                <div class="p-6 border-b border-gray-100 bg-gray-50/50">
-                    <h3 class="text-base font-bold text-gray-900">Data Pokok Pendidikan & Kewilayahan</h3>
-                    <p class="text-xs text-gray-500">Sesuaikan data identitas resmi lembaga dan titik koordinat geografis untuk pemetaan berkas rapor serta portal publik.</p>
+            <div class="bg-white rounded-[2rem] shadow-xl shadow-slate-200/40 border border-slate-100 overflow-hidden relative">
+                
+                {{-- Efek Latar Belakang --}}
+                <div class="absolute top-0 right-0 w-96 h-96 bg-indigo-50 rounded-full blur-3xl opacity-50 pointer-events-none -translate-y-1/2 translate-x-1/2"></div>
+
+                <div class="p-6 md:p-8 border-b border-slate-100 bg-white/50 backdrop-blur-sm relative z-10">
+                    <h3 class="text-lg font-black text-slate-800 tracking-tight flex items-center gap-2">
+                        <span class="text-indigo-500">📋</span> Data Pokok Pendidikan (Dapodik)
+                    </h3>
+                    <p class="text-sm font-medium text-slate-500 mt-2 leading-relaxed max-w-4xl">
+                        Pastikan seluruh informasi di bawah ini diisi dengan valid sesuai surat keputusan resmi. Data ini akan diproyeksikan langsung pada <strong class="text-slate-700">cetak Rapor, Surat Mutasi, serta Kartu Pelajar</strong> siswa.
+                    </p>
                 </div>
 
-                <form action="{{ route('master.profil-sekolah.save') }}" method="POST" class="p-6 space-y-8">
+                <form action="{{ route('master.profil-sekolah.save') }}" method="POST" class="p-6 md:p-8 space-y-10 relative z-10">
                     @csrf
                     
+                    {{-- SEKSI I: PROFIL IDENTITAS --}}
                     <div>
-                        <h4 class="text-xs font-bold text-indigo-600 uppercase tracking-wider border-b border-indigo-50 pb-2 mb-4">I. Profil & Nomor Registrasi</h4>
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                            <div class="sm:col-span-2">
-                                <label class="block text-xs font-semibold text-gray-600 mb-1">Nama Resmi Sekolah *</label>
-                                <input type="text" name="nama_sekolah" required value="{{ old('nama_sekolah', $profil->nama_sekolah ?? '') }}" class="w-full text-xs rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
+                        <div class="flex items-center gap-3 mb-6">
+                            <span class="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-100 text-indigo-700 font-black text-sm">I</span>
+                            <h4 class="text-sm font-black text-slate-800 uppercase tracking-widest">Informasi Identitas & Registrasi</h4>
+                            <div class="flex-grow h-px bg-slate-200 ml-2"></div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-12 gap-5">
+                            <div class="md:col-span-6">
+                                <label class="block font-black text-slate-700 text-xs uppercase tracking-widest mb-2">Nama Resmi Sekolah <span class="text-rose-500">*</span></label>
+                                <input type="text" name="nama_sekolah" required value="{{ old('nama_sekolah', $profil->nama_sekolah ?? '') }}" 
+                                       placeholder="Cth: SMA Negeri 1 Nusantara" 
+                                       class="w-full rounded-xl border-slate-200 text-sm font-bold shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 py-3 px-4">
                             </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-gray-600 mb-1">Jenjang Sekolah *</label>
-                                <input type="text" name="jenjang" required value="{{ old('jenjang', $profil->jenjang ?? '') }}" placeholder="Contoh: SMK" class="w-full text-xs rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
+                            <div class="md:col-span-3">
+                                <label class="block font-black text-slate-700 text-xs uppercase tracking-widest mb-2">Jenjang <span class="text-rose-500">*</span></label>
+                                <input type="text" name="jenjang" required value="{{ old('jenjang', $profil->jenjang ?? '') }}" 
+                                       placeholder="Cth: SMA/SMK" 
+                                       class="w-full rounded-xl border-slate-200 text-sm font-bold shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 py-3 px-4">
                             </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-gray-600 mb-1">NPSN *</label>
-                                <input type="text" name="npsn" required value="{{ old('npsn', $profil->npsn ?? '') }}" class="w-full text-xs rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
+                            <div class="md:col-span-3">
+                                <label class="block font-black text-slate-700 text-xs uppercase tracking-widest mb-2">NPSN <span class="text-rose-500">*</span></label>
+                                <input type="text" name="npsn" required value="{{ old('npsn', $profil->npsn ?? '') }}" 
+                                       class="w-full rounded-xl border-slate-200 text-sm font-bold shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 py-3 px-4 font-mono text-indigo-700 bg-indigo-50/30">
                             </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-gray-600 mb-1">NSS</label>
-                                <input type="text" name="nss" value="{{ old('nss', $profil->nss ?? '') }}" class="w-full text-xs rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
+                            <div class="md:col-span-6">
+                                <label class="block font-black text-slate-700 text-xs uppercase tracking-widest mb-2">Fase Kurikulum</label>
+                                <input type="text" name="fase" value="{{ old('fase', $profil->fase ?? '') }}" 
+                                       placeholder="Cth: Fase E & F" 
+                                       class="w-full rounded-xl border-slate-200 text-sm font-medium shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 py-3 px-4 placeholder-slate-400">
                             </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-gray-600 mb-1">Fase Kurikulum</label>
-                                <input type="text" name="fase" value="{{ old('fase', $profil->fase ?? '') }}" placeholder="Fase F" class="w-full text-xs rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
+                            <div class="md:col-span-6">
+                                <label class="block font-black text-slate-700 text-xs uppercase tracking-widest mb-2">Nomor Statistik Sekolah (NSS)</label>
+                                <input type="text" name="nss" value="{{ old('nss', $profil->nss ?? '') }}" 
+                                       class="w-full rounded-xl border-slate-200 text-sm font-medium shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 py-3 px-4 font-mono text-slate-600">
                             </div>
                         </div>
                     </div>
 
+                    {{-- SEKSI II: GEOGRAFIS LOKASI --}}
                     <div>
-                        <h4 class="text-xs font-bold text-indigo-600 uppercase tracking-wider border-b border-indigo-50 pb-2 mb-4">II. Lokasi Kewilayahan & Koordinat Peta</h4>
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="flex items-center gap-3 mb-6">
+                            <span class="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-100 text-indigo-700 font-black text-sm">II</span>
+                            <h4 class="text-sm font-black text-slate-800 uppercase tracking-widest">Alamat Fisik & Titik Peta (GPS)</h4>
+                            <div class="flex-grow h-px bg-slate-200 ml-2"></div>
+                        </div>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                             
-                            <div class="space-y-4">
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="space-y-5 bg-slate-50 p-6 rounded-[1.5rem] border border-slate-100">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                                     <div>
-                                        <label class="block text-xs font-semibold text-gray-600 mb-1">Provinsi *</label>
-                                        <select id="provinsi" name="provinsi" data-current="{{ old('provinsi', $profil->provinsi ?? '') }}" required class="w-full text-xs rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
+                                        <label class="block font-black text-slate-700 text-xs uppercase tracking-widest mb-2">Provinsi <span class="text-rose-500">*</span></label>
+                                        <select id="provinsi" name="provinsi" data-current="{{ old('provinsi', $profil->provinsi ?? '') }}" required 
+                                                class="w-full rounded-xl border-slate-200 text-sm font-bold shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 py-3 px-4 bg-white">
                                             <option value="">-- Pilih Provinsi --</option>
                                         </select>
                                     </div>
                                     <div>
-                                        <label class="block text-xs font-semibold text-gray-600 mb-1">Kabupaten / Kota *</label>
-                                        <select id="kota" name="kota" data-current="{{ old('kota', $profil->kota ?? '') }}" required class="w-full text-xs rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
-                                            <option value="">-- Pilih Kota --</option>
+                                        <label class="block font-black text-slate-700 text-xs uppercase tracking-widest mb-2">Kabupaten / Kota <span class="text-rose-500">*</span></label>
+                                        <select id="kota" name="kota" data-current="{{ old('kota', $profil->kota ?? '') }}" required 
+                                                class="w-full rounded-xl border-slate-200 text-sm font-bold shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 py-3 px-4 bg-white">
+                                            <option value="">-- Menunggu Provinsi --</option>
                                         </select>
                                     </div>
                                     <div>
-                                        <label class="block text-xs font-semibold text-gray-600 mb-1">Kecamatan *</label>
-                                        <select id="kecamatan" name="kecamatan" data-current="{{ old('kecamatan', $profil->kecamatan ?? '') }}" required class="w-full text-xs rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
-                                            <option value="">-- Pilih Kecamatan --</option>
+                                        <label class="block font-black text-slate-700 text-xs uppercase tracking-widest mb-2">Kecamatan <span class="text-rose-500">*</span></label>
+                                        <select id="kecamatan" name="kecamatan" data-current="{{ old('kecamatan', $profil->kecamatan ?? '') }}" required 
+                                                class="w-full rounded-xl border-slate-200 text-sm font-bold shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 py-3 px-4 bg-white">
+                                            <option value="">-- Menunggu Kota --</option>
                                         </select>
                                     </div>
                                     <div>
-                                        <label class="block text-xs font-semibold text-gray-600 mb-1">Desa / Kelurahan *</label>
-                                        <select id="kelurahan" name="kelurahan" data-current="{{ old('kelurahan', $profil->kelurahan ?? '') }}" required class="w-full text-xs rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
-                                            <option value="">-- Pilih Kelurahan --</option>
+                                        <label class="block font-black text-slate-700 text-xs uppercase tracking-widest mb-2">Desa / Kelurahan <span class="text-rose-500">*</span></label>
+                                        <select id="kelurahan" name="kelurahan" data-current="{{ old('kelurahan', $profil->kelurahan ?? '') }}" required 
+                                                class="w-full rounded-xl border-slate-200 text-sm font-bold shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 py-3 px-4 bg-white">
+                                            <option value="">-- Menunggu Kecamatan --</option>
                                         </select>
                                     </div>
                                 </div>
 
                                 <div>
-                                    <label class="block text-xs font-semibold text-gray-600 mb-1">Alamat Jalan / Kampung / RT-RW *</label>
-                                    <textarea id="alamat" name="alamat" rows="2" required placeholder="Nama jalan, nomor, RT/RW" class="w-full text-xs rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">{{ old('alamat', $profil->alamat ?? '') }}</textarea>
+                                    <label class="block font-black text-slate-700 text-xs uppercase tracking-widest mb-2">Jalan / Komplek / Detail <span class="text-rose-500">*</span></label>
+                                    <textarea id="alamat" name="alamat" rows="2" required 
+                                              placeholder="Jl. Pendidikan No. 123, Blok A, RT 01/RW 02..." 
+                                              class="w-full rounded-xl border-slate-200 text-sm font-medium shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 py-3 px-4 bg-white placeholder-slate-400">{{ old('alamat', $profil->alamat ?? '') }}</textarea>
                                 </div>
 
-                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                    <div>
-                                        <label class="block text-xs font-semibold text-gray-600 mb-1">Kode Pos *</label>
-                                        <input type="text" id="kode_pos" name="kode_pos" required value="{{ old('kode_pos', $profil->kode_pos ?? '') }}" class="w-full text-xs rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
+                                <div class="grid grid-cols-1 sm:grid-cols-12 gap-5">
+                                    <div class="sm:col-span-4">
+                                        <label class="block font-black text-slate-700 text-[10px] uppercase tracking-widest mb-2">Kode Pos <span class="text-rose-500">*</span></label>
+                                        <input type="text" id="kode_pos" name="kode_pos" required value="{{ old('kode_pos', $profil->kode_pos ?? '') }}" 
+                                               class="w-full rounded-xl border-slate-200 text-sm font-bold shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 py-2.5 px-3 bg-white">
                                     </div>
-                                    <div>
-                                        <label class="block text-xs font-semibold text-gray-600 mb-1">Latitude *</label>
-                                        <input type="text" id="latitude" name="latitude" required value="{{ old('latitude', $profil->latitude ?? '-6.2088') }}" class="w-full text-xs rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm font-mono">
+                                    <div class="sm:col-span-4">
+                                        <label class="block font-black text-slate-700 text-[10px] uppercase tracking-widest mb-2">Latitude (Y) <span class="text-rose-500">*</span></label>
+                                        <input type="text" id="latitude" name="latitude" required value="{{ old('latitude', $profil->latitude ?? '-6.2088') }}" 
+                                               class="w-full rounded-xl border-slate-200 text-xs font-mono shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 py-2.5 px-3 bg-amber-50/50 text-slate-600">
                                     </div>
-                                    <div>
-                                        <label class="block text-xs font-semibold text-gray-600 mb-1">Longitude *</label>
-                                        <input type="text" id="longitude" name="longitude" required value="{{ old('longitude', $profil->longitude ?? '106.8456') }}" class="w-full text-xs rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm font-mono">
+                                    <div class="sm:col-span-4">
+                                        <label class="block font-black text-slate-700 text-[10px] uppercase tracking-widest mb-2">Longitude (X) <span class="text-rose-500">*</span></label>
+                                        <input type="text" id="longitude" name="longitude" required value="{{ old('longitude', $profil->longitude ?? '106.8456') }}" 
+                                               class="w-full rounded-xl border-slate-200 text-xs font-mono shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 py-2.5 px-3 bg-amber-50/50 text-slate-600">
                                     </div>
                                 </div>
                                 
-                                <button type="button" onclick="cariAlamatKePeta()" class="w-full py-2 bg-slate-800 hover:bg-slate-900 text-white text-[11px] font-bold rounded-lg shadow-sm cursor-pointer transition-colors">
-                                    🔍 Ambil Koordinat Otomatis Dari Teks Alamat Di Atas
+                                <button type="button" onclick="cariAlamatKePeta()" 
+                                        class="w-full py-3.5 bg-slate-800 hover:bg-slate-900 text-white text-sm font-black rounded-xl shadow-md cursor-pointer transition-all hover:-translate-y-0.5 flex items-center justify-center gap-2">
+                                    <span>📡</span> Deteksi Koordinat dari Teks Alamat Di Atas
                                 </button>
                             </div>
 
-                            <div class="flex flex-col">
-                                <label class="block text-xs font-semibold text-gray-600 mb-1">Titik Koordinat Lokasi Lembaga (Klik/Geser Pin pada Peta)</label>
-                                <div id="map" class="w-full h-72 rounded-xl border border-gray-200 shadow-inner z-10"></div>
-                                <p class="text-[10px] text-gray-400 mt-1">💡 Anda dapat menggeser pin merah di atas atau klik di mana saja pada peta untuk memperbarui koordinat secara instan.</p>
+                            <div class="flex flex-col h-full bg-slate-50 p-6 rounded-[1.5rem] border border-slate-100">
+                                <label class="block font-black text-slate-700 text-xs uppercase tracking-widest mb-3 flex items-center gap-2">
+                                    <span>📍</span> Visualisasi Peta (Leaflet JS)
+                                </label>
+                                <div class="bg-white p-2 rounded-[1.5rem] border border-slate-200 shadow-sm flex-grow min-h-[350px] relative">
+                                    <div id="map" class="w-full h-full rounded-xl z-10 absolute inset-2" style="width: calc(100% - 16px); height: calc(100% - 16px);"></div>
+                                </div>
+                                <div class="mt-4 flex gap-3 text-[11px] font-medium text-slate-500 bg-indigo-50/50 p-3 rounded-xl border border-indigo-100/50">
+                                    <span class="text-indigo-500 text-lg">💡</span> 
+                                    <p>Tarik & geser Pin Merah (Marker) pada peta di atas secara manual jika deteksi otomatis kurang akurat. Titik kordinat akan tersimpan otomatis.</p>
+                                </div>
                             </div>
 
                         </div>
                     </div>
 
+                    {{-- SEKSI III: MEDIA KOMUNIKASI --}}
                     <div>
-                        <h4 class="text-xs font-bold text-indigo-600 uppercase tracking-wider border-b border-indigo-50 pb-2 mb-4">III. Media Komunikasi Elektronik</h4>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="flex items-center gap-3 mb-6">
+                            <span class="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-100 text-indigo-700 font-black text-sm">III</span>
+                            <h4 class="text-sm font-black text-slate-800 uppercase tracking-widest">Media Komunikasi & Kontak Publik</h4>
+                            <div class="flex-grow h-px bg-slate-200 ml-2"></div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 bg-slate-50 p-6 rounded-[1.5rem] border border-slate-100">
                             <div>
-                                <label class="block text-xs font-semibold text-gray-600 mb-1">Email Resmi Sekolah *</label>
-                                <input type="email" name="email" required value="{{ old('email', $profil->email ?? '') }}" class="w-full text-xs rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
+                                <label class="block font-black text-slate-700 text-xs uppercase tracking-widest mb-2">Alamat Email Resmi <span class="text-rose-500">*</span></label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                        <span class="text-slate-400">📧</span>
+                                    </div>
+                                    <input type="email" name="email" required value="{{ old('email', $profil->email ?? '') }}" 
+                                           placeholder="sekolah@domain.sch.id"
+                                           class="w-full rounded-xl border-slate-200 text-sm font-bold shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 py-3 pl-10 pr-4 bg-white">
+                                </div>
                             </div>
                             <div>
-                                <label class="block text-xs font-semibold text-gray-600 mb-1">Website Resmi URL</label>
-                                <input type="url" name="website" value="{{ old('website', $profil->website ?? '') }}" class="w-full text-xs rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
+                                <label class="block font-black text-slate-700 text-xs uppercase tracking-widest mb-2">Tautan Portal Website</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                        <span class="text-slate-400">🌐</span>
+                                    </div>
+                                    <input type="url" name="website" value="{{ old('website', $profil->website ?? '') }}" 
+                                           placeholder="https://www.sekolah.sch.id"
+                                           class="w-full rounded-xl border-slate-200 text-sm font-medium shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 py-3 pl-10 pr-4 bg-white">
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="pt-4 border-t border-gray-100 flex justify-end">
-                        <button type="submit" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg shadow-sm transition-colors cursor-pointer">
-                            💾 Simpan & Sinkronisasi Lokasi
+                    <div class="pt-8 border-t border-slate-100 flex justify-end">
+                        <button type="submit" class="w-full md:w-auto px-10 py-4 bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-700 hover:to-indigo-600 text-white font-black text-sm rounded-xl shadow-lg shadow-indigo-500/30 transition-all hover:-translate-y-0.5 cursor-pointer flex items-center justify-center gap-2">
+                            <span>💾</span> Rekam Permanen Data Institusi
                         </button>
                     </div>
                 </form>
@@ -153,6 +227,7 @@
         </div>
     </div>
 
+    <!-- SCRIPT LEAFLET DAN LARAVOLT API SAMA SEKALI TIDAK DIUBAH -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
 

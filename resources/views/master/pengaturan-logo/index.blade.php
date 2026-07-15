@@ -1,134 +1,206 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Pengaturan Logo & Kelengkapan Cetak Dokumen') }}
-        </h2>
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+                <h2 class="font-black text-2xl text-slate-800 leading-tight flex items-center gap-2">
+                    <span class="text-3xl">🎨</span> {{ __('Pengaturan Aset Grafis & Logo') }}
+                </h2>
+                <p class="text-sm font-medium text-slate-500 mt-1">Kelola aset visual utama untuk kebutuhan administrasi surat-menyurat dan cetak dokumen resmi.</p>
+            </div>
+        </div>
     </x-slot>
 
-    <div class="py-12 bg-slate-900/10 min-h-screen">
-        <div class="max-w-5xl mx-auto sm:px-6 lg:px-8 space-y-6">
+    <style>
+        /* Pola checkerboard halus untuk preview gambar transparan */
+        .bg-transparency-grid {
+            background-color: #f8fafc;
+            background-image: linear-gradient(45deg, #e2e8f0 25%, transparent 25%), 
+                              linear-gradient(-45deg, #e2e8f0 25%, transparent 25%), 
+                              linear-gradient(45deg, transparent 75%, #e2e8f0 75%), 
+                              linear-gradient(-45deg, transparent 75%, #e2e8f0 75%);
+            background-size: 16px 16px;
+            background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+        }
+    </style>
+
+    <div class="py-10 bg-slate-50/50 min-h-screen relative font-sans">
+        <div class="max-w-6xl mx-auto sm:px-6 lg:px-8 space-y-6 relative z-10">
             
+            {{-- Notifikasi --}}
             @if(session('success'))
-                <div class="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm rounded-xl shadow-sm flex items-center gap-2">
-                    <span>✅</span> {{ session('success') }}
+                <div class="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm font-bold rounded-2xl shadow-sm flex items-center gap-3">
+                    <span class="text-2xl">✅</span> {{ session('success') }}
                 </div>
             @endif
 
             @if($errors->any())
-                <div class="p-4 bg-rose-50 border border-rose-200 text-rose-800 text-sm rounded-xl shadow-sm space-y-1">
-                    <div class="flex items-center gap-2 font-semibold">
-                        <span>⚠️</span> Terjadi kesalahan validasi berkas:
+                <div class="p-5 bg-rose-50 border border-rose-200 text-rose-800 text-sm font-bold rounded-2xl shadow-sm flex items-start gap-3">
+                    <span class="text-2xl">⚠️</span> 
+                    <div>
+                        <div class="mb-2 text-base font-black">Gagal memvalidasi aset gambar!</div>
+                        <ul class="list-disc list-inside text-xs font-medium text-rose-700 space-y-1 bg-rose-100/50 p-3 rounded-xl border border-rose-200/50">
+                            @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
                     </div>
-                    <ul class="list-disc pl-5 text-xs space-y-0.5">
-                        @foreach($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
                 </div>
             @endif
 
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-2xl border border-gray-100">
-                <div class="p-6 border-b border-gray-100 bg-gray-50/50">
-                    <h3 class="text-base font-bold text-gray-900">Aset Gambar & Atribut Resmi Instansi</h3>
-                    <p class="text-xs text-gray-500">Berkas gambar transparan (PNG) di bawah ini digunakan otomatis untuk kop surat administrasi, cetak lembar Rapor Siswa, piagam, serta kartu pelajar.</p>
+            <div class="bg-white rounded-[2rem] shadow-xl shadow-slate-200/40 border border-slate-100 overflow-hidden relative">
+                
+                {{-- Efek Latar Belakang --}}
+                <div class="absolute top-0 right-0 w-96 h-96 bg-indigo-50 rounded-full blur-3xl opacity-50 pointer-events-none -translate-y-1/2 translate-x-1/2"></div>
+
+                <div class="p-6 md:p-8 border-b border-slate-100 bg-white/50 backdrop-blur-sm relative z-10">
+                    <h3 class="text-lg font-black text-slate-800 tracking-tight flex items-center gap-2">
+                        <span class="text-indigo-500">📸</span> Form Unggah Atribut Resmi
+                    </h3>
+                    <p class="text-sm font-medium text-slate-500 mt-2 leading-relaxed max-w-3xl">
+                        Berkas gambar transparan (PNG) di bawah ini digunakan otomatis oleh sistem untuk membuat <strong class="text-slate-700">kop surat administrasi, cetak lembar Rapor Siswa, piagam, serta kartu pelajar</strong>. 
+                        Pastikan ukuran file di bawah 2MB.
+                    </p>
                 </div>
 
-                <form action="{{ route('master.pengaturan-logo.save') }}" method="POST" enctype="multipart/form-data" class="p-6 space-y-6">
+                <form action="{{ route('master.pengaturan-logo.save') }}" method="POST" enctype="multipart/form-data" class="p-6 md:p-8 space-y-8 relative z-10">
                     @csrf
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
                         
-                        <div class="border border-gray-100 p-4 rounded-xl bg-gray-50/30 flex flex-col justify-between">
+                        {{-- KARTU: LOGO PEMDA --}}
+                        <div class="group border border-slate-200 rounded-[1.5rem] p-5 md:p-6 bg-white hover:bg-slate-50 hover:border-indigo-200 hover:shadow-lg hover:shadow-indigo-500/5 transition-all duration-300 flex flex-col justify-between">
                             <div>
-                                <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Logo Pemerintah Daerah (PEMDA)</label>
-                                <p class="text-[10px] text-gray-400 mb-3">Digunakan pada sisi kiri Kop Surat kedinasan. Rekomendasi format PNG transparan.</p>
-                                <input type="file" name="logo_pemda" accept="image/*" class="w-full text-xs text-gray-500 file:mr-4 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                                <label class="flex items-center gap-2 text-xs font-black text-slate-800 uppercase tracking-widest mb-1.5">
+                                    <span class="text-lg">🏛️</span> Logo Pemerintah Daerah (PEMDA)
+                                </label>
+                                <p class="text-[11px] font-medium text-slate-500 mb-4 leading-relaxed">
+                                    Tampil di pojok kiri atas pada Kop Surat kedinasan. Wajib berformat PNG transparan.
+                                </p>
+                                <input type="file" name="logo_pemda" accept="image/png, image/jpeg" 
+                                       class="block w-full text-sm text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-black file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 hover:file:text-indigo-800 cursor-pointer transition-colors shadow-sm focus:outline-none">
                             </div>
-                            <div class="mt-4 flex items-center justify-center p-3 bg-white border border-gray-100 rounded-lg min-h-[100px]">
+                            <div class="mt-5 flex items-center justify-center p-4 rounded-xl border border-dashed border-slate-300 bg-transparency-grid min-h-[140px] relative overflow-hidden group-hover:border-indigo-300 transition-colors">
                                 @if($logoSetting && $logoSetting->logo_pemda)
-                                    <img src="{{ asset('storage/' . $logoSetting->logo_pemda) }}" class="h-20 object-contain" alt="Logo Pemda">
+                                    <img src="{{ asset('storage/' . $logoSetting->logo_pemda) }}" class="max-h-24 object-contain drop-shadow-md hover:scale-105 transition-transform duration-300" alt="Logo Pemda">
                                 @else
-                                    <span class="text-[11px] text-gray-400 italic">Belum diunggah</span>
+                                    <span class="text-xs font-bold text-slate-400 bg-white/80 px-3 py-1 rounded-lg backdrop-blur-sm">Belum terunggah</span>
                                 @endif
                             </div>
                         </div>
 
-                        <div class="border border-gray-100 p-4 rounded-xl bg-gray-50/30 flex flex-col justify-between">
+                        {{-- KARTU: LOGO SEKOLAH --}}
+                        <div class="group border border-slate-200 rounded-[1.5rem] p-5 md:p-6 bg-white hover:bg-slate-50 hover:border-indigo-200 hover:shadow-lg hover:shadow-indigo-500/5 transition-all duration-300 flex flex-col justify-between">
                             <div>
-                                <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Logo Resmi Sekolah / Tut Wuri</label>
-                                <p class="text-[10px] text-gray-400 mb-3">Digunakan untuk header website, favicon, sisi kanan Kop Surat, dan Rapor.</p>
-                                <input type="file" name="logo_sekolah" accept="image/*" class="w-full text-xs text-gray-500 file:mr-4 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                                <label class="flex items-center gap-2 text-xs font-black text-slate-800 uppercase tracking-widest mb-1.5">
+                                    <span class="text-lg">🏫</span> Logo Resmi Institusi
+                                </label>
+                                <p class="text-[11px] font-medium text-slate-500 mb-4 leading-relaxed">
+                                    Dipakai untuk Favicon, sisi kanan Kop Surat, dan tengah halaman Rapor. Gunakan PNG transparan beresolusi tinggi.
+                                </p>
+                                <input type="file" name="logo_sekolah" accept="image/png, image/jpeg" 
+                                       class="block w-full text-sm text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-black file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 hover:file:text-indigo-800 cursor-pointer transition-colors shadow-sm focus:outline-none">
                             </div>
-                            <div class="mt-4 flex items-center justify-center p-3 bg-white border border-gray-100 rounded-lg min-h-[100px]">
+                            <div class="mt-5 flex items-center justify-center p-4 rounded-xl border border-dashed border-slate-300 bg-transparency-grid min-h-[140px] relative overflow-hidden group-hover:border-indigo-300 transition-colors">
                                 @if($logoSetting && $logoSetting->logo_sekolah)
-                                    <img src="{{ asset('storage/' . $logoSetting->logo_sekolah) }}" class="h-20 object-contain" alt="Logo Sekolah">
+                                    <img src="{{ asset('storage/' . $logoSetting->logo_sekolah) }}" class="max-h-24 object-contain drop-shadow-md hover:scale-105 transition-transform duration-300" alt="Logo Sekolah">
                                 @else
-                                    <span class="text-[11px] text-gray-400 italic">Belum diunggah</span>
+                                    <span class="text-xs font-bold text-slate-400 bg-white/80 px-3 py-1 rounded-lg backdrop-blur-sm">Belum terunggah</span>
                                 @endif
                             </div>
                         </div>
 
-                        <div class="md:col-span-2 border border-gray-100 p-4 rounded-xl bg-gray-50/30">
-                            <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Gambar Banner Kop Surat Jadi</label>
-                            <p class="text-[10px] text-gray-400 mb-3">Opsional. Jika diisi, sistem cetak dokumen otomatis memakai banner Kop Surat ini secara penuh (Landscape lebar).</p>
-                            <input type="file" name="kop_surat" accept="image/*" class="w-full text-xs text-gray-500 file:mr-4 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
-                            <div class="mt-4 flex items-center justify-center p-3 bg-white border border-gray-100 rounded-lg min-h-[120px]">
+                        {{-- KARTU: BANNER KOP SURAT (FULL WIDTH) --}}
+                        <div class="md:col-span-2 group border border-slate-200 rounded-[1.5rem] p-5 md:p-6 bg-white hover:bg-slate-50 hover:border-indigo-200 hover:shadow-lg hover:shadow-indigo-500/5 transition-all duration-300">
+                            <label class="flex items-center gap-2 text-xs font-black text-slate-800 uppercase tracking-widest mb-1.5">
+                                <span class="text-lg">🖼️</span> Gambar Banner Kop Surat Kustom (Opsional)
+                            </label>
+                            <p class="text-xs font-medium text-slate-500 mb-4 leading-relaxed max-w-4xl">
+                                Jika Anda telah mendesain sendiri banner/header Kop Surat dalam format utuh (landscape/memanjang), unggah ke sini. 
+                                Sistem cetak dokumen (PDF) akan menimpa format standar dengan *banner* statis ini.
+                            </p>
+                            <input type="file" name="kop_surat" accept="image/png, image/jpeg" 
+                                   class="block w-full text-sm text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-black file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200 cursor-pointer transition-colors shadow-sm focus:outline-none w-full sm:w-auto">
+                            
+                            <div class="mt-5 flex items-center justify-center p-4 rounded-xl border border-dashed border-slate-300 bg-transparency-grid min-h-[140px] group-hover:border-indigo-300 transition-colors w-full">
                                 @if($logoSetting && $logoSetting->kop_surat)
-                                    <img src="{{ asset('storage/' . $logoSetting->kop_surat) }}" class="w-full max-h-24 object-contain" alt="Kop Surat">
+                                    <img src="{{ asset('storage/' . $logoSetting->kop_surat) }}" class="w-full max-h-32 object-contain drop-shadow-sm hover:scale-[1.02] transition-transform duration-300" alt="Banner Kop Surat">
                                 @else
-                                    <span class="text-[11px] text-gray-400 italic">Belum ada banner kop surat kustom terunggah</span>
+                                    <span class="text-xs font-bold text-slate-400 bg-white/80 px-3 py-1 rounded-lg backdrop-blur-sm">Belum ada banner terunggah (Memakai format Kop Surat Standar)</span>
                                 @endif
                             </div>
                         </div>
 
-                        <div class="border border-gray-100 p-4 rounded-xl bg-gray-50/30 flex flex-col justify-between">
+                        {{-- KARTU: TTD KEPSEK --}}
+                        <div class="group border border-slate-200 rounded-[1.5rem] p-5 md:p-6 bg-white hover:bg-slate-50 hover:border-indigo-200 hover:shadow-lg hover:shadow-indigo-500/5 transition-all duration-300 flex flex-col justify-between">
                             <div>
-                                <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Tanda Tangan Kepala Sekolah (Digital)</label>
-                                <p class="text-[10px] text-gray-400 mb-3">Gunakan tanda tangan berlatar transparan/putih polos bersih.</p>
-                                <input type="file" name="ttd_kepala_sekolah" accept="image/*" class="w-full text-xs text-gray-500 file:mr-4 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                                <label class="flex items-center gap-2 text-xs font-black text-slate-800 uppercase tracking-widest mb-1.5">
+                                    <span class="text-lg">✍️</span> Tanda Tangan Kepsek (Digital)
+                                </label>
+                                <p class="text-[11px] font-medium text-slate-500 mb-4 leading-relaxed">
+                                    Potong rapi (crop) tanpa menyertakan nama dan gelar. Wajib background transparan murni.
+                                </p>
+                                <input type="file" name="ttd_kepala_sekolah" accept="image/png" 
+                                       class="block w-full text-sm text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-black file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 hover:file:text-emerald-800 cursor-pointer transition-colors shadow-sm focus:outline-none">
                             </div>
-                            <div class="mt-4 flex items-center justify-center p-3 bg-white border border-gray-100 rounded-lg min-h-[100px]">
+                            <div class="mt-5 flex items-center justify-center p-4 rounded-xl border border-dashed border-slate-300 bg-transparency-grid min-h-[140px] relative overflow-hidden group-hover:border-indigo-300 transition-colors">
                                 @if($logoSetting && $logoSetting->ttd_kepala_sekolah)
-                                    <img src="{{ asset('storage/' . $logoSetting->ttd_kepala_sekolah) }}" class="h-16 object-contain" alt="TTD Kepsek">
+                                    <img src="{{ asset('storage/' . $logoSetting->ttd_kepala_sekolah) }}" class="max-h-20 object-contain drop-shadow-md hover:scale-105 transition-transform duration-300" alt="TTD Kepsek">
                                 @else
-                                    <span class="text-[11px] text-gray-400 italic">Belum diunggah</span>
+                                    <span class="text-xs font-bold text-slate-400 bg-white/80 px-3 py-1 rounded-lg backdrop-blur-sm">Belum terunggah</span>
                                 @endif
                             </div>
                         </div>
 
-                        <div class="border border-gray-100 p-4 rounded-xl bg-gray-50/30 flex flex-col justify-between">
+                        {{-- KARTU: STEMPEL SEKOLAH --}}
+                        <div class="group border border-slate-200 rounded-[1.5rem] p-5 md:p-6 bg-white hover:bg-slate-50 hover:border-indigo-200 hover:shadow-lg hover:shadow-indigo-500/5 transition-all duration-300 flex flex-col justify-between">
                             <div>
-                                <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Stempel / Cap Resmi Sekolah</label>
-                                <p class="text-[10px] text-gray-400 mb-3">Disarankan berformat PNG transparan warna ungu/biru instansi.</p>
-                                <input type="file" name="stempel_sekolah" accept="image/*" class="w-full text-xs text-gray-500 file:mr-4 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                                <label class="flex items-center gap-2 text-xs font-black text-slate-800 uppercase tracking-widest mb-1.5">
+                                    <span class="text-lg">🛑</span> Stempel / Cap Resmi Sekolah
+                                </label>
+                                <p class="text-[11px] font-medium text-slate-500 mb-4 leading-relaxed">
+                                    Potong tepat di pinggir lingkaran stempel. Disarankan warna biru/ungu instansi (Transparan PNG).
+                                </p>
+                                <input type="file" name="stempel_sekolah" accept="image/png" 
+                                       class="block w-full text-sm text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-black file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100 hover:file:text-amber-800 cursor-pointer transition-colors shadow-sm focus:outline-none">
                             </div>
-                            <div class="mt-4 flex items-center justify-center p-3 bg-white border border-gray-100 rounded-lg min-h-[100px]">
+                            <div class="mt-5 flex items-center justify-center p-4 rounded-xl border border-dashed border-slate-300 bg-transparency-grid min-h-[140px] relative overflow-hidden group-hover:border-indigo-300 transition-colors">
                                 @if($logoSetting && $logoSetting->stempel_sekolah)
-                                    <img src="{{ asset('storage/' . $logoSetting->stempel_sekolah) }}" class="h-16 object-contain" alt="Stempel Sekolah">
+                                    <img src="{{ asset('storage/' . $logoSetting->stempel_sekolah) }}" class="max-h-24 object-contain drop-shadow-md hover:scale-105 transition-transform duration-300" alt="Stempel Sekolah">
                                 @else
-                                    <span class="text-[11px] text-gray-400 italic">Belum diunggah</span>
+                                    <span class="text-xs font-bold text-slate-400 bg-white/80 px-3 py-1 rounded-lg backdrop-blur-sm">Belum terunggah</span>
                                 @endif
                             </div>
                         </div>
 
-                        <div class="md:col-span-2 border border-gray-100 p-4 rounded-xl bg-gray-50/30">
-                            <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Kombinasi Langsung TTD + Stempel Menyatu</label>
-                            <p class="text-[10px] text-gray-400 mb-3">Berguna untuk otomatisasi cetak cepat massal tanpa perlu menumpuk gambar via CSS editor.</p>
-                            <input type="file" name="ttd_dan_stempel" accept="image/*" class="w-full text-xs text-gray-500 file:mr-4 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
-                            <div class="mt-4 flex items-center justify-center p-3 bg-white border border-gray-100 rounded-lg min-h-[120px]">
+                        {{-- KARTU: KOMBINASI (TTD + STEMPEL) --}}
+                        <div class="md:col-span-2 group border border-slate-200 rounded-[1.5rem] p-5 md:p-6 bg-white hover:bg-slate-50 hover:border-indigo-200 hover:shadow-lg hover:shadow-indigo-500/5 transition-all duration-300">
+                            <label class="flex items-center gap-2 text-xs font-black text-slate-800 uppercase tracking-widest mb-1.5">
+                                <span class="text-lg">🔗</span> Mode Pintas: TTD & Stempel Menyatu (Menimpa Gambar)
+                            </label>
+                            <p class="text-xs font-medium text-slate-500 mb-4 leading-relaxed max-w-4xl">
+                                Opsi tingkat lanjut: Jika peletakan posisi terpisah (CSS) sulit dikonfigurasi, Anda bisa mengunggah 1 file gambar yang <strong class="text-slate-700">sudah berisi Tanda Tangan ditimpa (overlap) Stempel</strong>. 
+                                Sistem akan memprioritaskan aset ini untuk Rapor dan Surat Masal.
+                            </p>
+                            <input type="file" name="ttd_dan_stempel" accept="image/png" 
+                                   class="block w-full text-sm text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-black file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200 cursor-pointer transition-colors shadow-sm focus:outline-none w-full sm:w-auto">
+                            
+                            <div class="mt-5 flex items-center justify-center p-4 rounded-xl border border-dashed border-slate-300 bg-transparency-grid min-h-[140px] group-hover:border-indigo-300 transition-colors w-full">
                                 @if($logoSetting && $logoSetting->ttd_dan_stempel)
-                                    <img src="{{ asset('storage/' . $logoSetting->ttd_dan_stempel) }}" class="h-24 object-contain" alt="TTD dan Stempel">
+                                    <img src="{{ asset('storage/' . $logoSetting->ttd_dan_stempel) }}" class="max-h-28 object-contain drop-shadow-md hover:scale-105 transition-transform duration-300" alt="Kombinasi TTD dan Stempel">
                                 @else
-                                    <span class="text-[11px] text-gray-400 italic">Belum diunggah</span>
+                                    <span class="text-xs font-bold text-slate-400 bg-white/80 px-3 py-1 rounded-lg backdrop-blur-sm">Tidak ada gambar kombinasi. (Menggunakan pemisahan default)</span>
                                 @endif
                             </div>
                         </div>
 
                     </div>
 
-                    <div class="pt-4 border-t border-gray-100 flex justify-end">
-                        <button type="submit" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-lg shadow-md transition-colors cursor-pointer flex items-center gap-1">
-                            💾 Simpan & Perbarui Seluruh Logo
+                    <div class="pt-8 border-t border-slate-100 flex flex-col md:flex-row items-center justify-between gap-4">
+                        <div class="text-xs font-bold text-slate-500 bg-slate-50 px-4 py-2 rounded-xl border border-slate-100 w-full md:w-auto text-center md:text-left">
+                            💡 Pastikan cache browser di-clear (Ctrl + F5) jika logo baru tidak langsung muncul setelah disimpan.
+                        </div>
+                        <button type="submit" class="w-full md:w-auto px-8 py-3.5 bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-700 hover:to-indigo-600 text-white font-black text-sm rounded-xl shadow-lg shadow-indigo-500/30 transition-all hover:-translate-y-0.5 cursor-pointer flex items-center justify-center gap-2">
+                            <span>💾</span> Simpan Seluruh Aset
                         </button>
                     </div>
                 </form>

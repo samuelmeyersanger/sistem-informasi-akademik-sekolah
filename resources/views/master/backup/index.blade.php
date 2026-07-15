@@ -1,8 +1,13 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Backup & Restore Database') }}
-        </h2>
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+                <h2 class="font-black text-2xl text-slate-800 leading-tight flex items-center gap-2">
+                    <span class="text-3xl">🗄️</span> {{ __('Backup & Restore Data') }}
+                </h2>
+                <p class="text-sm font-medium text-slate-500 mt-1">Pusat kendali pencadangan dan pemulihan data sistem secara menyeluruh.</p>
+            </div>
+        </div>
     </x-slot>
 
     <div x-data="{
@@ -20,48 +25,67 @@
             document.getElementById('backup_file_input').value = '';
             this.openUploadConfirm = false;
         }
-    }" class="py-12 bg-slate-900/10 min-h-screen relative">
+    }" class="py-10 bg-slate-50/50 min-h-screen relative font-sans">
 
-        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 space-y-6">
+        <div class="max-w-5xl mx-auto sm:px-6 lg:px-8 space-y-8">
             
+            {{-- Notifikasi --}}
             @if(session('success'))
-                <div class="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm rounded-xl shadow-sm flex items-center gap-2">
-                    <span>✅</span> {{ session('success') }}
+                <div class="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm font-bold rounded-2xl shadow-sm flex items-center gap-3">
+                    <span class="text-2xl">✅</span> {{ session('success') }}
                 </div>
             @endif
 
             @if(session('error'))
-                <div class="p-4 bg-rose-50 border border-rose-200 text-rose-800 text-sm rounded-xl shadow-sm flex items-center gap-2">
-                    <span>⚠️</span> {{ session('error') }}
+                <div class="p-5 bg-rose-50 border border-rose-200 text-rose-800 text-sm font-bold rounded-2xl shadow-sm flex items-center gap-3">
+                    <span class="text-2xl">⚠️</span> {{ session('error') }}
                 </div>
             @endif
 
+            {{-- Kartu Aksi --}}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 
                 {{-- KARTU 1: CADANGKAN DATABASE --}}
-                <div class="bg-white p-6 shadow-sm sm:rounded-2xl border border-gray-100 flex flex-col justify-between space-y-4">
-                    <div>
-                        <h3 class="text-sm font-bold text-gray-900 uppercase tracking-wider">🟢 Cadangkan Database</h3>
-                        <p class="text-xs text-gray-500 mt-1">Buat file backup `.zip` baru untuk mengamankan data yang ada di server Sail saat ini.</p>
+                <div class="bg-white p-8 shadow-xl shadow-slate-200/40 rounded-[2rem] border border-slate-100 flex flex-col justify-between space-y-6 relative overflow-hidden group hover:border-emerald-200 transition-colors">
+                    
+                    <div class="absolute -right-16 -top-16 w-48 h-48 bg-emerald-50 rounded-full blur-3xl opacity-60 pointer-events-none group-hover:bg-emerald-100 transition-colors"></div>
+                    
+                    <div class="relative z-10 flex items-start gap-4">
+                        <div class="w-14 h-14 bg-gradient-to-br from-emerald-100 to-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center text-3xl shrink-0 shadow-inner border border-emerald-100">
+                            📥
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-black text-slate-800 tracking-tight">Cadangkan Database</h3>
+                            <p class="text-xs font-medium text-slate-500 mt-1.5 leading-relaxed">Ekstrak seluruh data dari server menjadi sebuah file <strong class="text-emerald-600">.zip</strong> agar aman dan dapat disimpan di perangkat lokal Anda.</p>
+                        </div>
                     </div>
-                    <form action="{{ route('master.backup.create') }}" method="POST" @submit="isLoading = true">
+                    
+                    <form action="{{ route('master.backup.create') }}" method="POST" @submit="isLoading = true" class="relative z-10 pt-2 border-t border-slate-50">
                         @csrf
-                        <button type="submit" class="w-full px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg shadow-sm transition-all flex items-center justify-center gap-1.5 cursor-pointer">
-                            ➕ Buat & Simpan Backup Baru
+                        <button type="submit" class="w-full px-6 py-3.5 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-xl shadow-lg shadow-slate-800/20 transition-all hover:-translate-y-0.5 cursor-pointer flex items-center justify-center gap-2">
+                            <span>📦</span> Buat Backup Server Sekarang
                         </button>
                     </form>
                 </div>
 
                 {{-- KARTU 2: UPLOAD & RESTORE --}}
-                <div class="bg-white p-6 shadow-sm sm:rounded-2xl border border-gray-100 flex flex-col justify-between space-y-4">
-                    <div>
-                        <h3 class="text-sm font-bold text-gray-900 uppercase tracking-wider">🔴 Upload & Restore</h3>
-                        <p class="text-xs text-gray-500 mt-1">Punya file backup di laptop? Unggah file `.zip` tersebut untuk menimpa database saat ini.</p>
+                <div class="bg-white p-8 shadow-xl shadow-slate-200/40 rounded-[2rem] border border-slate-100 flex flex-col justify-between space-y-6 relative overflow-hidden group hover:border-rose-200 transition-colors">
+                    
+                    <div class="absolute -right-16 -top-16 w-48 h-48 bg-rose-50 rounded-full blur-3xl opacity-60 pointer-events-none group-hover:bg-rose-100 transition-colors"></div>
+                    
+                    <div class="relative z-10 flex items-start gap-4">
+                        <div class="w-14 h-14 bg-gradient-to-br from-rose-100 to-rose-50 text-rose-600 rounded-2xl flex items-center justify-center text-3xl shrink-0 shadow-inner border border-rose-100">
+                            📤
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-black text-slate-800 tracking-tight">Restore & Timpa Data</h3>
+                            <p class="text-xs font-medium text-slate-500 mt-1.5 leading-relaxed">Punya file backup <strong class="text-rose-600">.zip</strong> di laptop? Unggah file tersebut untuk menimpa total *database* server saat ini.</p>
+                        </div>
                     </div>
-                    <div>
-                        {{-- Tombol pemicu klik input file --}}
-                        <label for="backup_file_input" class="w-full px-4 py-2.5 bg-amber-500 hover:bg-amber-600 text-white text-xs font-semibold rounded-lg shadow-sm transition-all flex items-center justify-center gap-1.5 cursor-pointer text-center">
-                            📤 Upload File Zip & Restore
+                    
+                    <div class="relative z-10 pt-2 border-t border-slate-50">
+                        <label for="backup_file_input" class="w-full px-6 py-3.5 bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 text-white font-bold rounded-xl shadow-lg shadow-rose-500/30 transition-all hover:-translate-y-0.5 cursor-pointer flex items-center justify-center gap-2 text-center">
+                            <span>⚡</span> Pilih File Zip & Restore
                         </label>
                     </div>
                 </div>
@@ -69,40 +93,54 @@
             </div>
 
             {{-- TABEL DAFTAR BACKUP --}}
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-2xl border border-gray-100">
-                <div class="p-4 border-b border-gray-100 bg-gray-50/50">
-                    <h3 class="text-xs font-bold text-gray-700 uppercase">File Backup yang Tersimpan di Server</h3>
+            <div class="bg-white overflow-hidden shadow-xl shadow-slate-200/40 rounded-[2rem] border border-slate-100">
+                <div class="p-6 border-b border-slate-100 bg-slate-50/50 flex items-center gap-3">
+                    <span class="p-2 bg-indigo-100 text-indigo-600 rounded-xl">☁️</span>
+                    <h3 class="text-sm font-black text-slate-800 uppercase tracking-widest">Arsip File Backup di Server Storage</h3>
                 </div>
 
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse text-sm">
                         <thead>
-                            <tr class="bg-gray-100/70 border-b border-gray-100 text-gray-600 font-semibold text-xs uppercase tracking-wider">
-                                <th class="p-4 pl-6 w-12 text-center">No</th>
-                                <th class="p-4">Nama File</th>
-                                <th class="p-4 text-center w-24">Ukuran</th>
-                                <th class="p-4 text-center w-40">Tanggal</th>
-                                <th class="p-4 pr-6 text-center w-28">Aksi</th>
+                            <tr class="bg-slate-50 border-b-2 border-slate-100 text-slate-500 font-black text-xs uppercase tracking-widest">
+                                <th class="p-5 pl-6 text-center w-16">No</th>
+                                <th class="p-5">Nama Berkas Archive</th>
+                                <th class="p-5 text-center w-32">Kapasitas</th>
+                                <th class="p-5 text-center w-48">Waktu Pembuatan</th>
+                                <th class="p-5 pr-6 text-center w-32">Unduh File</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-gray-100 text-gray-700 text-xs">
+                        <tbody class="divide-y divide-slate-100 text-slate-700 font-medium">
                             @forelse($backupList as $index => $backup)
-                                <tr class="hover:bg-gray-50/80 transition-colors">
-                                    <td class="p-4 pl-6 text-center text-gray-400">{{ $index + 1 }}</td>
-                                    <td class="p-4 font-mono text-gray-900 break-all">{{ $backup['file_name'] }}</td>
-                                    <td class="p-4 text-center text-gray-500">{{ $backup['file_size'] }}</td>
-                                    <td class="p-4 text-center text-gray-500 whitespace-nowrap">{{ $backup['last_modified'] }}</td>
-                                    <td class="p-4 pr-6 text-center">
+                                <tr class="hover:bg-indigo-50/30 transition-colors duration-200 group">
+                                    <td class="p-5 pl-6 text-center text-slate-400 font-bold">{{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}</td>
+                                    <td class="p-5">
+                                        <div class="flex items-center gap-3">
+                                            <span class="text-2xl opacity-70">🗜️</span>
+                                            <span class="font-mono text-slate-900 font-bold bg-slate-50 px-2 py-1 rounded-lg border border-slate-200 break-all">{{ $backup['file_name'] }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="p-5 text-center">
+                                        <span class="text-[11px] font-black uppercase text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-md">{{ $backup['file_size'] }}</span>
+                                    </td>
+                                    <td class="p-5 text-center text-slate-500 text-xs font-semibold whitespace-nowrap">{{ $backup['last_modified'] }}</td>
+                                    <td class="p-5 pr-6 text-center">
                                         <a href="{{ route('master.backup.download', $backup['file_name']) }}" 
-                                           class="inline-block px-2.5 py-1.5 bg-blue-50 border border-blue-200 text-blue-600 hover:bg-blue-100 font-bold text-[11px] rounded-md shadow-sm transition-colors cursor-pointer">
-                                            📥 Download
+                                           class="inline-flex items-center justify-center w-10 h-10 bg-white border border-slate-200 text-slate-500 hover:text-indigo-600 hover:border-indigo-300 hover:bg-indigo-50 rounded-xl transition-all cursor-pointer shadow-sm hover:shadow-md" title="Download ZIP">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                                         </a>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="p-12 text-center text-gray-400 italic bg-gray-50/30">
-                                        📦 Belum ada file backup di server. Klik tombol kiri atas untuk membuat baru.
+                                    <td colspan="5" class="p-16 text-center">
+                                        <div class="flex flex-col items-center justify-center text-slate-400">
+                                            <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center text-4xl mb-4 border border-slate-100">
+                                                🌪️
+                                            </div>
+                                            <h4 class="font-black text-slate-700 text-lg mb-1">Penyimpanan Kosong</h4>
+                                            <span class="text-sm">Belum ada file backup di server. Klik tombol di atas untuk membuat yang pertama.</span>
+                                        </div>
                                     </td>
                                 </tr>
                             @endforelse
@@ -112,35 +150,37 @@
             </div>
         </div>
 
-        {{-- MODAL DIALOG CONFIRMATION --}}
-        <div x-show="openUploadConfirm" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm" style="display: none;" x-transition>
-            <div class="bg-white rounded-2xl shadow-xl border border-gray-200 max-w-sm w-full p-6 text-center space-y-4">
-                <div class="w-12 h-12 bg-rose-50 text-rose-600 rounded-full flex items-center justify-center text-xl mx-auto border border-rose-100">
-                    ⚠️
-                </div>
-                <div>
-                    <h4 class="text-sm font-bold text-gray-900">Konfirmasi Upload & Restore!</h4>
-                    <p class="text-xs text-gray-500 mt-1">
-                        Anda mengunggah berkas backup dari komputer. <span class="font-bold text-rose-600">Seluruh database saat ini akan dihapus dan digantikan total</span> oleh isi file yang Anda upload.
-                    </p>
-                </div>
-                <div class="bg-gray-50 p-2.5 rounded-lg text-[10px] text-gray-600 border border-gray-200 break-all text-left">
-                    <strong>File yang di-upload:</strong> <span class="font-mono text-indigo-600" x-text="fileNameToUpload"></span>
+        {{-- MODAL DIALOG CONFIRMATION UPLOAD --}}
+        <div x-show="openUploadConfirm" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md" style="display: none;" x-transition>
+            <div class="bg-white rounded-[2rem] shadow-2xl border border-slate-100 max-w-md w-full p-8 text-center space-y-6 relative overflow-hidden" @click.away="cancelUpload()">
+                
+                <div class="w-24 h-24 bg-rose-50 text-rose-600 rounded-full flex items-center justify-center text-5xl mx-auto border border-rose-100 shadow-inner">
+                    ☢️
                 </div>
                 
-                {{-- 🟢 PERBAIKAN FORM: Input File dimasukkan ke dalam form ini sejak awal --}}
-                <form id="upload_restore_form" action="{{ route('master.backup.upload-restore') }}" method="POST" enctype="multipart/form-data" @submit="openUploadConfirm = false; isLoading = true;" class="flex flex-col justify-center gap-2 pt-2 m-0">
+                <div>
+                    <h4 class="text-xl font-black text-slate-900 tracking-tight">PERINGATAN RESTORE!</h4>
+                    <p class="text-sm font-medium text-slate-500 mt-2 leading-relaxed px-2">
+                        Anda akan menimpa seluruh sistem. <strong class="text-rose-600">Semua data database saat ini akan dihapus permanen</strong> dan digantikan oleh file yang Anda upload.
+                    </p>
+                </div>
+                
+                <div class="bg-indigo-50/50 p-4 rounded-xl border border-indigo-100 flex flex-col items-center gap-2">
+                    <span class="text-[10px] font-black text-indigo-400 uppercase tracking-widest">Berkas Yang Akan Diekstrak</span>
+                    <strong class="font-mono text-indigo-700 text-xs break-all" x-text="fileNameToUpload"></strong>
+                </div>
+                
+                <form id="upload_restore_form" action="{{ route('master.backup.upload-restore') }}" method="POST" enctype="multipart/form-data" @submit="openUploadConfirm = false; isLoading = true;" class="flex flex-col justify-center gap-3 pt-2 m-0">
                     @csrf
                     
-                    {{-- Input file ditaruh di sini agar terbaca sempurna oleh Controller --}}
                     <input type="file" id="backup_file_input" name="backup_file" accept=".zip" class="hidden" @change="handleFileChange($event)">
                     
-                    <div class="flex justify-center gap-2 w-full">
-                        <button type="button" @click="cancelUpload()" class="w-1/2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 font-semibold rounded-lg text-xs cursor-pointer">
-                            Batal
+                    <div class="flex flex-col sm:flex-row justify-center gap-3 w-full">
+                        <button type="button" @click="cancelUpload()" class="w-full sm:w-auto px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-all cursor-pointer">
+                            Batalkan Proses
                         </button>
-                        <button type="submit" class="w-1/2 px-4 py-2 !bg-rose-600 hover:!bg-rose-700 !text-white font-bold rounded-lg text-xs cursor-pointer shadow-sm">
-                            Ya, Upload & Timpa
+                        <button type="submit" class="w-full sm:w-auto px-6 py-3 bg-rose-600 hover:bg-rose-700 text-white font-black rounded-xl shadow-md transition-all cursor-pointer flex items-center justify-center gap-2">
+                            <span>💣</span> Ya, Timpa Database
                         </button>
                     </div>
                 </form>
@@ -148,15 +188,27 @@
         </div>
 
         {{-- SCREEN LOADING --}}
-        <div x-show="isLoading" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/70 backdrop-blur-md flex items-center justify-center p-4" style="display: none;" x-transition>
-            <div class="bg-white rounded-2xl max-w-xs w-full shadow-2xl p-6 text-center space-y-4">
-                <div class="w-10 h-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+        <div x-show="isLoading" class="fixed inset-0 z-[100] overflow-y-auto bg-slate-900/80 backdrop-blur-lg flex items-center justify-center p-4" style="display: none;" x-transition>
+            <div class="bg-white rounded-[2rem] max-w-sm w-full shadow-2xl p-10 text-center space-y-6">
+                
+                <div class="relative w-20 h-20 mx-auto">
+                    {{-- Animasi Luar --}}
+                    <div class="absolute inset-0 border-4 border-indigo-100 rounded-full"></div>
+                    <div class="absolute inset-0 border-4 border-indigo-600 rounded-full border-t-transparent animate-spin"></div>
+                    {{-- Icon Tengah --}}
+                    <div class="absolute inset-0 flex items-center justify-center text-2xl animate-pulse">
+                        🗄️
+                    </div>
+                </div>
+                
                 <div>
-                    <h3 class="text-sm font-bold text-gray-900 uppercase tracking-wider">Memproses Database...</h3>
-                    <p class="text-[11px] text-gray-500 mt-1 leading-relaxed">
-                        Sedang mengekstrak zip dan menyelaraskan struktur data PostgreSQL Sail Anda. Mohon tunggu sejenak...
+                    <h3 class="text-base font-black text-slate-900 uppercase tracking-widest">Memproses Database</h3>
+                    <p class="text-xs font-medium text-slate-500 mt-2 leading-relaxed px-4">
+                        Sedang mengekstrak file ZIP dan mengkonfigurasi ulang struktur PostgreSQL...<br>
+                        <strong class="text-indigo-600 block mt-2">Mohon jangan tutup jendela ini!</strong>
                     </p>
                 </div>
+                
             </div>
         </div>
 
