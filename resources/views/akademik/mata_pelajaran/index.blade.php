@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Data Master Mata Pelajaran
+        <h2 class="font-bold text-2xl text-gray-800 leading-tight flex items-center gap-3">
+            <span class="text-3xl">📚</span> {{ __('Data Master Mata Pelajaran') }}
         </h2>
     </x-slot>
 
@@ -35,68 +35,96 @@
             this.deleteTargetName = itemName;
             this.openDelete = true;
         }
-    }" class="py-12 bg-slate-900/10 min-h-screen">
-        <div class="max-w-6xl mx-auto sm:px-6 lg:px-8 space-y-6">
+    }" class="py-10 bg-slate-50 min-h-screen">
+        
+        <div class="max-w-6xl mx-auto sm:px-6 lg:px-8 space-y-8">
 
+            <!-- Pesan Sukses / Error -->
             @if(session('success'))
-                <div class="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm rounded-xl shadow-sm flex items-center gap-2">
-                    <span>✅</span> {{ session('success') }}
+                <div class="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm font-bold rounded-2xl shadow-sm flex items-center gap-3">
+                    <span class="text-2xl">✅</span> {{ session('success') }}
                 </div>
             @endif
 
-            <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4">
-                <form method="GET" action="{{ route('akademik.mata-pelajaran.index') }}" class="w-full sm:w-auto flex items-center gap-2">
-                    <div class="relative w-full sm:w-64">
-                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama atau singkatan mapel..." class="w-full text-xs rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm pl-3 pr-8">
+            <!-- Toolbar Atas: Pencarian & Tombol Tambah -->
+            <div class="bg-white p-5 rounded-3xl shadow-sm border border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <form method="GET" action="{{ route('akademik.mata-pelajaran.index') }}" class="w-full sm:w-auto flex flex-col sm:flex-row items-center gap-3">
+                    <div class="relative w-full sm:w-80">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400 text-lg">🔍</span>
+                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama atau singkatan mapel..." class="w-full text-sm rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-indigo-500 focus:ring-indigo-500 shadow-inner py-3 pl-12 pr-4 transition-colors">
                     </div>
-                    <button type="submit" class="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white font-semibold rounded-lg text-xs transition-colors cursor-pointer">
-                        Cari
-                    </button>
-                    @if(request('search'))
-                        <a href="{{ route('akademik.mata-pelajaran.index') }}" class="px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs text-center rounded-lg font-medium">Reset</a>
-                    @endif
+                    <div class="flex gap-2 w-full sm:w-auto">
+                        <button type="submit" class="w-full sm:w-auto px-6 py-3 bg-gray-900 hover:bg-black text-white font-bold rounded-xl text-sm transition-transform transform hover:-translate-y-0.5 shadow-md">
+                            Cari
+                        </button>
+                        @if(request('search'))
+                            <a href="{{ route('akademik.mata-pelajaran.index') }}" class="w-full sm:w-auto px-5 py-3 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 text-sm text-center rounded-xl font-bold transition-colors">Reset</a>
+                        @endif
+                    </div>
                 </form>
 
-                <button @click="openCreate = true" class="w-full sm:w-auto px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg shadow-sm transition-colors flex items-center justify-center gap-1.5 cursor-pointer">
-                    ➕ Tambah Mata Pelajaran
+                <button @click="openCreate = true" class="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-700 hover:to-indigo-600 text-white text-sm font-bold rounded-xl shadow-lg transition-transform transform hover:-translate-y-0.5 flex items-center justify-center gap-2">
+                    <span class="text-lg">➕</span> Tambah Mapel
                 </button>
             </div>
 
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-2xl border border-gray-100">
+            <!-- Tabel Data -->
+            <div class="bg-white overflow-hidden shadow-xl sm:rounded-3xl border border-gray-100">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse text-sm">
                         <thead>
-                            <tr class="bg-gray-50 border-b border-gray-100 text-gray-600 font-semibold text-xs uppercase tracking-wider">
-                                <th class="p-4 pl-6 w-20 text-center">No. Urut</th>
-                                <th class="p-4">Nama Mata Pelajaran</th>
-                                <th class="p-4 w-40">Singkatan</th>
-                                <th class="p-4 text-center w-32">Beban Waktu (Jam)</th>
-                                <th class="p-4 pr-6 text-center w-40">Aksi</th>
+                            <tr class="bg-gray-50/80 border-b border-gray-100 text-gray-500 font-bold uppercase tracking-wider text-xs">
+                                <th class="p-5 pl-8 text-center w-24">No. Urut</th>
+                                <th class="p-5">Nama Mata Pelajaran</th>
+                                <th class="p-5 w-48 text-center">Singkatan</th>
+                                <th class="p-5 text-center w-40">Beban Waktu</th>
+                                <th class="p-5 pr-8 text-center w-40">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-gray-100 text-gray-700 text-xs">
+                        <tbody class="divide-y divide-gray-50 text-gray-700">
                             @forelse($mataPelajaran as $m)
-                                <tr class="hover:bg-gray-50/50 transition-colors">
-                                    <td class="p-4 pl-6 text-center font-mono font-bold text-gray-400">
-                                        {{ $m->nomor_urut }}
-                                    </td>
-                                    <td class="p-4 font-bold text-gray-900 text-sm">
-                                        {{ $m->nama_mapel }}
-                                    </td>
-                                    <td class="p-4">
-                                        <span class="px-2 py-0.5 bg-slate-100 text-slate-700 rounded font-mono font-semibold text-[11px]">
-                                            {{ $m->singkatan_mapel ?? '-' }}
+                                <tr class="hover:bg-indigo-50/30 transition-colors group">
+                                    
+                                    <!-- Kolom No Urut -->
+                                    <td class="p-5 pl-8 text-center align-middle">
+                                        <span class="w-10 h-10 inline-flex items-center justify-center bg-gray-50 rounded-xl font-mono font-black text-gray-500 border border-gray-100 group-hover:bg-white transition-colors">
+                                            {{ $m->nomor_urut }}
                                         </span>
                                     </td>
-                                    <td class="p-4 text-center font-medium text-gray-900 text-sm">
-                                        {{ $m->jumlah_jam }} JP
+                                    
+                                    <!-- Kolom Nama Mapel -->
+                                    <td class="p-5 align-middle">
+                                        <div class="font-black text-gray-900 text-base">
+                                            {{ $m->nama_mapel }}
+                                        </div>
                                     </td>
-                                    <td class="p-4 pr-6 text-center">
-                                        <div class="flex items-center justify-center gap-4">
-                                            <button type="button" @click="initEdit({{ json_encode($m) }})" class="text-indigo-600 hover:underline font-semibold cursor-pointer">
-                                                📝 Edit
+                                    
+                                    <!-- Kolom Singkatan -->
+                                    <td class="p-5 align-middle text-center">
+                                        @if($m->singkatan_mapel)
+                                            <span class="px-4 py-1.5 bg-slate-100 text-slate-700 rounded-lg font-mono font-bold text-xs uppercase border border-slate-200">
+                                                {{ $m->singkatan_mapel }}
+                                            </span>
+                                        @else
+                                            <span class="text-gray-300">-</span>
+                                        @endif
+                                    </td>
+                                    
+                                    <!-- Kolom Beban Jam -->
+                                    <td class="p-5 text-center align-middle">
+                                        <div class="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-indigo-50 text-indigo-700 rounded-xl font-bold border border-indigo-100">
+                                            <span class="text-lg leading-none">{{ $m->jumlah_jam }}</span>
+                                            <span class="text-[10px] uppercase tracking-wider">JP</span>
+                                        </div>
+                                    </td>
+                                    
+                                    <!-- Kolom Aksi -->
+                                    <td class="p-5 pr-8 text-center align-middle">
+                                        <div class="flex flex-col gap-2 justify-center">
+                                            <button type="button" @click="initEdit({{ json_encode($m) }})" class="w-full px-3 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold rounded-xl text-xs transition-colors border border-emerald-100 shadow-sm">
+                                                ✏️ Edit
                                             </button>
-                                            <button type="button" @click="initDelete('{{ route('akademik.mata-pelajaran.destroy', $m->id) }}', '{{ addslashes($m->nama_mapel) }}')" class="text-rose-600 hover:underline font-semibold cursor-pointer">
+                                            <button type="button" @click="initDelete('{{ route('akademik.mata-pelajaran.destroy', $m->id) }}', '{{ addslashes($m->nama_mapel) }}')" class="w-full px-3 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold rounded-xl text-xs transition-colors border border-rose-100 shadow-sm">
                                                 🗑️ Hapus
                                             </button>
                                         </div>
@@ -104,8 +132,9 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="p-12 text-center text-gray-400 italic bg-gray-50/20">
-                                        Belum ada data mata pelajaran yang terekam di dalam sistem.
+                                    <td colspan="5" class="p-16 text-center text-gray-400 bg-gray-50/30">
+                                        <span class="text-5xl block mb-4">📭</span>
+                                        <p class="text-lg font-bold text-gray-500">Belum ada data mata pelajaran yang terekam.</p>
                                     </td>
                                 </tr>
                             @endforelse
@@ -114,103 +143,128 @@
                 </div>
                 
                 @if($mataPelajaran->hasPages())
-                    <div class="p-4 border-t border-gray-100 bg-gray-50/50">
+                    <div class="p-5 border-t border-gray-100 bg-gray-50/50">
                         {{ $mataPelajaran->links() }}
                     </div>
                 @endif
             </div>
         </div>
 
+        <!-- ========================================== -->
+        <!-- MODAL: TAMBAH MATA PELAJARAN -->
+        <!-- ========================================== -->
         <div x-show="openCreate" class="fixed inset-0 z-50 overflow-y-auto bg-gray-900/60 backdrop-blur-sm flex items-center justify-center p-4" style="display: none;" x-transition>
-            <div class="bg-white rounded-2xl max-w-sm w-full shadow-2xl border border-gray-100 p-6 space-y-4" @click.away="openCreate = false">
-                <div class="flex justify-between items-center border-b border-gray-100 pb-3">
-                    <h3 class="text-sm font-bold text-gray-900 uppercase tracking-wide">Tambah Mata Pelajaran</h3>
-                    <button type="button" @click="openCreate = false" class="text-gray-400 hover:text-gray-600 text-lg font-bold cursor-pointer">&times;</button>
+            <div class="bg-white rounded-3xl max-w-md w-full shadow-2xl border border-gray-100 overflow-hidden" @click.away="openCreate = false">
+                <div class="px-8 py-6 bg-gray-50 border-b border-gray-100 flex justify-between items-center">
+                    <h3 class="text-lg font-black text-gray-900">➕ Tambah Mapel</h3>
+                    <button type="button" @click="openCreate = false" class="text-gray-400 hover:text-rose-500 text-2xl font-bold cursor-pointer transition-colors">&times;</button>
                 </div>
-                <form action="{{ route('akademik.mata-pelajaran.store') }}" method="POST" class="space-y-4">
+                <form action="{{ route('akademik.mata-pelajaran.store') }}" method="POST">
                     @csrf
-                    <div class="grid grid-cols-3 gap-3">
-                        <div class="col-span-1">
-                            <label class="block text-xs font-semibold text-gray-600 mb-1">No. Urut *</label>
-                            <input type="number" name="nomor_urut" required min="0" value="0" class="w-full text-xs rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
+                    <div class="p-8 space-y-6">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-2">No. Urut <span class="text-rose-500">*</span></label>
+                                <input type="number" name="nomor_urut" required min="0" value="0" class="w-full text-base rounded-xl border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm bg-gray-50 px-4 py-3">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-2">Beban Waktu (Jam) <span class="text-rose-500">*</span></label>
+                                <input type="number" name="jumlah_jam" required min="0" value="0" class="w-full text-base rounded-xl border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm bg-gray-50 px-4 py-3">
+                            </div>
                         </div>
-                        <div class="col-span-2">
-                            <label class="block text-xs font-semibold text-gray-600 mb-1">Beban Waktu (Jam) *</label>
-                            <input type="number" name="jumlah_jam" required min="0" value="0" class="w-full text-xs rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
+
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">Nama Mata Pelajaran <span class="text-rose-500">*</span></label>
+                            <input type="text" name="nama_mapel" required placeholder="Contoh: Matematika Wajib" class="w-full text-base rounded-xl border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm bg-gray-50 px-4 py-3">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">Singkatan / Kode Mapel</label>
+                            <input type="text" name="singkatan_mapel" placeholder="Contoh: MTK" class="w-full text-base rounded-xl border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm uppercase bg-gray-50 px-4 py-3">
                         </div>
                     </div>
-
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-600 mb-1">Nama Mata Pelajaran *</label>
-                        <input type="text" name="nama_mapel" required placeholder="Contoh: Matematika Wajib" class="w-full text-xs rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-600 mb-1">Singkatan / Kode Mapel</label>
-                        <input type="text" name="singkatan_mapel" placeholder="Contoh: MTK" class="w-full text-xs rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm uppercase">
-                    </div>
-
-                    <div class="pt-4 border-t border-gray-100 flex justify-end gap-2">
-                        <button type="button" @click="openCreate = false" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-medium rounded-lg transition-colors cursor-pointer">Batal</button>
-                        <button type="submit" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg shadow-sm transition-colors cursor-pointer">Simpan Data</button>
+                    <div class="px-8 py-5 bg-gray-50 border-t border-gray-100 flex justify-end gap-3">
+                        <button type="button" @click="openCreate = false" class="px-6 py-3 bg-white border border-gray-300 hover:bg-gray-100 text-gray-700 font-bold rounded-xl transition-colors shadow-sm">Batal</button>
+                        <button type="submit" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-md transition-colors">💾 Simpan Data</button>
                     </div>
                 </form>
             </div>
         </div>
 
+        <!-- ========================================== -->
+        <!-- MODAL: EDIT MATA PELAJARAN -->
+        <!-- ========================================== -->
         <div x-show="openEdit" class="fixed inset-0 z-50 overflow-y-auto bg-gray-900/60 backdrop-blur-sm flex items-center justify-center p-4" style="display: none;" x-transition>
-            <div class="bg-white rounded-2xl max-w-sm w-full shadow-2xl border border-gray-100 p-6 space-y-4" @click.away="openEdit = false">
-                <div class="flex justify-between items-center border-b border-gray-100 pb-3">
-                    <h3 class="text-sm font-bold text-gray-900 uppercase">Ubah Mata Pelajaran</h3>
-                    <button type="button" @click="openEdit = false" class="text-gray-400 hover:text-gray-600 text-lg font-bold cursor-pointer">&times;</button>
+            <div class="bg-white rounded-3xl max-w-md w-full shadow-2xl border border-gray-100 overflow-hidden" @click.away="openEdit = false">
+                <div class="px-8 py-6 bg-gray-50 border-b border-gray-100 flex justify-between items-center">
+                    <h3 class="text-lg font-black text-gray-900">✏️ Ubah Mapel</h3>
+                    <button type="button" @click="openEdit = false" class="text-gray-400 hover:text-rose-500 text-2xl font-bold cursor-pointer transition-colors">&times;</button>
                 </div>
-                <form :action="editActionUrl" method="POST" class="space-y-4">
+                <form :action="editActionUrl" method="POST">
                     @csrf
                     @method('PUT')
-                    <div class="grid grid-cols-3 gap-3">
-                        <div class="col-span-1">
-                            <label class="block text-xs font-semibold text-gray-600 mb-1">No. Urut *</label>
-                            <input type="number" name="nomor_urut" x-model="editNomorUrut" required min="0" class="w-full text-xs rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
+                    <div class="p-8 space-y-6">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-2">No. Urut <span class="text-rose-500">*</span></label>
+                                <input type="number" name="nomor_urut" x-model="editNomorUrut" required min="0" class="w-full text-base rounded-xl border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm bg-gray-50 px-4 py-3">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-2">Beban Waktu (Jam) <span class="text-rose-500">*</span></label>
+                                <input type="number" name="jumlah_jam" x-model="editJumlahJam" required min="0" class="w-full text-base rounded-xl border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm bg-gray-50 px-4 py-3">
+                            </div>
                         </div>
-                        <div class="col-span-2">
-                            <label class="block text-xs font-semibold text-gray-600 mb-1">Beban Waktu (Jam) *</label>
-                            <input type="number" name="jumlah_jam" x-model="editJumlahJam" required min="0" class="w-full text-xs rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
+
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">Nama Mata Pelajaran <span class="text-rose-500">*</span></label>
+                            <input type="text" name="nama_mapel" x-model="editNamaMapel" required class="w-full text-base rounded-xl border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm bg-gray-50 px-4 py-3">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">Singkatan / Kode Mapel</label>
+                            <input type="text" name="singkatan_mapel" x-model="editSingkatanMapel" class="w-full text-base rounded-xl border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm uppercase bg-gray-50 px-4 py-3">
                         </div>
                     </div>
-
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-600 mb-1">Nama Mata Pelajaran *</label>
-                        <input type="text" name="nama_mapel" x-model="editNamaMapel" required class="w-full text-xs rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-600 mb-1">Singkatan / Kode Mapel</label>
-                        <input type="text" name="singkatan_mapel" x-model="editSingkatanMapel" class="w-full text-xs rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm uppercase">
-                    </div>
-
-                    <div class="pt-4 border-t border-gray-100 flex justify-end gap-2">
-                        <button type="button" @click="openEdit = false" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-medium rounded-lg transition-colors cursor-pointer">Batal</button>
-                        <button type="submit" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg shadow-sm transition-colors cursor-pointer">Simpan Perubahan</button>
+                    <div class="px-8 py-5 bg-gray-50 border-t border-gray-100 flex justify-end gap-3">
+                        <button type="button" @click="openEdit = false" class="px-6 py-3 bg-white border border-gray-300 hover:bg-gray-100 text-gray-700 font-bold rounded-xl transition-colors shadow-sm">Batal</button>
+                        <button type="submit" class="px-6 py-3 bg-gray-900 hover:bg-black text-white font-bold rounded-xl shadow-md transition-colors">💾 Perbarui Data</button>
                     </div>
                 </form>
             </div>
         </div>
 
-        <div x-show="openDelete" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm" style="display: none;" x-transition>
-            <div class="bg-white rounded-2xl shadow-xl border border-gray-200 max-w-sm w-full p-6 text-center space-y-4" @click.away="openDelete = false">
-                <div class="w-12 h-12 bg-rose-50 text-rose-600 rounded-full flex items-center justify-center text-xl mx-auto border border-rose-100">⚠️</div>
-                <div>
-                    <h4 class="text-sm font-bold text-gray-900">Arsipkan Mata Pelajaran?</h4>
-                    <p class="text-xs text-gray-500 mt-1">
-                        Apakah Anda yakin ingin menghapus mata pelajaran <span class="font-bold text-gray-800" x-text="deleteTargetName"></span>? Log pengajaran dan relasi kode guru yang terkait dengan mapel ini akan dinonaktifkan (Soft Delete).
+        <!-- ========================================================================= -->
+        <!-- ⚠️ POPUP MODAL HAPUS (DESAIN MODERN SWEET-ALERT STYLE) -->
+        <!-- ========================================================================= -->
+        <div x-show="openDelete" style="display: none;" class="fixed inset-0 z-[100] overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+            <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:p-0">
+                <div x-show="openDelete" @click="openDelete = false" x-transition.opacity class="fixed inset-0 bg-gray-900 bg-opacity-60 transition-opacity" aria-hidden="true"></div>
+                
+                <div x-show="openDelete" x-transition.scale.origin.center class="relative inline-block align-bottom bg-white rounded-3xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md sm:w-full p-8 text-center">
+                    
+                    <!-- Ikon Peringatan -->
+                    <div class="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-rose-50 mb-6 border border-rose-100">
+                        <span class="text-4xl">⚠️</span>
+                    </div>
+                    
+                    <!-- Teks -->
+                    <h3 class="text-2xl leading-6 font-bold text-gray-900 mb-4" id="modal-title">Arsipkan Mapel?</h3>
+                    <p class="text-sm text-gray-500 mb-8 px-2">
+                        Apakah Anda yakin ingin menghapus mata pelajaran <strong class="text-gray-800" x-text="deleteTargetName"></strong>? Log pengajaran dan relasi kode guru yang terkait dengan mapel ini akan ikut dinonaktifkan (Soft Delete).
                     </p>
+                    
+                    <!-- Form dan Tombol -->
+                    <form :action="deleteActionUrl" method="POST" class="flex justify-center gap-3 m-0">
+                        @csrf
+                        @method('DELETE')
+                        <button type="button" @click="openDelete = false" class="px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold rounded-xl transition-colors focus:outline-none">
+                            Batal
+                        </button>
+                        <button type="submit" class="px-6 py-3 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl transition-colors shadow-md focus:outline-none">
+                            Ya, Hapus Data
+                        </button>
+                    </form>
                 </div>
-                <form :action="deleteActionUrl" method="POST" class="flex justify-center gap-2 pt-2 m-0">
-                    @csrf
-                    @method('DELETE')
-                    <button type="button" @click="openDelete = false" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 font-semibold rounded-lg text-xs cursor-pointer">Batal</button>
-                    <button type="submit" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-lg text-xs cursor-pointer shadow-sm">Ya, Hapus</button>
-                </form>
             </div>
         </div>
 
