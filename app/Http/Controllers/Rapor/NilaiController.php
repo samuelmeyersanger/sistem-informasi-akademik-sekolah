@@ -1,0 +1,131 @@
+<?php
+
+namespace App\Http\Controllers\Rapor;
+
+use App\Http\Controllers\Controller;
+use App\Models\Nilai;
+use App\Models\Kelas;
+use App\Models\MataPelajaran;
+use App\Models\Siswa;
+use App\Models\TujuanPembelajaran;
+use Illuminate\Http\Request;
+
+class NilaiController extends Controller
+{
+    /**
+     * Menampilkan Halaman Single Page Input Nilai (Matriks TP + PSTS + PSAS)
+     */
+    public function index(Request $request)
+    {
+        $kelas_id = $request->input('kelas_id');
+        $mata_pelajaran_id = $request->input('mata_pelajaran_id');
+
+        $kelases = Kelas::orderBy('tingkat', 'asc')->orderBy('nama_kelas', 'asc')->get();
+        $mapels = MataPelajaran::orderBy('nama_mata_pelajaran', 'asc')->get();
+
+        $siswas = collect();
+        $tujuanPembelajarans = collect();
+        $nilaiData = []; 
+
+        if ($kelas_id && $mata_pelajaran_id) {
+            
+            $kelas = Kelas::find($kelas_id);
+            
+            if ($kelas) {
+                // Ambil Tujuan Pembelajaran (Sebagai Judul Kolom Matriks Sumatif)
+                $tujuanPembelajarans = TujuanPembelajaran::where('mata_pelajaran_id', $mata_pelajaran_id)
+                                        ->where('tingkat', $kelas->tingkat)
+                                        ->orderBy('nomor_tujuan', 'asc')
+                                        ->get();
+
+                $siswas = Siswa::where('kelas_id', $kelas_id)->orderBy('nama', 'asc')->get();
+
+                // Ambil Nilai Rapor Siswa yang sudah ada di database
+                $nilais = Nilai::where('kelas_id', $kelas_id)
+                               ->where('mata_pelajaran_id', $mata_pelajaran_id)
+                               ->get();
+                
+                // Konversi data ke Array berdasarkan ID Siswa untuk mempermudah pemanggilan di View HTML
+                foreach ($nilais as $n) {
+                    $nilaiData[$n->siswa_id] = $n;
+                }
+            }
+        }
+
+        return view('rapor.nilai.index', compact(
+            'kelases', 'mapels', 'siswas', 'tujuanPembelajarans', 'nilaiData', 'kelas_id', 'mata_pelajaran_id'
+        ));
+    }
+
+    /**
+     * Kalkulasi Otomatis dan Simpan Massal (Bulk Save)
+     */
+    public function store(Request $request)
+    {
+        $request->validate([
+            'kelas_id'          => ['required', 'exists:kelas,id'],
+            'mata_pelajaran_id' => ['required', 'exists:mata_pelajaran,id'],
+            'nilai'             => ['required', 'array'], 
+        ]);
+
+        $kelas_id = $request->kelas_id;
+        $mapel_id = $request->mata_pelajaran_id;
+        $sukses_tersimpan = 0;
+
+        foreach ($request->nilai as $siswa_id => $data) {
+            
+            $sumatif_array = $data['sumatif'] ?? []; // Ini adalah Array berisi daftar Nilai TP (dari input JSON)
+            
+            // Tangkap nilai Ujian, jadikan angka desimal. Jika kosong, anggap 0.
+            $psts = isset($data['psts']) && $data['psts'] !== '' ? (float) $data['psts'] : 0;
+            $psas = isset($data['psas']) && $data['psas'] !== '' ? (float) $data['psas'] : 0;
+
+            // 1. MESIN HITUNG: Rata-Rata Sumatif
+            $total_sumatif = 0;
+            $jumlah_tp_terisi = 0;
+            $rata_sumatif = 0;
+
+            // Melakukan looping ke semua input kolom nilai TP milik 1 siswa ini
+            foreach ($sumatif_array as $tp_id => $nilai_tp) {
+                if ($nilai_tp !== null && $nilai_tp !== '') {
+                    $total_sumatif += (float) $nilai_tp;
+                    $jumlah_tp_terisi++;
+                }
+            }
+
+            // Jika ada nilai Sumatif yang diisi, hitung rata-ratanya
+            if ($jumlah_tp_terisi > 0) {
+                $rata_sumatif = $total_sumatif / $jumlah_tp_terisi;
+            }
+
+            // 2. MESIN HITUNG: Nilai Rapor Akhir (60% + 20% + 20%)
+            $nilai_rapor = (0.6 * $rata_sumatif) + (0.2 * $psts) + (0.2 * $psas);
+
+            // Hanya simpan jika guru mengisi minimal salah satu nilai (biar database tidak penuh angka nol 0 semua)
+            if ($jumlah_tp_terisi > 0 || $psts > 0 || $psas > 0) {
+                
+                Nilai::updateOrCreate(
+                    [
+                        'siswa_id'          => $siswa_id,
+                        'kelas_id'          => $kelas_id,
+                        'mata_pelajaran_id' => $mapel_id,
+                    ],
+                    [
+                        'nilai_sumatif' => $sumatif_array, // Otomatis diconvert ke JSON oleh fitur $casts di Model!
+                        'rata_sumatif'  => round($rata_sumatif, 2),
+                        'psts'          => $psts,
+                        'psas'          => $psas,
+                        'nilai_rapor'   => round($nilai_rapor, 2),
+                    ]
+                );
+                
+                $sukses_tersimpan++;
+            }
+        }
+
+        return redirect()->route('rapor.nilai.index', [
+            'kelas_id'          => $kelas_id,
+            'mata_pelajaran_id' => $mapel_id
+        ])->with('success', $sukses_tersimpan . ' Data Nilai Rapor (Sumatif, PSTS, PSAS) berhasil dikalkulasi dan disimpan!');
+    }
+}

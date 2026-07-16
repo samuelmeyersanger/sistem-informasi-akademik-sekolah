@@ -580,20 +580,51 @@ Route::middleware(['auth', CheckApproval::class])->group(function () {
     
     /*
     |--------------------------------------------------------------------------
-    | Modul Manajemen rapor (SIAS Back-Office)
+    | Modul Manajemen Rapor (SIAS Back-Office)
     |--------------------------------------------------------------------------
     | 🔐 Dikunci menggunakan middleware 'permission' secara tersinkronisasi.
     | Prefix 'rapor.' akan melekat otomatis pada setiap komponen rute.
-    |
+    |--------------------------------------------------------------------------
     */
     Route::prefix('rapor')->name('rapor.')->group(function () {
         
-        // Rute Manajemen Pengaturan Tanggal Rapor
+        // 1. Pengaturan Tanggal Rapor (Bawaan Anda)
         Route::get('/tanggal-rapor', [\App\Http\Controllers\Rapor\TanggalRaporController::class, 'index'])->name('tanggal_rapor.index');
         Route::post('/tanggal-rapor', [\App\Http\Controllers\Rapor\TanggalRaporController::class, 'store'])->name('tanggal_rapor.store');
         Route::put('/tanggal-rapor/{id}', [\App\Http\Controllers\Rapor\TanggalRaporController::class, 'update'])->name('tanggal_rapor.update');
         Route::delete('/tanggal-rapor/{id}', [\App\Http\Controllers\Rapor\TanggalRaporController::class, 'destroy'])->name('tanggal_rapor.destroy');
+        // 2. Master Data Rapor (CRUD Standar)
+        // Menggunakan except() karena kita memakai modal (tidak butuh halaman /create dan /edit)
+        Route::resource('tema-kokurikuler', \App\Http\Controllers\Rapor\TemaKokurikulerController::class)->except(['create', 'show', 'edit']);
         
+        Route::resource('profil-lulusan', \App\Http\Controllers\Rapor\ProfilLulusanController::class)->except(['create', 'show', 'edit']);
+        
+        // Khusus Kegiatan Kokurikuler: ada rute tambahan untuk Set Profil Lulusan (assignProfil)
+        Route::post('kegiatan-kokurikuler/{id}/assign-profil', [\App\Http\Controllers\Rapor\KegiatanKokurikulerController::class, 'assignProfil'])->name('kegiatan-kokurikuler.assignProfil');
+        Route::resource('kegiatan-kokurikuler', \App\Http\Controllers\Rapor\KegiatanKokurikulerController::class)->except(['create', 'show', 'edit']);
+        
+        Route::resource('tujuan-pembelajaran', \App\Http\Controllers\Rapor\TujuanPembelajaranController::class)->except(['create', 'show', 'edit']);
+        // 3. Input Nilai Single Page (Bulk Save)
+        
+        // Input KKTP (Tujuan Pembelajaran)
+        Route::get('kktp', [\App\Http\Controllers\Rapor\KktpController::class, 'index'])->name('kktp.index');
+        Route::post('kktp', [\App\Http\Controllers\Rapor\KktpController::class, 'store'])->name('kktp.store');
+        // Input Nilai Rapor Utama (Sumatif, PSTS, PSAS)
+        Route::get('nilai', [\App\Http\Controllers\Rapor\NilaiController::class, 'index'])->name('nilai.index');
+        Route::post('nilai', [\App\Http\Controllers\Rapor\NilaiController::class, 'store'])->name('nilai.store');
+        // Input Nilai Ekstrakurikuler
+        Route::get('nilai-ekstrakurikuler', [\App\Http\Controllers\Rapor\NilaiEkstrakurikulerController::class, 'index'])->name('nilai-ekstrakurikuler.index');
+        Route::post('nilai-ekstrakurikuler', [\App\Http\Controllers\Rapor\NilaiEkstrakurikulerController::class, 'store'])->name('nilai-ekstrakurikuler.store');
+        Route::delete('nilai-ekstrakurikuler/{id}', [\App\Http\Controllers\Rapor\NilaiEkstrakurikulerController::class, 'destroy'])->name('nilai-ekstrakurikuler.destroy'); // Tombol Batal/Hapus
+        // Input Nilai Kokurikuler (P5)
+        Route::get('nilai-kokurikuler', [\App\Http\Controllers\Rapor\NilaiKokurikulerController::class, 'index'])->name('nilai-kokurikuler.index');
+        Route::post('nilai-kokurikuler', [\App\Http\Controllers\Rapor\NilaiKokurikulerController::class, 'store'])->name('nilai-kokurikuler.store');
+        // Input Kehadiran / Absensi
+        Route::get('kehadiran', [\App\Http\Controllers\Rapor\KehadiranController::class, 'index'])->name('kehadiran.index');
+        Route::post('kehadiran', [\App\Http\Controllers\Rapor\KehadiranController::class, 'store'])->name('kehadiran.store');
+        // Input Catatan Wali Kelas
+        Route::get('catatan-wali-kelas', [\App\Http\Controllers\Rapor\CatatanWaliKelasController::class, 'index'])->name('catatan-wali-kelas.index');
+        Route::post('catatan-wali-kelas', [\App\Http\Controllers\Rapor\CatatanWaliKelasController::class, 'store'])->name('catatan-wali-kelas.store');
     });
 });
 
