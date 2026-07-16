@@ -28,8 +28,10 @@ class Nilai extends Model
         'siswa_id',
         'mata_pelajaran_id',
         'nilai_sumatif',
+        'rata_sumatif',
         'psts',
         'psas',
+        'nilai_rapor',
     ];
 
     /**

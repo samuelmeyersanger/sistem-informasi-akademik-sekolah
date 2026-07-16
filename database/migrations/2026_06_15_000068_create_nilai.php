@@ -16,11 +16,14 @@ return new class extends Migration
             $table->foreignId('kelas_id')->constrained('kelas')->onDelete('set null');
             $table->foreignId('siswa_id')->constrained('siswa')->onDelete('set null');
             $table->foreignId('mata_pelajaran_id')->constrained('mata_pelajaran')->onDelete('set null');
+            
             $table->json('nilai_sumatif')->nullable();
+            $table->decimal('rata_sumatif', 5, 2)->nullable(); // <-- TAMBAHAN
             $table->decimal('psts', 5, 2)->nullable();
             $table->decimal('psas', 5, 2)->nullable();
+            $table->decimal('nilai_rapor', 5, 2)->nullable(); // <-- TAMBAHAN
+            
             $table->timestamps();
-
             $table->unique(['siswa_id', 'mata_pelajaran_id', 'kelas_id']);
         });
     }
