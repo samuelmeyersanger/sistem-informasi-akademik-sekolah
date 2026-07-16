@@ -578,7 +578,7 @@ Route::middleware(['auth', CheckApproval::class])->group(function () {
         Route::get('/daftar-nilai', [\App\Http\Controllers\PusatDownloadController::class, 'downloadDaftarNilai'])->name('daftar-nilai');
     });
     
-        /*
+    /*
     |--------------------------------------------------------------------------
     | Modul Manajemen rapor (SIAS Back-Office)
     |--------------------------------------------------------------------------
