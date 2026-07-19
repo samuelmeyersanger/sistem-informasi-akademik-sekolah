@@ -151,9 +151,7 @@
             </button>
         </form>
 
-        <div class="text-center mt-12 text-sm font-bold text-slate-400">
-            &copy; {{ date('Y') }} Sistem Survey Kepuasan Masyarakat
-        </div>
+        @include('layouts.footer')
     </div>
 </body>
 </html>
