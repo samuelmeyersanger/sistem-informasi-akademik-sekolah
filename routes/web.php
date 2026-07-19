@@ -86,6 +86,10 @@ Route::get('/kuesioner-gaya-belajar', [\App\Http\Controllers\BK\GayaBelajarContr
 Route::post('/kuesioner-gaya-belajar/submit', [\App\Http\Controllers\BK\GayaBelajarController::class, 'submitSiswa'])->name('siswa.gaya_belajar.submit');
 Route::get('/api/siswa-by-kelas/{kelas_id}', [\App\Http\Controllers\BK\GayaBelajarController::class, 'getSiswaByKelas'])->name('siswa.gaya_belajar.getSiswaByKelas');
 
+// --- Rute Survey Kepuasan Masyarakat (SKM) Publik ---
+Route::get('/survey-kepuasan', [\App\Http\Controllers\SurveyKepuasanController::class, 'index'])->name('publik.survey.index');
+Route::post('/survey-kepuasan/submit', [\App\Http\Controllers\SurveyKepuasanController::class, 'store'])->name('publik.survey.store');
+Route::get('/survey-kepuasan/sukses', [\App\Http\Controllers\SurveyKepuasanController::class, 'success'])->name('publik.survey.success');
 
 /*
 |--------------------------------------------------------------------------
@@ -576,27 +580,28 @@ Route::middleware(['auth', CheckApproval::class])->group(function () {
         Route::get('/rekap-siswa', [\App\Http\Controllers\PusatDownloadController::class, 'downloadRekapSiswa'])->name('rekap_siswa');
         Route::get('/jadwal-global', [\App\Http\Controllers\PusatDownloadController::class, 'downloadJadwalGlobal'])->name('jadwal_global');
         Route::get('/daftar-nilai', [\App\Http\Controllers\PusatDownloadController::class, 'downloadDaftarNilai'])->name('daftar-nilai');
+        Route::get('/hasil-skm', [\App\Http\Controllers\PusatDownloadController::class, 'downloadHasilSkm'])->name('hasil_skm');
     });
     
     /*
     |--------------------------------------------------------------------------
-    | Modul Manajemen Rapor (SIAS Back-Office)
+    | Modul Manajemen rapor (SIAS Back-Office)
     |--------------------------------------------------------------------------
     | 🔐 Dikunci menggunakan middleware 'permission' secara tersinkronisasi.
-    | Prefix 'rapor.' akan melekat otomatis pada setiap komponen rute.
-    |--------------------------------------------------------------------------
+    | Prefix 'rapor.' akan melekat otomatis pada setiap komponen rute di dalam grup.
+    |
     */
-    Route::prefix('rapor')->name('rapor.')->group(function () {
+    Route::prefix('rapor')->name('rapor.')->middleware(['permission'])->group(function () {
         
         // 1. Pengaturan Tanggal Rapor (Bawaan Anda)
         Route::get('/tanggal-rapor', [\App\Http\Controllers\Rapor\TanggalRaporController::class, 'index'])->name('tanggal_rapor.index');
         Route::post('/tanggal-rapor', [\App\Http\Controllers\Rapor\TanggalRaporController::class, 'store'])->name('tanggal_rapor.store');
         Route::put('/tanggal-rapor/{id}', [\App\Http\Controllers\Rapor\TanggalRaporController::class, 'update'])->name('tanggal_rapor.update');
         Route::delete('/tanggal-rapor/{id}', [\App\Http\Controllers\Rapor\TanggalRaporController::class, 'destroy'])->name('tanggal_rapor.destroy');
+        
         // 2. Master Data Rapor (CRUD Standar)
         // Menggunakan except() karena kita memakai modal (tidak butuh halaman /create dan /edit)
         Route::resource('tema-kokurikuler', \App\Http\Controllers\Rapor\TemaKokurikulerController::class)->except(['create', 'show', 'edit']);
-        
         Route::resource('profil-lulusan', \App\Http\Controllers\Rapor\ProfilLulusanController::class)->except(['create', 'show', 'edit']);
         
         // Khusus Kegiatan Kokurikuler: ada rute tambahan untuk Set Profil Lulusan (assignProfil)
@@ -604,27 +609,55 @@ Route::middleware(['auth', CheckApproval::class])->group(function () {
         Route::resource('kegiatan-kokurikuler', \App\Http\Controllers\Rapor\KegiatanKokurikulerController::class)->except(['create', 'show', 'edit']);
         
         Route::resource('tujuan-pembelajaran', \App\Http\Controllers\Rapor\TujuanPembelajaranController::class)->except(['create', 'show', 'edit']);
+        
         // 3. Input Nilai Single Page (Bulk Save)
         
         // Input KKTP (Tujuan Pembelajaran)
         Route::get('kktp', [\App\Http\Controllers\Rapor\KktpController::class, 'index'])->name('kktp.index');
         Route::post('kktp', [\App\Http\Controllers\Rapor\KktpController::class, 'store'])->name('kktp.store');
+        
         // Input Nilai Rapor Utama (Sumatif, PSTS, PSAS)
         Route::get('nilai', [\App\Http\Controllers\Rapor\NilaiController::class, 'index'])->name('nilai.index');
         Route::post('nilai', [\App\Http\Controllers\Rapor\NilaiController::class, 'store'])->name('nilai.store');
+        
         // Input Nilai Ekstrakurikuler
         Route::get('nilai-ekstrakurikuler', [\App\Http\Controllers\Rapor\NilaiEkstrakurikulerController::class, 'index'])->name('nilai-ekstrakurikuler.index');
         Route::post('nilai-ekstrakurikuler', [\App\Http\Controllers\Rapor\NilaiEkstrakurikulerController::class, 'store'])->name('nilai-ekstrakurikuler.store');
         Route::delete('nilai-ekstrakurikuler/{id}', [\App\Http\Controllers\Rapor\NilaiEkstrakurikulerController::class, 'destroy'])->name('nilai-ekstrakurikuler.destroy'); // Tombol Batal/Hapus
+        
         // Input Nilai Kokurikuler (P5)
         Route::get('nilai-kokurikuler', [\App\Http\Controllers\Rapor\NilaiKokurikulerController::class, 'index'])->name('nilai-kokurikuler.index');
         Route::post('nilai-kokurikuler', [\App\Http\Controllers\Rapor\NilaiKokurikulerController::class, 'store'])->name('nilai-kokurikuler.store');
+        
         // Input Kehadiran / Absensi
         Route::get('kehadiran', [\App\Http\Controllers\Rapor\KehadiranController::class, 'index'])->name('kehadiran.index');
         Route::post('kehadiran', [\App\Http\Controllers\Rapor\KehadiranController::class, 'store'])->name('kehadiran.store');
+        
         // Input Catatan Wali Kelas
         Route::get('catatan-wali-kelas', [\App\Http\Controllers\Rapor\CatatanWaliKelasController::class, 'index'])->name('catatan-wali-kelas.index');
         Route::post('catatan-wali-kelas', [\App\Http\Controllers\Rapor\CatatanWaliKelasController::class, 'store'])->name('catatan-wali-kelas.store');
+    });
+
+        /*
+    |--------------------------------------------------------------------------
+    | Modul Survey Kepuasan Masyarakat (SIAS Back-Office)
+    |--------------------------------------------------------------------------
+    | 🔐 Dikunci menggunakan middleware 'permission' secara tersinkronisasi.
+    | Prefix 'skm.' akan melekat otomatis pada setiap komponen rute di dalam grup.
+    |
+    */
+    Route::prefix('skm')->name('skm.')->middleware(['permission'])->group(function () {
+        
+        // 1. Route Master Data Layanan SKM
+        Route::get('/layanan', [\App\Http\Controllers\Skm\SkmLayananController::class, 'index'])->name('layanan.index');
+        Route::post('/layanan', [\App\Http\Controllers\Skm\SkmLayananController::class, 'store'])->name('layanan.store');
+        Route::put('/layanan/{id}', [\App\Http\Controllers\Skm\SkmLayananController::class, 'update'])->name('layanan.update');
+        Route::delete('/layanan/{id}', [\App\Http\Controllers\Skm\SkmLayananController::class, 'destroy'])->name('layanan.destroy');
+        // 2. Route Master Data Unsur (Pertanyaan) SKM
+        Route::get('/unsur', [\App\Http\Controllers\Skm\SkmUnsurController::class, 'index'])->name('unsur.index');
+        Route::post('/unsur', [\App\Http\Controllers\Skm\SkmUnsurController::class, 'store'])->name('unsur.store');
+        Route::put('/unsur/{id}', [\App\Http\Controllers\Skm\SkmUnsurController::class, 'update'])->name('unsur.update');
+        Route::delete('/unsur/{id}', [\App\Http\Controllers\Skm\SkmUnsurController::class, 'destroy'])->name('unsur.destroy');
     });
 });
 

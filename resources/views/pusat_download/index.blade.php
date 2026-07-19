@@ -242,6 +242,37 @@
 
                 </div>
             </div>
+            
+            {{-- KATEGORI 4: LAYANAN MASYARAKAT (SKM) --}}
+            <div class="space-y-6 pt-6">
+                <div class="flex items-center gap-4 border-b border-slate-200/60 pb-3">
+                    <div class="px-4 py-2 bg-blue-100 text-blue-800 rounded-xl font-black text-sm uppercase tracking-widest flex items-center gap-2 shadow-sm border border-blue-200">
+                        <span class="text-lg">🤝</span> Layanan Publik & Masyarakat
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    
+                    {{-- Card: Rekap Hasil Survei SKM --}}
+                    <div class="bg-white rounded-[2rem] p-6 shadow-xl shadow-slate-200/40 border border-slate-100 flex flex-col justify-between hover:-translate-y-1 hover:shadow-2xl hover:shadow-blue-200/30 transition-all duration-300 relative overflow-hidden group">
+                        <div class="absolute left-0 top-0 bottom-0 w-2 bg-blue-500"></div>
+                        <div class="absolute right-0 top-0 w-32 h-32 bg-blue-50 rounded-full blur-3xl opacity-60 -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+                        <div class="pl-2 relative z-10 flex flex-col h-full">
+                            <div class="flex items-center gap-3 mb-4">
+                                <span class="text-3xl drop-shadow-md">🌟</span>
+                                <h4 class="font-black text-slate-900 text-base leading-tight">Rekap Hasil Survei (SKM)</h4>
+                            </div>
+                            <p class="text-[11px] font-medium text-slate-500 leading-relaxed mb-6 flex-1">Unduh data mentah seluruh kuesioner masyarakat untuk penghitungan Indeks Kepuasan Masyarakat.</p>
+                            
+                            <form action="{{ route('hasil_skm') }}" method="GET" target="_blank" class="mt-auto">
+                                <button type="submit" class="w-full px-4 py-3.5 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white text-[11px] font-black uppercase tracking-widest rounded-xl transition-all shadow-lg shadow-blue-500/30 hover:-translate-y-0.5 flex justify-center items-center gap-2">
+                                    <span>📊</span> Buka Tabel Olah Data
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
         </div>
     </div>

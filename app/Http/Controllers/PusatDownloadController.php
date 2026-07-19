@@ -290,4 +290,24 @@ class PusatDownloadController extends Controller
             'kelas', 'siswaList', 'nama_sekolah', 'tahun_ajaran'
         ));
     }
+
+        // =========================================================================
+    // FITUR 9: DOWNLOAD HASIL SURVEY KEPUASAN MASYARAKAT (SKM)
+    // =========================================================================
+    public function downloadHasilSkm(Request $request)
+    {
+        // Ambil daftar unsur pertanyaan agar menjadi Header Tabel (U1, U2, dst)
+        $unsurs = \App\Models\SkmUnsur::orderBy('kode_unsur', 'asc')->get();
+        
+        // Ambil seluruh data responden beserta jawaban dan layanannya
+        $respondens = \App\Models\SkmResponden::with(['layanan', 'jawaban'])
+                        ->orderBy('created_at', 'desc')
+                        ->get();
+        $data = [
+            'nama_sekolah' => 'SMPN 4 CIBITUNG',
+            'unsurs'       => $unsurs,
+            'respondens'   => $respondens
+        ];
+        return view('pusat_download.exports.hasil_survey_skm', $data);
+    }
 }
