@@ -86,6 +86,10 @@ Route::get('/kuesioner-gaya-belajar', [\App\Http\Controllers\BK\GayaBelajarContr
 Route::post('/kuesioner-gaya-belajar/submit', [\App\Http\Controllers\BK\GayaBelajarController::class, 'submitSiswa'])->name('siswa.gaya_belajar.submit');
 Route::get('/api/siswa-by-kelas/{kelas_id}', [\App\Http\Controllers\BK\GayaBelajarController::class, 'getSiswaByKelas'])->name('siswa.gaya_belajar.getSiswaByKelas');
 
+// --- Rute Survey Kepuasan Masyarakat (SKM) Publik ---
+Route::get('/survey-kepuasan', [\App\Http\Controllers\SurveyKepuasanController::class, 'index'])->name('publik.survey.index');
+Route::post('/survey-kepuasan/submit', [\App\Http\Controllers\SurveyKepuasanController::class, 'store'])->name('publik.survey.store');
+Route::get('/survey-kepuasan/sukses', [\App\Http\Controllers\SurveyKepuasanController::class, 'success'])->name('publik.survey.success');
 
 /*
 |--------------------------------------------------------------------------
@@ -576,6 +580,7 @@ Route::middleware(['auth', CheckApproval::class])->group(function () {
         Route::get('/rekap-siswa', [\App\Http\Controllers\PusatDownloadController::class, 'downloadRekapSiswa'])->name('rekap_siswa');
         Route::get('/jadwal-global', [\App\Http\Controllers\PusatDownloadController::class, 'downloadJadwalGlobal'])->name('jadwal_global');
         Route::get('/daftar-nilai', [\App\Http\Controllers\PusatDownloadController::class, 'downloadDaftarNilai'])->name('daftar-nilai');
+        Route::get('/hasil-skm', [\App\Http\Controllers\PusatDownloadController::class, 'downloadHasilSkm'])->name('hasil_skm');
     });
     
     /*
@@ -631,6 +636,28 @@ Route::middleware(['auth', CheckApproval::class])->group(function () {
         // Input Catatan Wali Kelas
         Route::get('catatan-wali-kelas', [\App\Http\Controllers\Rapor\CatatanWaliKelasController::class, 'index'])->name('catatan-wali-kelas.index');
         Route::post('catatan-wali-kelas', [\App\Http\Controllers\Rapor\CatatanWaliKelasController::class, 'store'])->name('catatan-wali-kelas.store');
+    });
+
+        /*
+    |--------------------------------------------------------------------------
+    | Modul Survey Kepuasan Masyarakat (SIAS Back-Office)
+    |--------------------------------------------------------------------------
+    | 🔐 Dikunci menggunakan middleware 'permission' secara tersinkronisasi.
+    | Prefix 'skm.' akan melekat otomatis pada setiap komponen rute di dalam grup.
+    |
+    */
+    Route::prefix('skm')->name('skm.')->middleware(['permission'])->group(function () {
+        
+        // 1. Route Master Data Layanan SKM
+        Route::get('/layanan', [\App\Http\Controllers\Skm\SkmLayananController::class, 'index'])->name('layanan.index');
+        Route::post('/layanan', [\App\Http\Controllers\Skm\SkmLayananController::class, 'store'])->name('layanan.store');
+        Route::put('/layanan/{id}', [\App\Http\Controllers\Skm\SkmLayananController::class, 'update'])->name('layanan.update');
+        Route::delete('/layanan/{id}', [\App\Http\Controllers\Skm\SkmLayananController::class, 'destroy'])->name('layanan.destroy');
+        // 2. Route Master Data Unsur (Pertanyaan) SKM
+        Route::get('/unsur', [\App\Http\Controllers\Skm\SkmUnsurController::class, 'index'])->name('unsur.index');
+        Route::post('/unsur', [\App\Http\Controllers\Skm\SkmUnsurController::class, 'store'])->name('unsur.store');
+        Route::put('/unsur/{id}', [\App\Http\Controllers\Skm\SkmUnsurController::class, 'update'])->name('unsur.update');
+        Route::delete('/unsur/{id}', [\App\Http\Controllers\Skm\SkmUnsurController::class, 'destroy'])->name('unsur.destroy');
     });
 });
 
