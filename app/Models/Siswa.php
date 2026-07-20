@@ -226,4 +226,13 @@ class Siswa extends Model
     {
         return $this->hasOne(GayaBelajarHasil::class, 'siswa_id');
     }
+        /**
+     * Relasi ke tabel Catatan Wali Kelas.
+     * 1 Siswa hanya memiliki 1 catatan per-kelas/semester.
+     */
+    public function catatanWaliKelas()
+    {
+        // Sesuaikan nama class 'CatatanWaliKelas' dengan nama Model yang Anda miliki.
+        return $this->hasOne(\App\Models\CatatanWaliKelas::class, 'siswa_id');
+    }
 }
