@@ -10,23 +10,28 @@ use Illuminate\Http\Request;
 
 class CatatanWaliKelasController extends Controller
 {
-    /**
+        /**
      * Menampilkan Halaman Single Page Input Catatan Wali Kelas
      */
     public function index(Request $request)
     {
-        // Menangkap filter dari form Dropdown
+        // 1. Menangkap filter dari form Dropdown
         $kelas_id = $request->input('kelas_id');
-
-        // Mengambil data Master Kelas untuk Dropdown
-        $kelases = Kelas::orderBy('tingkat', 'asc')->orderBy('nama_kelas', 'asc')->get();
-
+        // 2. Mengambil data Master Kelas HANYA yang dipegang oleh user (Wali Kelas) tersebut
+        $kelases = Kelas::aksesSesuaiWali(auth()->user())
+                        ->orderBy('tingkat', 'asc')
+                        ->orderBy('nama_kelas', 'asc')
+                        ->get();
         $siswas = collect(); // Koleksi kosong secara default
-
-        // Jika Guru sudah memilih Kelas, baru kita munculkan daftar Siswanya
         if ($kelas_id) {
+            // 3. PENGAMANAN (URL HACKING PREVENTION): 
+            // Cek apakah $kelas_id yang dicari ada di dalam daftar $kelases milik guru ini.
+            // Jika dia iseng ganti URL kelas orang lain, tolak aksesnya!
+            if (!$kelases->contains('id', $kelas_id)) {
+                abort(403, 'Akses Ditolak! Anda bukan Wali dari Kelas ini.');
+            }
             
-            // Ambil semua siswa di kelas tersebut beserta catatan mereka sebelumnya (jika ada)
+            // 4. Ambil semua siswa di kelas tersebut beserta catatan mereka sebelumnya (jika ada)
             $siswas = Siswa::where('kelas_id', $kelas_id)
                 ->orderBy('nama', 'asc')
                 // Pastikan Model Siswa memiliki relasi: public function catatanWaliKelas() { return $this->hasOne(CatatanWaliKelas::class, 'siswa_id'); }
@@ -35,7 +40,6 @@ class CatatanWaliKelasController extends Controller
                 }])
                 ->get();
         }
-
         return view('rapor.catatan-wali-kelas.index', compact(
             'kelases', 
             'siswas', 
