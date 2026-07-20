@@ -235,4 +235,8 @@ class Siswa extends Model
         // Sesuaikan nama class 'CatatanWaliKelas' dengan nama Model yang Anda miliki.
         return $this->hasOne(\App\Models\CatatanWaliKelas::class, 'siswa_id');
     }
+    public function kehadiran()
+    {
+        return $this->hasOne(\App\Models\Kehadiran::class, 'siswa_id');
+    }
 }

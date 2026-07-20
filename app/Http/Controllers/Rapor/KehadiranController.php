@@ -10,33 +10,34 @@ use Illuminate\Http\Request;
 
 class KehadiranController extends Controller
 {
-    /**
+        /**
      * Menampilkan Halaman Single Page Input Absensi
      */
     public function index(Request $request)
     {
-        // Menangkap filter dari form Dropdown
+        // 1. Menangkap filter dari form Dropdown
         $kelas_id = $request->input('kelas_id');
-
-        // Mengambil data Master Kelas untuk Dropdown
-        $kelases = Kelas::orderBy('tingkat', 'asc')->orderBy('nama_kelas', 'asc')->get();
-
+        // 2. Mengambil data Master Kelas HANYA yang dipegang oleh Wali Kelas yang sedang login
+        $kelases = Kelas::aksesSesuaiWali(auth()->user())
+                        ->orderBy('tingkat', 'asc')
+                        ->orderBy('nama_kelas', 'asc')
+                        ->get();
         $siswas = collect(); // Koleksi kosong secara default
-
-        // Jika Guru sudah memilih Kelas, baru kita munculkan daftar Siswanya
         if ($kelas_id) {
             
-            // Ambil semua siswa di kelas tersebut
-            // Serta tarik data kehadiran (absensi) mereka JIKA ADA untuk kelas ini
+            // 3. PENGAMANAN (URL HACKING PREVENTION)
+            if (!$kelases->contains('id', $kelas_id)) {
+                abort(403, 'Akses Ditolak! Anda tidak memiliki wewenang untuk melihat absensi kelas ini.');
+            }
+            
+            // 4. Ambil semua siswa di kelas tersebut beserta data kehadiran mereka
             $siswas = Siswa::where('kelas_id', $kelas_id)
-                ->orderBy('nama_lengkap', 'asc')
-                // Pastikan di Model Siswa Anda sudah punya fungsi public function kehadiran() { return $this->hasOne(Kehadiran::class, 'siswa_id'); }
+                ->orderBy('nama_lengkap', 'asc') // Pastikan nama kolomnya benar 'nama_lengkap' atau 'nama'
                 ->with(['kehadiran' => function($query) use ($kelas_id) {
                     $query->where('kelas_id', $kelas_id);
                 }])
                 ->get();
         }
-
         return view('rapor.kehadiran.index', compact(
             'kelases', 
             'siswas', 
