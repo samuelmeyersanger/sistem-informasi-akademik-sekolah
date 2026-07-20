@@ -17,43 +17,77 @@ class NilaiController extends Controller
      */
     public function index(Request $request)
     {
+        $user = auth()->user();
         $kelas_id = $request->input('kelas_id');
         $mata_pelajaran_id = $request->input('mata_pelajaran_id');
-
-        $kelases = Kelas::orderBy('tingkat', 'asc')->orderBy('nama_kelas', 'asc')->get();
-        $mapels = MataPelajaran::orderBy('nama_mapel', 'asc')->get();
-
+        // ====================================================================
+        // GEMBOK KELAS & MAPEL (JADWAL MENGAJAR & KODE GURU)
+        // ====================================================================
+        if ($user->hasPermission('akses-semua-data')) {
+            $kelases = \App\Models\Kelas::orderBy('tingkat', 'asc')->orderBy('nama_kelas', 'asc')->get();
+            $mapels = \App\Models\MataPelajaran::orderBy('nama_mapel', 'asc')->get();
+        } else {
+            $pegawai = \App\Models\Pegawai::where('user_id', $user->id)->first();
+            if ($pegawai) {
+                $kodeGurus = \App\Models\KodeGuru::where('pegawai_id', $pegawai->id)->get();
+                $kodeGuruIds = $kodeGurus->pluck('id');
+                $mapelIdsDiampu = $kodeGurus->pluck('mata_pelajaran_id')->unique();
+                $jadwalGuru = \App\Models\JadwalPelajaran::whereIn('kode_guru_id', $kodeGuruIds)->get();
+                $kelasIdsDiampu = $jadwalGuru->pluck('kelas_id')->unique();
+                $kelases = \App\Models\Kelas::whereIn('id', $kelasIdsDiampu)->orderBy('tingkat', 'asc')->orderBy('nama_kelas', 'asc')->get();
+                $mapels = \App\Models\MataPelajaran::whereIn('id', $mapelIdsDiampu)->orderBy('nama_mapel', 'asc')->get();
+            } else {
+                $kelases = collect();
+                $mapels = collect();
+            }
+        }
         $siswas = collect();
-        $tujuanPembelajarans = collect();
+        $tujuanPembelajarans = collect(); // <-- Tambahan
         $nilaiData = []; 
-
         if ($kelas_id && $mata_pelajaran_id) {
             
-            $kelas = Kelas::find($kelas_id);
+            if (!$kelases->contains('id', $kelas_id) || !$mapels->contains('id', $mata_pelajaran_id)) {
+                abort(403, 'Akses Ditolak! Anda tidak memiliki jadwal mengajar di Kelas/Mapel ini.');
+            }
+            $kelas = \App\Models\Kelas::find($kelas_id);
             
             if ($kelas) {
-                // Ambil Tujuan Pembelajaran (Sebagai Judul Kolom Matriks Sumatif)
-                $tujuanPembelajarans = TujuanPembelajaran::where('mata_pelajaran_id', $mata_pelajaran_id)
+                // 1. AMBIL TUJUAN PEMBELAJARAN (Sama seperti KKTP)
+                $tujuanPembelajarans = \App\Models\TujuanPembelajaran::where('mata_pelajaran_id', $mata_pelajaran_id)
                                         ->where('tingkat', $kelas->tingkat)
                                         ->orderBy('nomor_tujuan', 'asc')
                                         ->get();
-
-                $siswas = Siswa::where('kelas_id', $kelas_id)->orderBy('nama_lengkap', 'asc')->get();
-
-                // Ambil Nilai Rapor Siswa yang sudah ada di database
-                $nilais = Nilai::where('kelas_id', $kelas_id)
-                               ->where('mata_pelajaran_id', $mata_pelajaran_id)
+                // 2. AMBIL DATA SISWA
+                $siswas = \App\Models\Siswa::where('kelas_id', $kelas_id)
+                               ->orderBy('nama_lengkap', 'asc')
                                ->get();
+                // 3. AMBIL DATA NILAI
+                $nilais = \App\Models\Nilai::where('kelas_id', $kelas_id)
+                             ->where('mata_pelajaran_id', $mata_pelajaran_id)
+                             ->get();
                 
-                // Konversi data ke Array berdasarkan ID Siswa untuk mempermudah pemanggilan di View HTML
+                // Menyusun ulang data Nilai. 
+                // Jika 1 Siswa punya banyak baris nilai (Satu baris per TP), pakai format: $nilaiData[ID_SISWA][ID_TP]
+                // Jika 1 Siswa hanya punya 1 baris nilai (Nilai Sumatifnya dijadikan array JSON), pakai format: $nilaiData[ID_SISWA]
                 foreach ($nilais as $n) {
-                    $nilaiData[$n->siswa_id] = $n;
+                    // ASUMSI: Data nilai disimpan per TP (1 Siswa bisa punya banyak record nilai sumatif)
+                    if(isset($n->tujuan_pembelajaran_id)) {
+                        $nilaiData[$n->siswa_id][$n->tujuan_pembelajaran_id] = $n;
+                    } else {
+                        // ASUMSI: Data nilai disimpan per Anak (1 Siswa = 1 Record Nilai Lengkap)
+                        $nilaiData[$n->siswa_id] = $n;
+                    }
                 }
             }
         }
-
         return view('rapor.nilai.index', compact(
-            'kelases', 'mapels', 'siswas', 'tujuanPembelajarans', 'nilaiData', 'kelas_id', 'mata_pelajaran_id'
+            'kelases', 
+            'mapels', 
+            'siswas', 
+            'tujuanPembelajarans', 
+            'nilaiData',
+            'kelas_id',
+            'mata_pelajaran_id'
         ));
     }
 
