@@ -9,33 +9,25 @@ use Illuminate\Http\Request;
 
 class TujuanPembelajaranController extends Controller
 {
-    /**
-     * Menampilkan daftar Tujuan Pembelajaran
-     */
     public function index(Request $request)
     {
         $search = $request->input('search');
-
         // Menarik data beserta relasi Mata Pelajarannya
         $query = TujuanPembelajaran::with('mataPelajaran');
-
         // Pencarian berdasarkan nomor tujuan atau deksripsinya
         if (!empty($search)) {
             $query->where('nomor_tujuan', 'like', '%' . $search . '%')
                   ->orWhere('deskripsi', 'like', '%' . $search . '%');
         }
-
-        // Pengurutan data yang rapi (Berdasarkan Mapel -> Tingkat -> Nomor)
-        $tujuans = $query->orderBy('mata_pelajaran_id', 'asc')
+        // PERUBAHAN ADA DI SINI:
+        $tujuanPembelajarans = $query->orderBy('mata_pelajaran_id', 'asc')
                          ->orderBy('tingkat', 'asc')
                          ->orderBy('nomor_tujuan', 'asc')
                          ->paginate(10)
                          ->appends(['search' => $search]);
-
-        // Mengambil daftar mata pelajaran untuk form dropdown modal (Tambah/Edit)
         $mapels = MataPelajaran::all();
-
-        return view('rapor.tujuan-pembelajaran.index', compact('tujuans', 'search', 'mapels'));
+        // DAN DI SINI:
+        return view('rapor.tujuan-pembelajaran.index', compact('tujuanPembelajarans', 'search', 'mapels'));
     }
 
     /**
