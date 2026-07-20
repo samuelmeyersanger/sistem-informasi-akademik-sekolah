@@ -32,7 +32,7 @@ class NilaiEkstrakurikulerController extends Controller
             // Ambil semua siswa di kelas tersebut
             // Dan kita tarik juga nilai ekskulnya JIKA ADA untuk ekskul yang sedang dipilih
             $siswas = Siswa::where('kelas_id', $kelas_id)
-                ->orderBy('nama', 'asc')
+                ->orderBy('nama_lengkap', 'asc')
                 ->with(['nilaiEkstrakurikuler' => function($query) use ($ekstrakurikuler_id) {
                     $query->where('ekstrakurikuler_id', $ekstrakurikuler_id);
                 }])

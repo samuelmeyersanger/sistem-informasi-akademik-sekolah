@@ -21,7 +21,7 @@ class NilaiController extends Controller
         $mata_pelajaran_id = $request->input('mata_pelajaran_id');
 
         $kelases = Kelas::orderBy('tingkat', 'asc')->orderBy('nama_kelas', 'asc')->get();
-        $mapels = MataPelajaran::orderBy('nama_mata_pelajaran', 'asc')->get();
+        $mapels = MataPelajaran::orderBy('nama_mapel', 'asc')->get();
 
         $siswas = collect();
         $tujuanPembelajarans = collect();
@@ -38,7 +38,7 @@ class NilaiController extends Controller
                                         ->orderBy('nomor_tujuan', 'asc')
                                         ->get();
 
-                $siswas = Siswa::where('kelas_id', $kelas_id)->orderBy('nama', 'asc')->get();
+                $siswas = Siswa::where('kelas_id', $kelas_id)->orderBy('nama_lengkap', 'asc')->get();
 
                 // Ambil Nilai Rapor Siswa yang sudah ada di database
                 $nilais = Nilai::where('kelas_id', $kelas_id)

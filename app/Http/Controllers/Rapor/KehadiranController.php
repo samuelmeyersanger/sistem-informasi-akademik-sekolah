@@ -29,7 +29,7 @@ class KehadiranController extends Controller
             // Ambil semua siswa di kelas tersebut
             // Serta tarik data kehadiran (absensi) mereka JIKA ADA untuk kelas ini
             $siswas = Siswa::where('kelas_id', $kelas_id)
-                ->orderBy('nama', 'asc')
+                ->orderBy('nama_lengkap', 'asc')
                 // Pastikan di Model Siswa Anda sudah punya fungsi public function kehadiran() { return $this->hasOne(Kehadiran::class, 'siswa_id'); }
                 ->with(['kehadiran' => function($query) use ($kelas_id) {
                     $query->where('kelas_id', $kelas_id);

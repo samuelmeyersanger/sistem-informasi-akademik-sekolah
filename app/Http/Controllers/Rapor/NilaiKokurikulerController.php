@@ -61,7 +61,7 @@ class NilaiKokurikulerController extends Controller
         if ($kelas_id && $kegiatan_kokurikuler_id && $profil_lulusan_id) {
             
             $siswas = Siswa::where('kelas_id', $kelas_id)
-                           ->orderBy('nama', 'asc')
+                           ->orderBy('nama_lengkap', 'asc')
                            ->get();
 
             // Ambil riwayat nilai P5 yang sudah pernah disimpan
