@@ -9,24 +9,61 @@ use Illuminate\Http\Request;
 
 class TujuanPembelajaranController extends Controller
 {
+    /**
+     * FUNGSI BANTUAN:
+     * Mendapatkan daftar ID Mata Pelajaran yang diampu oleh Guru yang sedang login.
+     * Mengembalikan Array berisi ID Mapel, atau `true` jika dia adalah Super Admin.
+     */
+    private function getMapelIdsDiampu()
+    {
+        $user = auth()->user();
+        if ($user->hasPermission('akses-semua-data')) {
+            return true; // Akses penuh untuk Super Admin
+        }
+
+        $pegawai = \App\Models\Pegawai::where('user_id', $user->id)->first();
+        if ($pegawai) {
+            // Ambil langsung dari tabel KodeGuru (Lintas Tingkat/Kelas)
+            return \App\Models\KodeGuru::where('pegawai_id', $pegawai->id)
+                            ->pluck('mata_pelajaran_id')
+                            ->unique()
+                            ->toArray();
+        }
+
+        return []; // Jika bukan guru, array kosong
+    }
+
     public function index(Request $request)
     {
         $search = $request->input('search');
-        // Menarik data beserta relasi Mata Pelajarannya
+        $mapelDiampu = $this->getMapelIdsDiampu();
+        
         $query = TujuanPembelajaran::with('mataPelajaran');
-        // Pencarian berdasarkan nomor tujuan atau deksripsinya
-        if (!empty($search)) {
-            $query->where('nomor_tujuan', 'like', '%' . $search . '%')
-                  ->orWhere('deskripsi', 'like', '%' . $search . '%');
+
+        // GEMBOK VIEW (Hanya tampilkan TP dari mapel yang dia ampu)
+        if ($mapelDiampu !== true) {
+            $query->whereIn('mata_pelajaran_id', $mapelDiampu);
+            
+            // Dropdown form modal juga hanya memunculkan mapel dia saja
+            $mapels = MataPelajaran::whereIn('id', $mapelDiampu)->orderBy('nama_mapel', 'asc')->get();
+        } else {
+            $mapels = MataPelajaran::orderBy('nama_mapel', 'asc')->get();
         }
-        // PERUBAHAN ADA DI SINI:
+
+        // Pencarian (Dibungkus function($q) agar tidak tembus gembok whereIn saat mencari)
+        if (!empty($search)) {
+            $query->where(function($q) use ($search) {
+                $q->where('nomor_tujuan', 'like', '%' . $search . '%')
+                  ->orWhere('deskripsi', 'like', '%' . $search . '%');
+            });
+        }
+
         $tujuanPembelajarans = $query->orderBy('mata_pelajaran_id', 'asc')
                          ->orderBy('tingkat', 'asc')
                          ->orderBy('nomor_tujuan', 'asc')
                          ->paginate(10)
                          ->appends(['search' => $search]);
-        $mapels = MataPelajaran::all();
-        // DAN DI SINI:
+
         return view('rapor.tujuan-pembelajaran.index', compact('tujuanPembelajarans', 'search', 'mapels'));
     }
 
@@ -41,6 +78,12 @@ class TujuanPembelajaranController extends Controller
             'nomor_tujuan'      => ['required', 'string', 'max:50'],
             'deskripsi'         => ['required', 'string'],
         ]);
+
+        // PENCEGAHAN HACKING (Mencegah guru menyimpan ke Mapel guru lain lewat Inspect Element Browser)
+        $mapelDiampu = $this->getMapelIdsDiampu();
+        if ($mapelDiampu !== true && !in_array($request->mata_pelajaran_id, $mapelDiampu)) {
+            abort(403, 'Akses Ditolak! Anda tidak mengampu Mata Pelajaran ini.');
+        }
 
         TujuanPembelajaran::create($request->all());
 
@@ -62,6 +105,15 @@ class TujuanPembelajaranController extends Controller
             'deskripsi'         => ['required', 'string'],
         ]);
 
+        // PENCEGAHAN HACKING
+        $mapelDiampu = $this->getMapelIdsDiampu();
+        if ($mapelDiampu !== true) {
+            // Tolak jika TP yang ingin diedit awalnya bukan milik dia, ATAU jika dia mengeditnya ke mapel orang lain
+            if (!in_array($tujuan->mata_pelajaran_id, $mapelDiampu) || !in_array($request->mata_pelajaran_id, $mapelDiampu)) {
+                abort(403, 'Akses Ditolak! Anda tidak memiliki wewenang untuk mengubah data pada Mata Pelajaran ini.');
+            }
+        }
+
         $tujuan->update($request->all());
 
         return redirect()->route('rapor.tujuan-pembelajaran.index')
@@ -75,6 +127,12 @@ class TujuanPembelajaranController extends Controller
     {
         $tujuan = TujuanPembelajaran::findOrFail($id);
         
+        // PENCEGAHAN HACKING (Mencegah guru menghapus TP milik guru lain)
+        $mapelDiampu = $this->getMapelIdsDiampu();
+        if ($mapelDiampu !== true && !in_array($tujuan->mata_pelajaran_id, $mapelDiampu)) {
+            abort(403, 'Akses Ditolak! Anda tidak memiliki wewenang untuk menghapus data ini.');
+        }
+
         $tujuan->delete(); // Otomatis Soft Delete
 
         return redirect()->route('rapor.tujuan-pembelajaran.index')
