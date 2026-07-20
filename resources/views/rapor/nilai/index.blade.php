@@ -36,7 +36,7 @@
                             <option value="">-- Pilih Mapel --</option>
                             @foreach ($mapels as $mapel)
                                 <option value="{{ $mapel->id }}" {{ (isset($mata_pelajaran_id) && $mata_pelajaran_id == $mapel->id) ? 'selected' : '' }}>
-                                    {{ $mapel->nama_mata_pelajaran }}
+                                    {{ $mapel->nama_mapel }}
                                 </option>
                             @endforeach
                         </select>
@@ -98,7 +98,7 @@
                                         <tr class="hover:bg-indigo-50/50 transition-colors border-b border-slate-100">
                                             <td class="px-4 py-3 text-center font-bold text-slate-400 sticky left-0 z-10 bg-white border-r border-slate-100 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]">{{ $index + 1 }}</td>
                                             <td class="px-6 py-3 sticky left-12 z-10 bg-white border-r border-slate-100 shadow-[4px_0_8px_-2px_rgba(0,0,0,0.05)]">
-                                                <div class="font-bold text-slate-800">{{ $siswa->nama }}</div>
+                                                <div class="font-bold text-slate-800">{{ $siswa->nama_lengkap }}</div>
                                             </td>
                                             
                                             {{-- Input Kolom Sumatif TP --}}

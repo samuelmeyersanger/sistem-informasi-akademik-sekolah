@@ -96,7 +96,7 @@
                                         <tr class="hover:bg-sky-50/30 transition-colors">
                                             <td class="px-6 py-4 text-center font-bold text-slate-400">{{ $index + 1 }}</td>
                                             <td class="px-6 py-4">
-                                                <div class="font-bold text-slate-800">{{ $siswa->nama }}</div>
+                                                <div class="font-bold text-slate-800">{{ $siswa->nama_lengkap }}</div>
                                             </td>
                                             
                                             {{-- Dropdown Predikat --}}

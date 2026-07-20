@@ -27,7 +27,7 @@
                             <option value="">-- Pilih Ekstrakurikuler --</option>
                             @foreach ($ekstrakurikulers ?? [] as $ekskul)
                                 <option value="{{ $ekskul->id }}" {{ (isset($ekstrakurikuler_id) && $ekstrakurikuler_id == $ekskul->id) ? 'selected' : '' }}>
-                                    {{ $ekskul->nama_ekstrakurikuler }}
+                                    {{ $ekskul->nama }}
                                 </option>
                             @endforeach
                         </select>
@@ -73,7 +73,7 @@
                                         <tr class="hover:bg-indigo-50/30 transition-colors">
                                             <td class="px-6 py-4 text-center font-bold text-slate-400">{{ $index + 1 }}</td>
                                             <td class="px-6 py-4">
-                                                <div class="font-bold text-slate-800">{{ $siswa->nama }}</div>
+                                                <div class="font-bold text-slate-800">{{ $siswa->nama_lengkap }}</div>
                                             </td>
                                             
                                             {{-- Dropdown Predikat --}}

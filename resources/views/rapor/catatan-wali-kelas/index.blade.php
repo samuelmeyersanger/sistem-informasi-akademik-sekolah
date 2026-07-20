@@ -48,7 +48,7 @@
                                         <th class="px-6 py-5 text-center w-16">No</th>
                                         <th class="px-6 py-5 text-left w-64">Nama Siswa</th>
                                         <th class="px-6 py-5 text-center">NISN</th>
-                                        <th class="px-6 py-5 text-center">NIS</th>
+                                        <th class="px-6 py-5 text-center">NIPD</th>
                                         <th class="px-6 py-5 text-left border-l border-white/20">Catatan Wali Kelas</th>
                                     </tr>
                                 </thead>
@@ -57,10 +57,10 @@
                                         <tr class="hover:bg-indigo-50/30 transition-colors">
                                             <td class="px-6 py-4 text-center font-bold text-slate-400">{{ $index + 1 }}</td>
                                             <td class="px-6 py-4">
-                                                <div class="font-bold text-slate-800">{{ $siswa->nama }}</div>
+                                                <div class="font-bold text-slate-800">{{ $siswa->nama_lengkap }}</div>
                                             </td>
                                             <td class="px-6 py-4 text-center text-slate-500">{{ $siswa->nisn }}</td>
-                                            <td class="px-6 py-4 text-center text-slate-500">{{ $siswa->nis }}</td>
+                                            <td class="px-6 py-4 text-center text-slate-500">{{ $siswa->nipd }}</td>
                                             
                                             {{-- Input Teks Area --}}
                                             <td class="px-6 py-4 border-l border-slate-100">

@@ -50,7 +50,7 @@
                                         <th class="px-6 py-5 text-center w-16">No</th>
                                         <th class="px-6 py-5 text-left">Nama Siswa</th>
                                         <th class="px-6 py-5 text-center">NISN</th>
-                                        <th class="px-6 py-5 text-center">NIS</th>
+                                        <th class="px-6 py-5 text-center">NIPD</th>
                                         {{-- Header Bertingkat untuk Ketidakhadiran --}}
                                         <th colspan="3" class="px-6 py-2 text-center border-l border-white/20">
                                             <div class="border-b border-white/30 pb-2 mb-2 w-full">Jml Ketidakhadiran</div>
@@ -67,10 +67,10 @@
                                         <tr class="hover:bg-indigo-50/30 transition-colors">
                                             <td class="px-6 py-4 text-center font-bold text-slate-400">{{ $index + 1 }}</td>
                                             <td class="px-6 py-4">
-                                                <div class="font-bold text-slate-800">{{ $siswa->nama }}</div>
+                                                <div class="font-bold text-slate-800">{{ $siswa->nama_lengkap }}</div>
                                             </td>
                                             <td class="px-6 py-4 text-center text-slate-500">{{ $siswa->nisn }}</td>
-                                            <td class="px-6 py-4 text-center text-slate-500">{{ $siswa->nis }}</td>
+                                            <td class="px-6 py-4 text-center text-slate-500">{{ $siswa->nipd }}</td>
                                             
                                             {{-- Input Absensi (Menggunakan Array berdasarkan ID Siswa) --}}
                                             <td colspan="3" class="px-6 py-4 border-l border-slate-100">
