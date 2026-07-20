@@ -15,51 +15,71 @@ class KktpController extends Controller
     /**
      * Menampilkan Halaman Single Page Input KKTP (Matriks)
      */
-    public function index(Request $request)
+        public function index(Request $request)
     {
-        // 1. Menangkap filter dari Dropdown (Pilih Kelas & Pilih Mapel)
+        $user = auth()->user();
+        // 1. Menangkap filter dari Dropdown
         $kelas_id = $request->input('kelas_id');
         $mata_pelajaran_id = $request->input('mata_pelajaran_id');
-
-        // Mengambil data Master untuk Dropdown
-        $kelases = Kelas::orderBy('tingkat', 'asc')->orderBy('nama_kelas', 'asc')->get();
-        $mapels = MataPelajaran::orderBy('nama_mapel', 'asc')->get(); // Sesuaikan nama kolom mapel
-
+        // ====================================================================
+        // GEMBOK KELAS & MAPEL (MELEWATI JEMBATAN "KODE GURU")
+        // ====================================================================
+        
+        if ($user->hasPermission('akses-semua-data')) {
+            $kelases = Kelas::orderBy('tingkat', 'asc')->orderBy('nama_kelas', 'asc')->get();
+            $mapels = MataPelajaran::orderBy('nama_mapel', 'asc')->get();
+        } else {
+            $pegawai = \App\Models\Pegawai::where('user_id', $user->id)->first();
+            
+            if ($pegawai) {
+                // A. Cari semua "Kode Tugas Mengajar" milik guru ini
+                $kodeGurus = \App\Models\KodeGuru::where('pegawai_id', $pegawai->id)->get();
+                $kodeGuruIds = $kodeGurus->pluck('id');
+                
+                // B. Tarik ID Mapel langsung dari tabel KodeGuru
+                $mapelIdsDiampu = $kodeGurus->pluck('mata_pelajaran_id')->unique();
+                // C. Cari jadwal pelajaran yang menggunakan kode-kode guru di atas
+                $jadwalGuru = \App\Models\JadwalPelajaran::whereIn('kode_guru_id', $kodeGuruIds)->get();
+                $kelasIdsDiampu = $jadwalGuru->pluck('kelas_id')->unique();
+                // D. Eksekusi penarikan data Master Kelas & Mapel
+                $kelases = Kelas::whereIn('id', $kelasIdsDiampu)->orderBy('tingkat', 'asc')->orderBy('nama_kelas', 'asc')->get();
+                $mapels = MataPelajaran::whereIn('id', $mapelIdsDiampu)->orderBy('nama_mapel', 'asc')->get();
+            } else {
+                $kelases = collect();
+                $mapels = collect();
+            }
+        }
         $siswas = collect();
         $tujuanPembelajarans = collect();
-        $kktpData = []; // Array khusus untuk menyimpan riwayat nilai siswa
-
-        // 2. Jika Guru sudah memilih Kelas dan Mapel
+        $kktpData = []; 
         if ($kelas_id && $mata_pelajaran_id) {
             
-            // Cari data Kelas untuk mengetahui "Tingkat" kelas tersebut (misal: tingkat '7')
+            // PENCEGAHAN URL HACKING
+            if (!$kelases->contains('id', $kelas_id) || !$mapels->contains('id', $mata_pelajaran_id)) {
+                abort(403, 'Akses Ditolak! Anda tidak memiliki jadwal mengajar di Kelas/Mapel ini.');
+            }
             $kelas = Kelas::find($kelas_id);
             
             if ($kelas) {
-                // 3. Ambil Tujuan Pembelajaran (TP) HANYA untuk Mapel & Tingkat yang sesuai!
-                $tujuanPembelajarans = TujuanPembelajaran::where('mata_pelajaran_id', $mata_pelajaran_id)
+                // Ambil Tujuan Pembelajaran (TP)
+                $tujuanPembelajarans = \App\Models\TujuanPembelajaran::where('mata_pelajaran_id', $mata_pelajaran_id)
                                         ->where('tingkat', $kelas->tingkat)
                                         ->orderBy('nomor_tujuan', 'asc')
                                         ->get();
-
-                // 4. Ambil daftar Siswa di kelas tersebut
-                $siswas = Siswa::where('kelas_id', $kelas_id)
+                // Ambil daftar Siswa
+                $siswas = \App\Models\Siswa::where('kelas_id', $kelas_id)
                                ->orderBy('nama_lengkap', 'asc')
                                ->get();
-
-                // 5. Ambil data nilai KKTP yang sudah pernah disimpan (jika ada)
-                $kktps = Kktp::where('kelas_id', $kelas_id)
+                // Ambil data nilai KKTP
+                $kktps = \App\Models\Kktp::where('kelas_id', $kelas_id)
                              ->whereIn('tujuan_pembelajaran_id', $tujuanPembelajarans->pluck('id'))
                              ->get();
                 
-                // Menyusun ulang data KKTP ke format Matriks agar mudah dicek di View Blade (HTML)
                 foreach ($kktps as $k) {
-                    // Menyimpan data dengan pola: $kktpData[ID_SISWA][ID_TP] = data
                     $kktpData[$k->siswa_id][$k->tujuan_pembelajaran_id] = $k;
                 }
             }
         }
-
         return view('rapor.kktp.index', compact(
             'kelases', 
             'mapels', 
