@@ -33,7 +33,7 @@ class CatatanWaliKelasController extends Controller
             
             // 4. Ambil semua siswa di kelas tersebut beserta catatan mereka sebelumnya (jika ada)
             $siswas = Siswa::where('kelas_id', $kelas_id)
-                ->orderBy('nama', 'asc')
+                ->orderBy('nama_lengkap', 'asc')
                 // Pastikan Model Siswa memiliki relasi: public function catatanWaliKelas() { return $this->hasOne(CatatanWaliKelas::class, 'siswa_id'); }
                 ->with(['catatanWaliKelas' => function($query) use ($kelas_id) {
                     $query->where('kelas_id', $kelas_id);
