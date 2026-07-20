@@ -636,6 +636,9 @@ Route::middleware(['auth', CheckApproval::class])->group(function () {
         // Input Catatan Wali Kelas
         Route::get('catatan-wali-kelas', [\App\Http\Controllers\Rapor\CatatanWaliKelasController::class, 'index'])->name('catatan-wali-kelas.index');
         Route::post('catatan-wali-kelas', [\App\Http\Controllers\Rapor\CatatanWaliKelasController::class, 'store'])->name('catatan-wali-kelas.store');
+
+        // Rekap untuk Wali Kelas
+        Route::get('rekap-ekskul-wali', [App\Http\Controllers\Rapor\RekapEkskulWaliController::class, 'index'])->name('rekap-ekskul-wali.index');
     });
 
         /*
