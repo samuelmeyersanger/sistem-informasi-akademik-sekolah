@@ -93,4 +93,47 @@ class Pegawai extends Model
         // Ganti 'JadwalPelajaran' dengan nama Model jadwal Anda yang sebenarnya
         return $this->hasMany(JadwalPelajaran::class, 'pegawai_id'); 
     }
+
+        /**
+     * ========================================================================
+     * FUNGSI BANTUAN (HELPER) BEBAN MENGAJAR
+     * ========================================================================
+     * Mengambil seluruh ID Mata Pelajaran yang diampu oleh Pegawai (Guru) ini.
+     * Secara cerdas akan menggabungkan data dari arsitektur Many-to-Many.
+     */
+    public function getMapelIdsDiampu(): array
+    {
+        $kodeGurus = \App\Models\KodeGuru::with('mataPelajarans')
+                            ->where('pegawai_id', $this->id)
+                            ->get();
+        
+        $mapelIds = [];
+        
+        foreach ($kodeGurus as $kg) {
+            // Ambil dari tabel pivot (Many to Many)
+            foreach ($kg->mataPelajarans as $mapel) {
+                $mapelIds[] = $mapel->id;
+            }
+            
+            // Ambil dari kolom lama (jika ada)
+            if ($kg->mata_pelajaran_id) {
+                $mapelIds[] = $kg->mata_pelajaran_id;
+            }
+        }
+        
+        return array_unique($mapelIds);
+    }
+    /**
+     * Mengambil seluruh ID Kelas yang diajar oleh Pegawai (Guru) ini berdasarkan Jadwal.
+     */
+    public function getKelasIdsDiampu(): array
+    {
+        $kodeGuruIds = \App\Models\KodeGuru::where('pegawai_id', $this->id)->pluck('id');
+        
+        // Ingat: JadwalPelajaran terhubung lewat kode_guru_id, bukan pegawai_id
+        return \App\Models\JadwalPelajaran::whereIn('kode_guru_id', $kodeGuruIds)
+                            ->pluck('kelas_id')
+                            ->unique()
+                            ->toArray();
+    }
 }
