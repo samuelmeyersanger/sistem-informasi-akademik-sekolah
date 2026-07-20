@@ -44,7 +44,7 @@ class KktpController extends Controller
 
                 // 4. Ambil daftar Siswa di kelas tersebut
                 $siswas = Siswa::where('kelas_id', $kelas_id)
-                               ->orderBy('nama', 'asc')
+                               ->orderBy('nama_lengkap', 'asc')
                                ->get();
 
                 // 5. Ambil data nilai KKTP yang sudah pernah disimpan (jika ada)
