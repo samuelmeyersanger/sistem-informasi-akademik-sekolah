@@ -54,7 +54,7 @@
                                 @forelse ($tujuanPembelajarans as $tp)
                                     <tr class="hover:bg-indigo-50/30 transition-colors group">
                                         <td class="px-6 py-4">
-                                            <div class="font-bold text-slate-800">{{ $tp->mataPelajaran ? $tp->mataPelajaran->nama_mata_pelajaran : 'Mapel Tidak Ditemukan' }}</div>
+                                            <div class="font-bold text-slate-800">{{ $tp->mataPelajaran ? $tp->mataPelajaran->nama_mapel : 'Mapel Tidak Ditemukan' }}</div>
                                             <span class="inline-block mt-1 px-2 py-0.5 bg-slate-200 text-slate-700 rounded-md text-[10px] font-bold">
                                                 Tingkat {{ $tp->tingkat }}
                                             </span>
@@ -111,7 +111,7 @@
                                    class="w-full px-4 py-3 bg-slate-50 border-slate-200 text-sm font-bold text-slate-800 rounded-xl focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
                                 <option value="">Pilih Mapel...</option>
                                 @foreach ($mapels ?? [] as $mapel)
-                                    <option value="{{ $mapel->id }}">{{ $mapel->nama_mata_pelajaran }}</option>
+                                    <option value="{{ $mapel->id }}">{{ $mapel->nama_mapel }}</option>
                                 @endforeach
                             </select>
                         </div>
