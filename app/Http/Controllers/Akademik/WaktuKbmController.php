@@ -20,10 +20,16 @@ class WaktuKbmController extends Controller
      */
     public function index(Request $request): View
     {
+        // Tangkap parameter pencarian/filter
         $hariFilter = $request->get('hari');
-
-        $waktuKbm = WaktuKbm::latest() // atau query lainnya
-        ->orderByRaw("
+        // Mulai membangun Query
+        $query = WaktuKbm::query();
+        // 1. TERAPKAN FILTER JIKA ADA PILIHAN HARI
+        if ($hariFilter) {
+            $query->where('hari', $hariFilter);
+        }
+        // 2. PENGURUTAN (Hapus fungsi latest() agar urutan hari berfungsi sempurna)
+        $waktuKbm = $query->orderByRaw("
             CASE hari 
                 WHEN 'Senin' THEN 1
                 WHEN 'Selasa' THEN 2
@@ -35,9 +41,10 @@ class WaktuKbmController extends Controller
             END
         ")
         ->orderBy('jam_ke', 'asc')
-        ->paginate(20); // sesuaikan jika Anda pakai paginate atau get()
-
-        return view('akademik.waktu_kbm.index', compact('waktuKbm'));
+        ->paginate(20); 
+        // 3. PENTING: Tambahkan appends agar saat pindah halaman 2, 3, dst, filternya tidak hilang!
+        $waktuKbm->appends($request->all());
+        return view('akademik.waktu_kbm.index', compact('waktuKbm', 'hariFilter'));
     }
 
     /**
