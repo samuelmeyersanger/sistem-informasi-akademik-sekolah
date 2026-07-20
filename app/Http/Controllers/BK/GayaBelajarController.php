@@ -106,11 +106,12 @@ class GayaBelajarController extends Controller
     {
         // Cari ID siswa-siswa yang sudah pernah mengisi kuesioner
         $siswaSudahIsi = \App\Models\GayaBelajarHasil::pluck('siswa_id')->toArray();
+        
         // Tarik data siswa yang aktif, dan KECUALIKAN nama yang sudah pernah mengisi
         $siswa = \App\Models\Siswa::where('kelas_id', $kelas_id)
-                      ->where('status_siswa', 'Aktif')
-                      ->whereNotIn('id', $siswaSudahIsi) // 🟢 Baris ini yang akan menyembunyikan nama mereka
-                      ->orderBy('nama_lengkap', 'asc')
+                      ->where('status_siswa', 'Aktif') 
+                      ->whereNotIn('id', $siswaSudahIsi) 
+                      ->orderBy('id', 'asc') // <-- SUDAH DIUBAH: Sekarang mengurutkan berdasarkan ID, bukan Nama
                       ->select('id', 'nama_lengkap', 'nipd')
                       ->get();
                       
