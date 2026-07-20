@@ -14,7 +14,7 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="font-sans text-slate-900 antialiased bg-slate-50 relative overflow-hidden selection:bg-indigo-500 selection:text-white">
+<body class="font-sans text-slate-900 antialiased bg-slate-50 relative overflow-x-hidden selection:bg-indigo-500 selection:text-white">
     
     {{-- Elemen Dekoratif: Latar Belakang Orb Menyala (Glassmorphism Effect) --}}
     <div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
