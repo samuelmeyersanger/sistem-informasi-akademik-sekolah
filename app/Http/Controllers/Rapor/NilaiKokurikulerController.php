@@ -17,35 +17,43 @@ class NilaiKokurikulerController extends Controller
      */
     public function index(Request $request)
     {
+        $user = auth()->user();
         // 1. Menangkap 3 parameter dari Dropdown secara berurutan
         $kelas_id = $request->input('kelas_id');
         $kegiatan_kokurikuler_id = $request->input('kegiatan_kokurikuler_id');
         $profil_lulusan_id = $request->input('profil_lulusan_id');
-
-        $kelases = Kelas::orderBy('tingkat', 'asc')->orderBy('nama_kelas', 'asc')->get();
+        // GEMBOK KELAS: Hanya menampilkan kelas yang dipegang oleh Wali Kelas ini
+        // (Atau tampilkan semua jika yang login adalah Super Admin)
+        $kelases = \App\Models\Kelas::aksesSesuaiWali($user)
+                        ->orderBy('tingkat', 'asc')
+                        ->orderBy('nama_kelas', 'asc')
+                        ->get();
         
         $kegiatans = collect();
         $profils = collect();
         $siswas = collect();
         $nilaiData = [];
-
-        // 2. Jika Kelas dipilih, munculkan Kegiatan P5 HANYA untuk tingkat kelas tersebut (misal: Tingkat 7)
+        // 2. Jika Kelas dipilih, munculkan Kegiatan P5 HANYA untuk tingkat kelas tersebut
         if ($kelas_id) {
-            $kelas = Kelas::find($kelas_id);
+            
+            // PENCEGAHAN URL HACKING (Wali kelas tidak bisa mengintip/menilai kelas lain)
+            if (!$kelases->contains('id', $kelas_id)) {
+                abort(403, 'Akses Ditolak! Anda bukan Wali dari Kelas ini.');
+            }
+            $kelas = \App\Models\Kelas::find($kelas_id);
             if ($kelas) {
-                $kegiatans = KegiatanKokurikuler::where('tingkat', $kelas->tingkat)
+                $kegiatans = \App\Models\KegiatanKokurikuler::where('tingkat', $kelas->tingkat)
                                 ->orderBy('no_urut', 'asc')
                                 ->get();
             }
         }
-
         // 3. Jika Kegiatan dipilih, munculkan Profil Lulusan-nya
         if ($kegiatan_kokurikuler_id) {
-            $kegiatan = KegiatanKokurikuler::find($kegiatan_kokurikuler_id);
+            $kegiatan = \App\Models\KegiatanKokurikuler::find($kegiatan_kokurikuler_id);
             
             // Memfilter Profil Lulusan khusus yang terikat pada Kegiatan tersebut
             if ($kegiatan && $kegiatan->profil_lulusan_id) {
-                $profils = ProfilLulusan::where('id', $kegiatan->profil_lulusan_id)->get();
+                $profils = \App\Models\ProfilLulusan::where('id', $kegiatan->profil_lulusan_id)->get();
                 
                 // Cerdas: Jika guru belum nge-klik profil lulusan, kita otomatiskan terpilih!
                 if (!$profil_lulusan_id) {
@@ -53,29 +61,25 @@ class NilaiKokurikulerController extends Controller
                 }
             } else {
                 // Jika kegiatan belum disetel profil lulusannya, tampilkan semua opsi
-                $profils = ProfilLulusan::orderBy('no', 'asc')->get();
+                $profils = \App\Models\ProfilLulusan::orderBy('no', 'asc')->get();
             }
         }
-
         // 4. Jika ketiga Filter di atas sudah ada isinya, panggil data Siswanya
         if ($kelas_id && $kegiatan_kokurikuler_id && $profil_lulusan_id) {
             
-            $siswas = Siswa::where('kelas_id', $kelas_id)
+            $siswas = \App\Models\Siswa::where('kelas_id', $kelas_id)
                            ->orderBy('nama_lengkap', 'asc')
                            ->get();
-
             // Ambil riwayat nilai P5 yang sudah pernah disimpan
-            $nilais = NilaiKorikuler::where('kelas_id', $kelas_id)
+            $nilais = \App\Models\NilaiKorikuler::where('kelas_id', $kelas_id)
                                     ->where('kegiatan_kokurikuler_id', $kegiatan_kokurikuler_id)
                                     ->where('profil_lulusan_id', $profil_lulusan_id)
                                     ->get();
-
             // Konversi ke format Array (ID Siswa) agar gampang dicetak di tabel HTML
             foreach ($nilais as $n) {
                 $nilaiData[$n->siswa_id] = $n;
             }
         }
-
         return view('rapor.nilai-kokurikuler.index', compact(
             'kelases', 'kegiatans', 'profils', 'siswas', 'nilaiData',
             'kelas_id', 'kegiatan_kokurikuler_id', 'profil_lulusan_id'
