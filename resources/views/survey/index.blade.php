@@ -28,19 +28,30 @@
             </div>
         @endif
 
-        <!-- FORM SURVEI -->
-        <form action="{{ route('publik.survey.store') }}" method="POST" class="space-y-8">
+        <!-- FORM SURVEI (ALPINE.JS MULTI-STEP) -->
+        <form action="{{ route('publik.survey.store') }}" method="POST" class="space-y-8" x-data="{ step: 1 }">
             @csrf
 
-            <!-- KOTAK 1: PROFIL RESPONDEN (GLASSMORPHISM) -->
-            <div class="bg-white/80 backdrop-blur-xl shadow-xl shadow-indigo-500/10 rounded-[2rem] border border-white/60 p-8 sm:p-10">
+            <!-- STEP 1: PROFIL RESPONDEN -->
+            <div x-show="step === 1" 
+                 x-transition:enter="transition ease-out duration-500" 
+                 x-transition:enter-start="opacity-0 translate-x-10" 
+                 x-transition:enter-end="opacity-100 translate-x-0" 
+                 class="bg-white/80 backdrop-blur-xl shadow-xl shadow-indigo-500/10 rounded-[2rem] border border-white/60 p-8 sm:p-10 relative overflow-hidden">
+                
+                <!-- Indikator Langkah -->
+                <div class="absolute top-0 right-0 bg-indigo-100 text-indigo-700 font-black text-xs px-4 py-2 rounded-bl-2xl">
+                    Langkah 1 dari 2
+                </div>
+
                 <h2 class="text-lg font-black text-indigo-900 border-b border-indigo-100 pb-4 mb-6 uppercase tracking-widest"><i class="fa-solid fa-user-astronaut mr-2"></i> Data Responden</h2>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Layanan yang Dinilai (Wajib) -->
                     <div class="md:col-span-2">
                         <label class="block text-sm font-bold text-slate-700 mb-2">Layanan yang Anda Terima <span class="text-rose-500">*</span></label>
-                        <select name="layanan_id" required class="w-full px-4 py-3 bg-slate-50 border-slate-200 rounded-xl focus:ring-indigo-500 focus:border-indigo-500 font-medium">
+                        <!-- x-ref untuk mengecek validasi browser sebelum pindah halaman -->
+                        <select x-ref="layananInput" name="layanan_id" required class="w-full px-4 py-3 bg-slate-50 border-slate-200 rounded-xl focus:ring-indigo-500 focus:border-indigo-500 font-medium">
                             <option value="">-- Pilih Layanan --</option>
                             @foreach($layanans as $layanan)
                                 <option value="{{ $layanan->id }}">{{ $layanan->nama_layanan }}</option>
@@ -84,10 +95,29 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- TOMBOL BERIKUTNYA -->
+                <div class="mt-8">
+                    <button type="button" 
+                            @click="if($refs.layananInput.checkValidity()) { step = 2; window.scrollTo({ top: 0, behavior: 'smooth' }); } else { $refs.layananInput.reportValidity(); }" 
+                            class="w-full py-5 bg-slate-800 hover:bg-slate-900 text-white font-black text-sm uppercase tracking-[0.2em] rounded-2xl shadow-xl transition-all flex items-center justify-center gap-3">
+                        Lanjut ke Kuesioner <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
             </div>
 
-            <!-- KOTAK 2: PERTANYAAN (RATING BINTANG) -->
-            <div class="bg-white/80 backdrop-blur-xl shadow-xl shadow-indigo-500/10 rounded-[2rem] border border-white/60 p-8 sm:p-10">
+            <!-- STEP 2: PERTANYAAN RATING BINTANG -->
+            <div x-show="step === 2" style="display: none;" 
+                 x-transition:enter="transition ease-out duration-500 delay-100" 
+                 x-transition:enter-start="opacity-0 translate-x-10" 
+                 x-transition:enter-end="opacity-100 translate-x-0" 
+                 class="bg-white/80 backdrop-blur-xl shadow-xl shadow-indigo-500/10 rounded-[2rem] border border-white/60 p-8 sm:p-10 relative overflow-hidden">
+                
+                <!-- Indikator Langkah -->
+                <div class="absolute top-0 right-0 bg-indigo-100 text-indigo-700 font-black text-xs px-4 py-2 rounded-bl-2xl">
+                    Langkah 2 dari 2
+                </div>
+
                 <h2 class="text-lg font-black text-indigo-900 border-b border-indigo-100 pb-4 mb-6 uppercase tracking-widest"><i class="fa-solid fa-star-half-stroke mr-2"></i> Penilaian Kualitas Layanan</h2>
                 <p class="text-sm text-slate-500 font-medium mb-8">Silakan beri penilaian (Bintang) pada setiap unsur pelayanan di bawah ini. (1 Bintang = Buruk, 4 Bintang = Sangat Baik)</p>
 
@@ -118,14 +148,12 @@
                                     </template>
                                 </div>
                                 
-                                <!-- Label Teks Dinamis -->
                                 <div class="text-center sm:text-left">
                                     <span class="text-sm font-black tracking-widest uppercase transition-colors"
                                           :class="{'text-rose-500': rating==1, 'text-amber-500': rating==2, 'text-emerald-500': rating==3, 'text-blue-500': rating==4, 'text-slate-400': rating==0}"
                                           x-text="text"></span>
                                 </div>
 
-                                <!-- Input Hidden untuk Controller -->
                                 <input type="hidden" name="jawaban[{{ $unsur->id }}]" x-model="rating" required>
                             </div>
                         </div>
@@ -142,13 +170,21 @@
                     <label class="block text-sm font-bold text-slate-700 mb-3"><i class="fa-regular fa-comment-dots mr-2"></i> Saran & Masukan Tambahan (Opsional)</label>
                     <textarea name="saran_masukan" rows="4" class="w-full px-4 py-3 bg-slate-50 border-slate-200 rounded-xl focus:ring-indigo-500 focus:border-indigo-500 text-sm font-medium resize-none placeholder-slate-300" placeholder="Ketik saran untuk perbaikan layanan kami ke depannya..."></textarea>
                 </div>
+
+                <!-- TOMBOL KEMBALI & SUBMIT -->
+                <div class="mt-8 flex flex-col sm:flex-row gap-4">
+                    <button type="button" @click="step = 1; window.scrollTo({ top: 0, behavior: 'smooth' });" 
+                            class="w-full sm:w-1/3 py-5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-black text-xs uppercase tracking-[0.1em] rounded-2xl shadow-sm transition-all flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-arrow-left"></i> Kembali
+                    </button>
+                    
+                    <button type="submit" 
+                            class="w-full sm:w-2/3 py-5 bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-700 hover:to-indigo-600 text-white font-black text-sm uppercase tracking-[0.2em] rounded-2xl shadow-xl shadow-indigo-500/30 hover:-translate-y-1 transition-all flex items-center justify-center gap-3">
+                        Kirim Penilaian <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </div>
             </div>
 
-            <!-- TOMBOL SUBMIT -->
-            <button type="submit" class="w-full py-5 bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-700 hover:to-indigo-600 text-white font-black text-sm uppercase tracking-[0.2em] rounded-2xl shadow-xl shadow-indigo-500/30 hover:-translate-y-1 transition-all flex items-center justify-center gap-3">
-                <span>Kirim Penilaian Saya</span>
-                <i class="fa-solid fa-paper-plane"></i>
-            </button>
         </form>
 
         @include('layouts.footer')
