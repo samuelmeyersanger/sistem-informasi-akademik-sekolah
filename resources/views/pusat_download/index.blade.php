@@ -264,7 +264,7 @@
                             </div>
                             <p class="text-[11px] font-medium text-slate-500 leading-relaxed mb-6 flex-1">Unduh data mentah seluruh kuesioner masyarakat untuk penghitungan Indeks Kepuasan Masyarakat.</p>
                             
-                            <form action="{{ route('hasil_skm') }}" method="GET" target="_blank" class="mt-auto">
+                            <form action="{{ route('pusat_download.hasil_skm') }}" method="GET" target="_blank" class="mt-auto">
                                 <button type="submit" class="w-full px-4 py-3.5 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white text-[11px] font-black uppercase tracking-widest rounded-xl transition-all shadow-lg shadow-blue-500/30 hover:-translate-y-0.5 flex justify-center items-center gap-2">
                                     <span>📊</span> Buka Tabel Olah Data
                                 </button>
