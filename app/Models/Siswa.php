@@ -239,4 +239,12 @@ class Siswa extends Model
     {
         return $this->hasOne(\App\Models\Kehadiran::class, 'siswa_id');
     }
+    /**
+     * Relasi ke data Nilai Ekstrakurikuler Siswa
+     */
+    public function nilaiEkstrakurikuler()
+    {
+        // Sesuaikan nama class 'NilaiEkstrakurikuler' dengan nama Model yang Anda buat
+        return $this->hasMany(\App\Models\NilaiEkstrakurikuler::class, 'siswa_id');
+    }
 }

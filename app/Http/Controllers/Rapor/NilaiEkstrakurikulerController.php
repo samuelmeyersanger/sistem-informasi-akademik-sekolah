@@ -16,29 +16,39 @@ class NilaiEkstrakurikulerController extends Controller
      */
     public function index(Request $request)
     {
-        // Menangkap filter dari form Dropdown
+        $user = auth()->user();
+        // 1. Menangkap filter dari form Dropdown
         $ekstrakurikuler_id = $request->input('ekstrakurikuler_id');
         $kelas_id = $request->input('kelas_id');
-
-        // Mengambil data Master untuk Dropdown
-        $ekstrakurikulers = Ekstrakurikuler::all(); // Sesuaikan jika ada is_aktif
-        $kelases = Kelas::orderBy('tingkat', 'asc')->orderBy('nama_kelas', 'asc')->get();
-
+        // 2. GEMBOK EKSKUL: Hanya tarik ekskul yang dipegang oleh user (Pembina)
+        $ekstrakurikulers = \App\Models\Ekstrakurikuler::aksesPembina($user)
+                                ->where('is_aktif', true)
+                                ->orderBy('nama', 'asc')
+                                ->get();
+        // 3. KELAS DIBIARKAN TERBUKA: Agar pembina bisa mencari muridnya dari kelas manapun
+        $kelases = \App\Models\Kelas::orderBy('tingkat', 'asc')
+                        ->orderBy('nama_kelas', 'asc')
+                        ->get();
         $siswas = collect(); // Koleksi kosong secara default
-
         // Jika Guru sudah memilih Ekskul dan Kelas, baru kita munculkan daftar Siswanya
         if ($ekstrakurikuler_id && $kelas_id) {
             
-            // Ambil semua siswa di kelas tersebut
-            // Dan kita tarik juga nilai ekskulnya JIKA ADA untuk ekskul yang sedang dipilih
-            $siswas = Siswa::where('kelas_id', $kelas_id)
+            // PENCEGAHAN URL HACKING (Mencegah guru menilai ekskul milik guru lain)
+            if (!$ekstrakurikulers->contains('id', $ekstrakurikuler_id)) {
+                abort(403, 'Akses Ditolak! Anda bukan Pembina dari Ekstrakurikuler ini.');
+            }
+            
+            // AMBIL SISWA YANG HANYA IKUT EKSKUL TERSEBUT
+            $siswas = \App\Models\Siswa::where('kelas_id', $kelas_id)
+                ->whereHas('ekskulYangDiikuti', function($query) use ($ekstrakurikuler_id) {
+                    $query->where('ekstrakurikuler_id', $ekstrakurikuler_id);
+                })
                 ->orderBy('nama_lengkap', 'asc')
                 ->with(['nilaiEkstrakurikuler' => function($query) use ($ekstrakurikuler_id) {
                     $query->where('ekstrakurikuler_id', $ekstrakurikuler_id);
                 }])
                 ->get();
         }
-
         return view('rapor.nilai-ekstrakurikuler.index', compact(
             'ekstrakurikulers', 
             'kelases', 
