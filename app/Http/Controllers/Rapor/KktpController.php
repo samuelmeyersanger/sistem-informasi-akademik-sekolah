@@ -23,7 +23,7 @@ class KktpController extends Controller
 
         // Mengambil data Master untuk Dropdown
         $kelases = Kelas::orderBy('tingkat', 'asc')->orderBy('nama_kelas', 'asc')->get();
-        $mapels = MataPelajaran::orderBy('nama_mata_pelajaran', 'asc')->get(); // Sesuaikan nama kolom mapel
+        $mapels = MataPelajaran::orderBy('nama_mapel', 'asc')->get(); // Sesuaikan nama kolom mapel
 
         $siswas = collect();
         $tujuanPembelajarans = collect();
