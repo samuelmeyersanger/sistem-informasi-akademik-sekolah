@@ -27,6 +27,7 @@ class Nilai extends Model
         'kelas_id',
         'siswa_id',
         'mata_pelajaran_id',
+        'semester_id',
         'nilai_sumatif',
         'rata_sumatif',
         'psts',
@@ -72,5 +73,14 @@ class Nilai extends Model
     public function mataPelajaran()
     {
         return $this->belongsTo(MataPelajaran::class, 'mata_pelajaran_id');
+    }
+
+    /**
+     * Relasi ke tabel Semester.
+     * (Nilai ini berada di semester apa)
+     */
+    public function semester()
+    {
+        return $this->belongsTo(Semester::class, 'semester_id');
     }
 }

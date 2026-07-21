@@ -55,9 +55,13 @@ class NilaiController extends Controller
                                         ->get();
                 // Ambil Anak
                 $siswas = \App\Models\Siswa::where('kelas_id', $kelas_id)->orderBy('nama_lengkap', 'asc')->get();
+                $semesterAktif = \App\Models\Semester::active()->first();
+                $semester_aktif_id = $semesterAktif ? $semesterAktif->id : null;
+
                 // Ambil Riwayat Nilai
                 $nilais = \App\Models\Nilai::where('kelas_id', $kelas_id)
                              ->where('mata_pelajaran_id', $mata_pelajaran_id)
+                             ->where('semester_id', $semester_aktif_id)
                              ->get();
                 
                 foreach ($nilais as $n) {
@@ -85,6 +89,10 @@ class NilaiController extends Controller
 
         $kelas_id = $request->kelas_id;
         $mapel_id = $request->mata_pelajaran_id;
+        
+        $semesterAktif = \App\Models\Semester::active()->first();
+        $semester_aktif_id = $semesterAktif ? $semesterAktif->id : null;
+        
         $sukses_tersimpan = 0;
 
         foreach ($request->nilai as $siswa_id => $data) {
@@ -124,6 +132,7 @@ class NilaiController extends Controller
                         'siswa_id'          => $siswa_id,
                         'kelas_id'          => $kelas_id,
                         'mata_pelajaran_id' => $mapel_id,
+                        'semester_id'       => $semester_aktif_id,
                     ],
                     [
                         'nilai_sumatif' => $sumatif_array, // Otomatis diconvert ke JSON oleh fitur $casts di Model!

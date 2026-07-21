@@ -55,9 +55,13 @@ class KktpController extends Controller
                                         ->get();
                 // Ambil Anak
                 $siswas = \App\Models\Siswa::where('kelas_id', $kelas_id)->orderBy('nama_lengkap', 'asc')->get();
+                $semesterAktif = \App\Models\Semester::active()->first();
+                $semester_aktif_id = $semesterAktif ? $semesterAktif->id : null;
+
                 // Ambil Riwayat KKTP
                 $kktps = \App\Models\Kktp::where('kelas_id', $kelas_id)
                              ->whereIn('tujuan_pembelajaran_id', $tujuanPembelajarans->pluck('id'))
+                             ->where('semester_id', $semester_aktif_id)
                              ->get();
                 
                 foreach ($kktps as $k) {
@@ -80,6 +84,10 @@ class KktpController extends Controller
         ]);
 
         $kelas_id = $request->kelas_id;
+        
+        $semesterAktif = \App\Models\Semester::active()->first();
+        $semester_aktif_id = $semesterAktif ? $semesterAktif->id : null;
+
         $sukses_tersimpan = 0;
 
         // Konsep Input HTML: name="kktp[ID_SISWA][ID_TP][tercapai]"
@@ -100,6 +108,7 @@ class KktpController extends Controller
                             'siswa_id'               => $siswa_id,
                             'kelas_id'               => $kelas_id,
                             'tujuan_pembelajaran_id' => $tp_id,
+                            'semester_id'            => $semester_aktif_id,
                         ],
                         [
                             'tercapai'       => $tercapai,

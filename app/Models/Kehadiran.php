@@ -26,6 +26,7 @@ class Kehadiran extends Model
     protected $fillable = [
         'siswa_id',
         'kelas_id',
+        'semester_id',
         'sakit',
         'izin',
         'tanpa_keterangan',
@@ -47,5 +48,14 @@ class Kehadiran extends Model
     public function kelas()
     {
         return $this->belongsTo(Kelas::class, 'kelas_id');
+    }
+
+    /**
+     * Relasi ke tabel Semester.
+     * (Kehadiran ini berada di semester apa)
+     */
+    public function semester()
+    {
+        return $this->belongsTo(Semester::class, 'semester_id');
     }
 }

@@ -28,6 +28,7 @@ class NilaiKorikuler extends Model
         'kegiatan_kokurikuler_id',
         'profil_lulusan_id',
         'kelas_id',
+        'semester_id',
         'predikat',
     ];
 
@@ -61,5 +62,13 @@ class NilaiKorikuler extends Model
     public function kelas()
     {
         return $this->belongsTo(Kelas::class, 'kelas_id');
+    }
+
+    /**
+     * Relasi ke tabel Semester.
+     */
+    public function semester()
+    {
+        return $this->belongsTo(Semester::class, 'semester_id');
     }
 }

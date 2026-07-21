@@ -27,6 +27,7 @@ class Kktp extends Model
         'kelas_id',
         'siswa_id',
         'tujuan_pembelajaran_id',
+        'semester_id',
         'tercapai',
         'tidak_tercapai',
     ];
@@ -56,5 +57,14 @@ class Kktp extends Model
     public function tujuanPembelajaran()
     {
         return $this->belongsTo(TujuanPembelajaran::class, 'tujuan_pembelajaran_id');
+    }
+
+    /**
+     * Relasi ke tabel Semester.
+     * (KKTP ini berada di semester apa)
+     */
+    public function semester()
+    {
+        return $this->belongsTo(Semester::class, 'semester_id');
     }
 }

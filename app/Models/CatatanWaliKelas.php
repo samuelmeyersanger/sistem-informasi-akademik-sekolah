@@ -26,6 +26,7 @@ class CatatanWaliKelas extends Model
     protected $fillable = [
         'siswa_id',
         'kelas_id',
+        'semester_id',
         'catatan',
     ];
 
@@ -45,5 +46,14 @@ class CatatanWaliKelas extends Model
     public function kelas()
     {
         return $this->belongsTo(Kelas::class, 'kelas_id');
+    }
+
+    /**
+     * Relasi ke tabel Semester.
+     * (Catatan ini berada di semester apa)
+     */
+    public function semester()
+    {
+        return $this->belongsTo(Semester::class, 'semester_id');
     }
 }
