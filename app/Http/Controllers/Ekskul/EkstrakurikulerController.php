@@ -232,4 +232,66 @@ class EkstrakurikulerController extends Controller
 
         return redirect()->route('ekskul.ekstrakurikuler.show', $ekskulId)->with('success', 'Data prestasi berhasil dihapus.');
     }
+        /**
+     * =========================================================================
+     * AREA PUBLIK: PENDAFTARAN EKSTRAKURIKULER OLEH SISWA
+     * =========================================================================
+     */
+    // 1. Halaman Form Pendaftaran (Publik)
+    public function formPendaftaranPublic()
+    {
+        // Hanya tampilkan ekskul yang statusnya aktif (asumsi ada kolom is_aktif)
+        // Jika tidak ada kolom is_aktif, hapus where('is_aktif', true)
+        $ekskulList = Ekstrakurikuler::where('is_aktif', true)->orderBy('nama', 'asc')->get();
+        
+        // Ambil daftar kelas untuk Dropdown
+        $kelasList = Kelas::orderBy('tingkat', 'asc')->orderBy('nama_kelas', 'asc')->get();
+        return view('ekskul.pendaftaran_public', compact('ekskulList', 'kelasList'));
+    }
+    // 2. Proses Simpan Pendaftaran
+    public function storePendaftaranPublic(Request $request)
+    {
+        $request->validate([
+            'ekstrakurikuler_id' => 'required|exists:ekstrakurikuler,id',
+            'kelas_id'           => 'required|exists:kelas,id',
+            'siswa_id'           => 'required|exists:siswa,id',
+            'nomor_hp'           => 'required|string|max:15',
+            'motivasi'           => 'required|string',
+        ]);
+        // Cek apakah siswa tersebut sudah mendaftar di ekskul yang sama
+        $terdaftar = AnggotaEkstrakurikuler::where('ekstrakurikuler_id', $request->ekstrakurikuler_id)
+                                            ->where('siswa_id', $request->siswa_id)
+                                            ->exists();
+                                            
+        if ($terdaftar) {
+            return redirect()->back()->with('error', 'Pendaftaran Gagal: Kamu sudah terdaftar di ekstrakurikuler ini!');
+        }
+        AnggotaEkstrakurikuler::create([
+            'ekstrakurikuler_id' => $request->ekstrakurikuler_id,
+            'siswa_id'           => $request->siswa_id,
+            'kelas_id'           => $request->kelas_id,
+            'nomor_hp'           => $request->nomor_hp,
+            'motivasi'           => $request->motivasi,
+            'tanggal_bergabung'  => now()->toDateString(), // Otomatis tercatat hari ini
+            'status'             => 'Pending', // Status awal 'Pending' menunggu persetujuan Pembina
+        ]);
+        return redirect()->back()->with('success', 'Pendaftaran Berhasil! Silakan tunggu konfirmasi atau pengumuman lebih lanjut dari Pembina Ekstrakurikuler.');
+    }
+    // 3. AJAX Endpoint: Mengambil daftar siswa berdasarkan Kelas dan Ekskul
+    public function getSiswaByKelasAndEkskul($ekskul_id, $kelas_id)
+    {
+        // Cari ID siswa yang sudah terdaftar di ekskul ini
+        $siswaSudahDaftar = \App\Models\AnggotaEkstrakurikuler::where('ekstrakurikuler_id', $ekskul_id)
+                                ->pluck('siswa_id')
+                                ->toArray();
+        // Tarik data siswa yang aktif, dan KECUALIKAN yang sudah daftar di ekskul ini
+        $siswa = \App\Models\Siswa::where('kelas_id', $kelas_id)
+                      ->where('status_siswa', 'Aktif')
+                      ->whereNotIn('id', $siswaSudahDaftar)
+                      ->orderBy('nama_lengkap', 'asc')
+                      ->select('id', 'nama_lengkap', 'nipd')
+                      ->get();
+                      
+        return response()->json($siswa);
+    }
 }

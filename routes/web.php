@@ -91,6 +91,12 @@ Route::get('/survey-kepuasan', [\App\Http\Controllers\SurveyKepuasanController::
 Route::post('/survey-kepuasan/submit', [\App\Http\Controllers\SurveyKepuasanController::class, 'store'])->name('publik.survey.store');
 Route::get('/survey-kepuasan/sukses', [\App\Http\Controllers\SurveyKepuasanController::class, 'success'])->name('publik.survey.success');
 
+// Rute Pendaftaran Ekskul untuk Publik/Siswa
+Route::get('/daftar-ekskul', [\App\Http\Controllers\Ekskul\EkstrakurikulerController::class, 'formPendaftaranPublic'])->name('ekskul.pendaftaran.form');
+Route::post('/daftar-ekskul', [\App\Http\Controllers\Ekskul\EkstrakurikulerController::class, 'storePendaftaranPublic'])->name('ekskul.pendaftaran.store');
+// API AJAX untuk Dropdown Siswa
+Route::get('/api/siswa-ekskul/{ekskul_id}/{kelas_id}', [\App\Http\Controllers\Ekskul\EkstrakurikulerController::class, 'getSiswaByKelasAndEkskul']);
+
 /*
 |--------------------------------------------------------------------------
 | Protected Routes - Halaman Internal (Wajib Login)
