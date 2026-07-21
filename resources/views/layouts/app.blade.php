@@ -24,7 +24,7 @@
                 
                 @include('layouts.header')
 
-                <main class="flex-grow py-8 px-4 sm:px-6 lg:px-8 relative z-10">
+                <main class="flex-grow py-8 px-4 sm:px-6 lg:px-8">
                     {{ $slot }}
                 </main>
                 
