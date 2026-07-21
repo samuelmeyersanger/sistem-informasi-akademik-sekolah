@@ -273,7 +273,7 @@ class EkstrakurikulerController extends Controller
             'nomor_hp'           => $request->nomor_hp,
             'motivasi'           => $request->motivasi,
             'tanggal_bergabung'  => now()->toDateString(), // Otomatis tercatat hari ini
-            'status'             => 'Terdaftar Sebagai Anggota Ekskul', // Status awal 'Pending' menunggu persetujuan Pembina
+            'status'             => 'Aktif', // Status awal 'Aktif'
         ]);
         return redirect()->back()->with('success', 'Pendaftaran Berhasil! Silakan tunggu konfirmasi atau pengumuman lebih lanjut dari Pembina Ekstrakurikuler.');
     }
