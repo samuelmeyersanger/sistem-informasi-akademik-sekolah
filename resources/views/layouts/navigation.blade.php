@@ -11,7 +11,7 @@
 </div>
 
 <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'" 
-       class="fixed inset-y-0 left-0 z-50 flex flex-col w-64 bg-slate-950/95 backdrop-blur-2xl border-r border-white/5 text-slate-300 transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 shrink-0 shadow-2xl shadow-black/50 relative overflow-hidden">
+       class="fixed inset-y-0 left-0 z-50 flex flex-col w-64 bg-slate-950/95 backdrop-blur-2xl border-r border-white/5 text-slate-300 transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 shrink-0 shadow-2xl shadow-black/50 overflow-hidden">
     
     {{-- Aksen Cahaya Latar Samping Kiri Atas --}}
     <div class="absolute -top-20 -left-20 w-40 h-40 bg-indigo-500/10 rounded-full blur-[80px] pointer-events-none"></div>
