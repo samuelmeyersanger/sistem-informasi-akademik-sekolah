@@ -9,6 +9,11 @@
         // Mengambil tab aktif dari backend laravel
         activeTab: '{{ $currentTab }}',
 
+        // Data Master untuk Modal
+        allSiswa: {{ json_encode($listSiswa) }},
+        selectedKelasPelanggaran: '',
+        selectedKelasTerlambat: '',
+
         // State Modal Kontrol
         openCreatePelanggaran: false,
         openCreateTerlambat: false,
