@@ -94,7 +94,7 @@
                                     </td>
                                     <td class="p-5 align-middle">
                                         <span class="inline-flex items-center gap-1.5 text-xs text-indigo-700 bg-indigo-50 px-2.5 py-1 rounded-lg font-bold border border-indigo-100">
-                                            🏫 {{ $agt->kelas->nama ?? 'N/A' }}
+                                            🏫 {{ $agt->kelas->nama_kelas ?? 'N/A' }}
                                         </span>
                                     </td>
                                     <td class="p-5 align-middle font-medium text-gray-600">
