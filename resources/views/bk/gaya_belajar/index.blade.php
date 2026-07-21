@@ -50,9 +50,22 @@
             <!-- ========================================== -->
             <div x-show="activeTab === 'hasil'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" class="bg-white p-6 sm:p-8 rounded-b-2xl rounded-tr-2xl shadow-sm border border-gray-100">
                 
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-xl font-bold text-gray-800">Daftar Gaya Belajar Siswa</h3>
-                    <p class="text-sm text-gray-500">Merekap otomatis dari jawaban form kuesioner.</p>
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-6">
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-800">Daftar Gaya Belajar Siswa</h3>
+                        <p class="text-sm text-gray-500">Merekap otomatis dari jawaban form kuesioner.</p>
+                    </div>
+
+                    <!-- FORM FILTER KELAS -->
+                    <form method="GET" action="{{ route('bk.gaya_belajar.index') }}" class="w-full md:w-64">
+                        <label class="block text-xs font-bold text-gray-700 mb-1">Filter Berdasarkan Kelas</label>
+                        <select name="kelas_id" onchange="this.form.submit()" class="w-full rounded-xl border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 text-sm font-semibold shadow-sm bg-gray-50 hover:bg-white cursor-pointer transition-colors">
+                            <option value="">-- Semua Kelas (Yang sudah isi) --</option>
+                            @foreach($kelasList as $k)
+                                <option value="{{ $k->id }}" {{ $kelas_id == $k->id ? 'selected' : '' }}>{{ $k->tingkat }} - {{ $k->nama_kelas }}</option>
+                            @endforeach
+                        </select>
+                    </form>
                 </div>
 
                 <div class="overflow-x-auto rounded-xl border border-gray-200">
@@ -69,32 +82,82 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($hasil as $index => $h)
-                                <tr class="bg-white border-b hover:bg-gray-50 transition-colors">
-                                    <td class="px-6 py-4 font-bold">{{ $index + 1 }}</td>
-                                    <td class="px-6 py-4 font-bold text-gray-900">{{ $h->siswa->nama_lengkap ?? 'Anonim' }}</td>
-                                    <td class="px-6 py-4 text-center font-bold">{{ $h->skor_visual }}</td>
-                                    <td class="px-6 py-4 text-center font-bold">{{ $h->skor_auditory }}</td>
-                                    <td class="px-6 py-4 text-center font-bold">{{ $h->skor_kinesthetic }}</td>
-                                    <td class="px-6 py-4">
-                                        <span class="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-xs font-bold border border-indigo-200">
-                                            {{ $h->gaya_dominan }}
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4 text-center">
-                                        <!-- TOMBOL RESET MENGGUNAKAN POPUP MODERN -->
-                                        <button @click="bukaModalHapus('{{ route('bk.gaya_belajar.destroy_hasil', $h->id) }}', 'Reset Data Siswa?', 'Apakah Anda yakin ingin menghapus data gaya belajar {{ $h->siswa->nama_lengkap ?? 'siswa ini' }}? Namanya akan muncul kembali di form dan ia harus mengisi kuesioner dari awal.')" type="button" class="text-rose-600 hover:text-white bg-rose-50 hover:bg-rose-600 p-2 rounded-lg font-bold text-xs transition-colors shadow-sm border border-rose-200">
-                                            🔄 Reset
-                                        </button>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="7" class="px-6 py-10 text-center text-gray-500">
-                                        <span class="text-3xl block mb-2">📭</span> Belum ada siswa yang mengisi kuesioner.
-                                    </td>
-                                </tr>
-                            @endforelse
+                            @if($kelas_id)
+                                <!-- MODE 1: FILTER KELAS AKTIF (MENAMPILKAN SEMUA ANAK DI KELAS) -->
+                                @forelse($siswaPerKelas as $index => $siswa)
+                                    @php 
+                                        $h = $hasilData[$siswa->id] ?? null; 
+                                    @endphp
+                                    <tr class="border-b transition-colors {{ $h ? 'bg-white hover:bg-gray-50' : 'bg-red-50/20 hover:bg-red-50/50' }}">
+                                        <td class="px-6 py-4 font-bold">{{ $index + 1 }}</td>
+                                        <td class="px-6 py-4 font-bold {{ $h ? 'text-gray-900' : 'text-gray-400' }}">{{ $siswa->nama_lengkap }}</td>
+                                        
+                                        @if($h)
+                                            <!-- Jika Anak Sudah Mengisi -->
+                                            <td class="px-6 py-4 text-center font-bold">{{ $h->skor_visual }}</td>
+                                            <td class="px-6 py-4 text-center font-bold">{{ $h->skor_auditory }}</td>
+                                            <td class="px-6 py-4 text-center font-bold">{{ $h->skor_kinesthetic }}</td>
+                                            <td class="px-6 py-4">
+                                                <span class="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-xs font-bold border border-indigo-200">
+                                                    {{ $h->gaya_dominan }}
+                                                </span>
+                                            </td>
+                                            <td class="px-6 py-4 text-center">
+                                                <button @click="bukaModalHapus('{{ route('bk.gaya_belajar.destroy_hasil', $h->id) }}', 'Reset Data Siswa?', 'Apakah Anda yakin ingin menghapus data gaya belajar {{ $siswa->nama_lengkap }}? Namanya akan muncul kembali di form.')" type="button" class="text-rose-600 hover:text-white bg-rose-50 hover:bg-rose-600 p-2 rounded-lg font-bold text-xs transition-colors shadow-sm border border-rose-200">
+                                                    🔄 Reset
+                                                </button>
+                                            </td>
+                                        @else
+                                            <!-- Jika Anak BELUM Mengisi -->
+                                            <td colspan="4" class="px-6 py-4 text-center">
+                                                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-rose-100 text-rose-700 border border-rose-200">
+                                                    <i class="fa-solid fa-circle-exclamation"></i> Anak Ini Belum Mengisi
+                                                </span>
+                                            </td>
+                                            <td class="px-6 py-4 text-center">
+                                                <span class="text-gray-300 text-xs">-</span>
+                                            </td>
+                                        @endif
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="7" class="px-6 py-10 text-center text-gray-500">
+                                            <span class="text-3xl block mb-2">📭</span> Belum ada data siswa di kelas ini.
+                                        </td>
+                                    </tr>
+                                @endforelse
+
+                            @else
+                                <!-- MODE 2: TANPA FILTER KELAS (HANYA MENAMPILKAN YANG SUDAH ISI DARI SEMUA KELAS) -->
+                                @forelse($hasil as $index => $h)
+                                    <tr class="bg-white border-b hover:bg-gray-50 transition-colors">
+                                        <td class="px-6 py-4 font-bold">{{ $index + 1 }}</td>
+                                        <td class="px-6 py-4 font-bold text-gray-900">
+                                            {{ $h->siswa->nama_lengkap ?? 'Anonim' }}
+                                            <span class="block text-xs text-gray-400 mt-0.5">{{ $h->siswa->kelas->tingkat ?? '' }} {{ $h->siswa->kelas->nama_kelas ?? '' }}</span>
+                                        </td>
+                                        <td class="px-6 py-4 text-center font-bold">{{ $h->skor_visual }}</td>
+                                        <td class="px-6 py-4 text-center font-bold">{{ $h->skor_auditory }}</td>
+                                        <td class="px-6 py-4 text-center font-bold">{{ $h->skor_kinesthetic }}</td>
+                                        <td class="px-6 py-4">
+                                            <span class="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-xs font-bold border border-indigo-200">
+                                                {{ $h->gaya_dominan }}
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 text-center">
+                                            <button @click="bukaModalHapus('{{ route('bk.gaya_belajar.destroy_hasil', $h->id) }}', 'Reset Data Siswa?', 'Apakah Anda yakin ingin menghapus data gaya belajar {{ $h->siswa->nama_lengkap ?? 'siswa ini' }}? Namanya akan muncul kembali di form dan ia harus mengisi kuesioner dari awal.')" type="button" class="text-rose-600 hover:text-white bg-rose-50 hover:bg-rose-600 p-2 rounded-lg font-bold text-xs transition-colors shadow-sm border border-rose-200">
+                                                🔄 Reset
+                                            </button>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="7" class="px-6 py-10 text-center text-gray-500">
+                                            <span class="text-3xl block mb-2">📭</span> Belum ada siswa yang mengisi kuesioner.
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            @endif
                         </tbody>
                     </table>
                 </div>
@@ -132,7 +195,6 @@
                                 <div class="flex flex-col gap-2 min-w-[90px]">
                                     <button @click="editData = {{ $s }}; modalEdit = true" class="px-3 py-1.5 bg-gray-200 hover:bg-gray-300 text-gray-800 text-xs font-bold rounded-lg transition-colors text-center">Edit</button>
                                     
-                                    <!-- TOMBOL HAPUS SOAL MENGGUNAKAN POPUP MODERN -->
                                     <button @click="bukaModalHapus('{{ route('bk.gaya_belajar.destroy_soal', $s->id) }}', 'Hapus Soal Kuesioner?', 'Apakah Anda yakin ingin menghapus pertanyaan ini? Pertanyaan ini akan hilang dari form siswa secara permanen.')" type="button" class="w-full px-3 py-1.5 bg-red-100 hover:bg-red-200 text-red-700 text-xs font-bold rounded-lg transition-colors text-center">
                                         Hapus
                                     </button>
@@ -145,41 +207,29 @@
                         </div>
                     @endforelse
                 </div>
-            </div> <!-- End Tab 2 -->
+            </div> 
 
             <!-- ========================================================================= -->
-            <!-- ⚠️ POPUP MODAL HAPUS / RESET (DESAIN MODERN SEPERTI REFERENSI GAMBAR) -->
+            <!-- ⚠️ POPUP MODAL HAPUS / RESET -->
             <!-- ========================================================================= -->
             <div x-show="modalHapus" style="display: none;" class="fixed inset-0 z-[100] overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
                 <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:p-0">
                     <div x-show="modalHapus" @click="modalHapus = false" x-transition.opacity class="fixed inset-0 bg-gray-900 bg-opacity-60 transition-opacity" aria-hidden="true"></div>
                     
                     <div x-show="modalHapus" x-transition.scale.origin.center class="relative inline-block align-bottom bg-white rounded-3xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md sm:w-full p-8 text-center">
-                        
-                        <!-- Ikon Peringatan -->
-                        <div class="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-rose-50 mb-6">
-                            <span class="text-4xl">⚠️</span>
-                        </div>
-                        
-                        <!-- Teks -->
+                        <div class="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-rose-50 mb-6"><span class="text-4xl">⚠️</span></div>
                         <h3 class="text-2xl leading-6 font-bold text-gray-900 mb-4" id="modal-title" x-text="hapusTitle"></h3>
                         <p class="text-sm text-gray-500 mb-8 px-2" x-text="hapusPesan"></p>
-                        
-                        <!-- Form dan Tombol -->
                         <form :action="hapusUrl" method="POST" class="flex justify-center gap-3">
                             @csrf @method('DELETE')
-                            <button type="button" @click="modalHapus = false" class="px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold rounded-xl transition-colors focus:outline-none">
-                                Batal
-                            </button>
-                            <button type="submit" class="px-6 py-3 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl transition-colors shadow-md focus:outline-none">
-                                Ya, Lanjutkan
-                            </button>
+                            <button type="button" @click="modalHapus = false" class="px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold rounded-xl transition-colors focus:outline-none">Batal</button>
+                            <button type="submit" class="px-6 py-3 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl transition-colors shadow-md focus:outline-none">Ya, Lanjutkan</button>
                         </form>
                     </div>
                 </div>
             </div>
 
-            <!-- MODAL TAMBAH (Kode tetap sama) -->
+            <!-- MODAL TAMBAH & EDIT SAMA SEPERTI SEBELUMNYA -->
             <div x-show="modalTambah" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto">
                 <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:p-0">
                     <div x-show="modalTambah" @click="modalTambah = false" x-transition.opacity class="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity"></div>
@@ -204,7 +254,6 @@
                 </div>
             </div>
 
-            <!-- MODAL EDIT (Kode tetap sama) -->
             <div x-show="modalEdit" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto">
                 <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:p-0">
                     <div x-show="modalEdit" @click="modalEdit = false" x-transition.opacity class="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity"></div>

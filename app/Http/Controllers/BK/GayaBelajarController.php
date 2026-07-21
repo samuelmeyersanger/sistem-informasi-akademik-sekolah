@@ -18,16 +18,34 @@ class GayaBelajarController extends Controller
      */
 
     // Menampilkan Dashboard Utama Guru BK (Daftar Soal & Rekap Hasil)
-    public function index()
+    // Menampilkan Dashboard Utama Guru BK (Daftar Soal & Rekap Hasil)
+    public function index(Request $request)
     {
         $soal = GayaBelajarSoal::all();
+        $kelasList = Kelas::orderBy('tingkat', 'asc')->orderBy('nama_kelas', 'asc')->get();
         
-        // Menarik semua data hasil gaya belajar beserta profil siswanya
-        $hasil = GayaBelajarHasil::with(['siswa.kelas'])
-            ->orderBy('created_at', 'desc')
-            ->get();
-
-        return view('bk.gaya_belajar.index', compact('soal', 'hasil'));
+        // Menangkap filter jika Guru BK memilih kelas di Dropdown
+        $kelas_id = $request->input('kelas_id');
+        
+        $siswaPerKelas = collect();
+        $hasilData = []; 
+        $hasil = collect(); 
+        if ($kelas_id) {
+            // MODE 1: Jika filter kelas diaktifkan, tarik SEMUA siswa di kelas itu (termasuk yang belum ngisi)
+            $siswaPerKelas = Siswa::where('kelas_id', $kelas_id)->orderBy('nama_lengkap', 'asc')->get();
+            
+            // Cari data kuesioner anak-anak tersebut
+            $kumpulanHasil = GayaBelajarHasil::whereIn('siswa_id', $siswaPerKelas->pluck('id'))->get();
+            
+            // Susun datanya agar gampang dicek di Blade
+            foreach ($kumpulanHasil as $h) {
+                $hasilData[$h->siswa_id] = $h;
+            }
+        } else {
+            // MODE 2: Jika tidak ada filter, tampilkan riwayat semua anak yang sudah isi (seperti biasa)
+            $hasil = GayaBelajarHasil::with(['siswa.kelas'])->orderBy('created_at', 'desc')->get();
+        }
+        return view('bk.gaya_belajar.index', compact('soal', 'hasil', 'kelasList', 'kelas_id', 'siswaPerKelas', 'hasilData'));
     }
 
     // Guru BK: Menyimpan Pertanyaan Baru
