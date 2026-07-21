@@ -241,12 +241,17 @@
         <div x-show="openCreate" class="fixed inset-0 z-50 overflow-y-auto bg-gray-900/60 backdrop-blur-sm flex items-center justify-center p-4" style="display: none;" x-transition>
             <div class="bg-white/95 backdrop-blur-xl rounded-[2.5rem] max-w-4xl w-full shadow-2xl border border-white/50 flex flex-col max-h-[90vh]" @click.away="resetWizard()">
                 
-                <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-                    <div>
-                        <h3 class="text-sm font-bold text-gray-900 uppercase">Form Pendaftaran Akun Siswa</h3>
-                        <p class="text-[11px] text-gray-400">Harap isi form data diri, domisili, dan silsilah keluarga di bawah.</p>
+                <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-gradient-to-r from-gray-50 to-white">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center text-xl shadow-inner border border-indigo-200">
+                            📝
+                        </div>
+                        <div>
+                            <h3 class="text-base font-black text-gray-900 uppercase tracking-wide">Pendaftaran Siswa Baru</h3>
+                            <p class="text-xs text-gray-500 font-medium">Harap isi form data diri, domisili, dan silsilah keluarga di bawah secara teliti.</p>
+                        </div>
                     </div>
-                    <button type="button" @click="resetWizard()" class="text-gray-400 hover:text-gray-600 text-lg font-bold cursor-pointer">&times;</button>
+                    <button type="button" @click="resetWizard()" class="text-gray-400 hover:text-rose-500 hover:bg-rose-50 p-2 rounded-full text-xl font-bold transition-all cursor-pointer">&times;</button>
                 </div>
 
                 <div class="px-6 py-2.5 bg-indigo-50/40 border-b border-gray-100 grid grid-cols-3 text-center text-xs font-bold text-gray-400">
@@ -899,17 +904,17 @@
                     </div>
 
                     <!-- Navigasi Tombol di bagian bawah -->
-                    <div class="pt-4 border-t border-gray-100 flex justify-between bg-white">
-                        <button type="button" x-show="currentStep > 1" @click="currentStep--" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold rounded-lg transition-colors cursor-pointer">
+                    <div class="pt-6 border-t border-gray-100 flex justify-between bg-white">
+                        <button type="button" x-show="currentStep > 1" @click="currentStep--" class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-bold rounded-xl transition-colors cursor-pointer shadow-sm">
                             ⬅️ Kembali
                         </button>
                         <div x-show="currentStep === 1"></div>
                         
-                        <button type="button" x-show="currentStep < 3" @click="currentStep++" class="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white text-xs font-semibold rounded-lg shadow-sm transition-colors cursor-pointer">
+                        <button type="button" x-show="currentStep < 3" @click="currentStep++" class="px-6 py-2.5 bg-gradient-to-r from-gray-800 to-gray-700 hover:from-gray-900 hover:to-gray-800 text-white text-sm font-bold rounded-xl shadow-md transition-all cursor-pointer">
                             Lanjut ➡️
                         </button>
                         
-                        <button type="submit" x-show="currentStep === 3" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-lg shadow-sm transition-colors cursor-pointer">
+                        <button type="submit" x-show="currentStep === 3" class="px-6 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white text-sm font-black uppercase tracking-widest rounded-xl shadow-lg shadow-emerald-500/30 transition-all cursor-pointer transform hover:-translate-y-0.5">
                             💾 Daftarkan Siswa
                         </button>
                     </div>
@@ -920,12 +925,17 @@
         <div x-show="openEdit" class="fixed inset-0 z-50 overflow-y-auto bg-gray-900/60 backdrop-blur-sm flex items-center justify-center p-4" style="display: none;" x-transition>
             <div class="bg-white/95 backdrop-blur-xl rounded-[2.5rem] max-w-4xl w-full shadow-2xl shadow-indigo-200/40 border border-white/50 flex flex-col max-h-[90vh]" @click.away="resetWizard()">
                 
-                <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-                    <div>
-                        <h3 class="text-sm font-bold text-gray-900 uppercase">Form Edit Akun Siswa</h3>
-                        <p class="text-[11px] text-gray-400">Harap isi form data diri, domisili, dan silsilah keluarga di bawah.</p>
+                <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-gradient-to-r from-gray-50 to-white">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center text-xl shadow-inner border border-amber-200">
+                            ✏️
+                        </div>
+                        <div>
+                            <h3 class="text-base font-black text-gray-900 uppercase tracking-wide">Edit Data Induk Siswa</h3>
+                            <p class="text-xs text-gray-500 font-medium">Lakukan pembaruan terhadap rekam jejak akademik maupun data personal siswa.</p>
+                        </div>
                     </div>
-                    <button type="button" @click="resetWizard()" class="text-gray-400 hover:text-gray-600 text-lg font-bold cursor-pointer">&times;</button>
+                    <button type="button" @click="resetWizard()" class="text-gray-400 hover:text-rose-500 hover:bg-rose-50 p-2 rounded-full text-xl font-bold transition-all cursor-pointer">&times;</button>
                 </div>
 
                 <div class="px-6 py-2.5 bg-indigo-50/40 border-b border-gray-100 grid grid-cols-3 text-center text-xs font-bold text-gray-400">
@@ -936,6 +946,7 @@
 
                 <form :action="editActionUrl" method="POST" id="formEditSiswa" class="flex-1 overflow-y-auto p-6 text-xs space-y-4 text-gray-700">
                     @csrf
+                    @method('PUT')
 
                     <div x-show="currentStep === 1" class="space-y-4">
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -1561,32 +1572,30 @@
                         </div>
                     </div>
 
-                    <div class="pt-6 mt-4 border-t border-gray-100 flex justify-between items-center bg-white">
+                    <div class="pt-6 border-t border-gray-100 flex justify-between items-center bg-white">
     
                         <div>
                             <button type="button" 
                                     x-show="currentStep > 1" 
                                     @click="currentStep--" 
-                                    class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold rounded-lg transition-colors cursor-pointer">
+                                    class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-bold rounded-xl transition-colors cursor-pointer shadow-sm">
                                 ⬅️ Kembali
                             </button>
                         </div>
                         
-                        <div>
+                        <div class="flex gap-2">
                             <button type="button" 
                                     x-show="currentStep < 3" 
                                     @click="currentStep++" 
-                                    class="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white text-xs font-semibold rounded-lg shadow-sm transition-colors cursor-pointer">
+                                    class="px-6 py-2.5 bg-gradient-to-r from-gray-800 to-gray-700 hover:from-gray-900 hover:to-gray-800 text-white text-sm font-bold rounded-xl shadow-md transition-all cursor-pointer">
                                 Lanjut ➡️
                             </button>
                             
-                            <form action="{{ url('kesiswaan/siswa/' . ($siswaTunggal?->id ?? '')) }}" method="POST" novalidate>
-                                @csrf
-                                @method('PUT') 
-                                <button type="submit" x-show="currentStep === 3" class="...">
-                                    💾 Simpan & Daftarkan Siswa
-                                </button>
-                            </form>
+                            <button type="submit" 
+                                    x-show="currentStep === 3" 
+                                    class="px-6 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white text-sm font-black uppercase tracking-widest rounded-xl shadow-lg shadow-amber-500/30 transition-all cursor-pointer transform hover:-translate-y-0.5">
+                                💾 Simpan Perubahan
+                            </button>
                         </div>
                         
                     </div>
