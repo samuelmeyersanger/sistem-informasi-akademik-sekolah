@@ -45,8 +45,8 @@
                     <span class="text-6xl block mb-4">🎉</span>
                     <h3 class="text-3xl font-black mb-2">Pendaftaran Berhasil!</h3>
                     <p class="text-lg opacity-90 font-medium">{{ session('success') }}</p>
-                    <a href="{{ route('/') }}" class="mt-6 inline-block bg-white text-emerald-600 px-6 py-2 rounded-full font-bold shadow-md hover:bg-gray-50 transition-colors">
-                        Kembali ke Dashboard
+                    <a href="{{ url('/') }}" class="mt-6 inline-block bg-white text-emerald-600 px-6 py-2 rounded-full font-bold shadow-md hover:bg-gray-50 transition-colors">
+                        Kembali ke Halaman Utama
                     </a>
                 </div>
             @endif

@@ -258,23 +258,39 @@ class EkstrakurikulerController extends Controller
             'nomor_hp'           => 'required|string|max:15',
             'motivasi'           => 'required|string',
         ]);
-        // Cek apakah siswa tersebut sudah mendaftar di ekskul yang sama
-        $terdaftar = AnggotaEkstrakurikuler::where('ekstrakurikuler_id', $request->ekstrakurikuler_id)
+        // Cek apakah siswa tersebut sudah mendaftar di ekskul yang sama (termasuk yang pernah dikeluarkan/dihapus)
+        $terdaftar = AnggotaEkstrakurikuler::withTrashed()
+                                            ->where('ekstrakurikuler_id', $request->ekstrakurikuler_id)
                                             ->where('siswa_id', $request->siswa_id)
-                                            ->exists();
+                                            ->first();
                                             
         if ($terdaftar) {
-            return redirect()->back()->with('error', 'Pendaftaran Gagal: Kamu sudah terdaftar di ekstrakurikuler ini!');
+            if ($terdaftar->trashed()) {
+                // Jika sebelumnya dikeluarkan, maka aktifkan kembali (Restore)
+                $terdaftar->restore();
+                $terdaftar->update([
+                    'kelas_id'           => $request->kelas_id,
+                    'nomor_hp'           => $request->nomor_hp,
+                    'motivasi'           => $request->motivasi,
+                    'tanggal_bergabung'  => now()->toDateString(),
+                    'status'             => 'Aktif',
+                ]);
+            } else {
+                return redirect()->back()->with('error', 'Pendaftaran Gagal: Kamu sudah terdaftar di ekstrakurikuler ini!');
+            }
+        } else {
+            // Jika benar-benar baru pertama kali mendaftar
+            AnggotaEkstrakurikuler::create([
+                'ekstrakurikuler_id' => $request->ekstrakurikuler_id,
+                'siswa_id'           => $request->siswa_id,
+                'kelas_id'           => $request->kelas_id,
+                'nomor_hp'           => $request->nomor_hp,
+                'motivasi'           => $request->motivasi,
+                'tanggal_bergabung'  => now()->toDateString(),
+                'status'             => 'Aktif',
+            ]);
         }
-        AnggotaEkstrakurikuler::create([
-            'ekstrakurikuler_id' => $request->ekstrakurikuler_id,
-            'siswa_id'           => $request->siswa_id,
-            'kelas_id'           => $request->kelas_id,
-            'nomor_hp'           => $request->nomor_hp,
-            'motivasi'           => $request->motivasi,
-            'tanggal_bergabung'  => now()->toDateString(), // Otomatis tercatat hari ini
-            'status'             => 'Aktif', // Status awal 'Aktif'
-        ]);
+
         return redirect()->back()->with('success', 'Pendaftaran Berhasil! Silakan tunggu konfirmasi atau pengumuman lebih lanjut dari Pembina Ekstrakurikuler.');
     }
     // 3. AJAX Endpoint: Mengambil daftar siswa berdasarkan Kelas dan Ekskul
