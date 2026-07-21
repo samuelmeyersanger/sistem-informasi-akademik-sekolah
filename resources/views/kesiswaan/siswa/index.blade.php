@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Manajemen Data Master Siswa') }}
+        <h2 class="font-bold text-2xl text-gray-800 leading-tight flex items-center gap-3">
+            <span class="text-3xl">🎓</span> {{ __('Modul Kesiswaan - Data Induk Siswa') }}
         </h2>
     </x-slot>
 
@@ -62,14 +62,14 @@
                 <div class="p-6 border-b border-gray-100 bg-gray-50/50 space-y-4">
                     <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                         <div>
-                            <h3 class="text-base font-bold text-gray-900">Daftar Induk Siswa</h3>
-                            <p class="text-xs text-gray-500">Gunakan bilah pencarian dan filter di bawah untuk memilah status operasional akademik siswa.</p>
+                            <h3 class="text-lg font-black text-gray-900 mb-1">Daftar Induk Siswa</h3>
+                            <p class="text-sm text-gray-500">Pusat pangkalan data akademik dan demografi seluruh peserta didik aktif maupun non-aktif.</p>
                         </div>
                         
                         <!-- 👇 BUKA GEMBOK 1: Tombol Tambah Siswa -->
                         @if(auth()->user()->hasPermission('kesiswaan.siswa.store'))
-                        <button @click="openCreate = true" class="px-4 py-2.5 bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-700 hover:to-indigo-600 text-white text-[11px] font-black uppercase tracking-widest rounded-xl shadow-lg shadow-indigo-500/30 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-1 cursor-pointer whitespace-nowrap">
-                            ➕ Tambah Siswa Baru
+                        <button @click="openCreate = true" class="px-6 py-3 bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-700 hover:to-indigo-600 text-white text-sm font-bold rounded-xl shadow-lg transition-transform transform hover:-translate-y-0.5 flex items-center justify-center gap-2 shrink-0 cursor-pointer">
+                            <span class="text-lg">➕</span> Tambah Siswa
                         </button>
                         @endif
                         
@@ -147,12 +147,12 @@
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse text-sm">
                         <thead>
-                            <tr class="bg-slate-50 border-b border-slate-100 text-slate-500 font-black text-[10px] uppercase tracking-widest">
-                                <th class="p-4 pl-6">Nama Lengkap / NIPD</th>
-                                <th class="p-4">NISN / NIK</th>
-                                <th class="p-4">Tingkat & Ruang Kelas</th>
-                                <th class="p-4 text-center">Status</th>
-                                <th class="p-4 pr-6 text-center w-48">Aksi</th>
+                            <tr class="bg-gray-50/80 border-b border-gray-100 text-gray-500 font-bold uppercase tracking-wider text-xs">
+                                <th class="p-5 pl-8">Nama Lengkap / NIPD</th>
+                                <th class="p-5">NISN / NIK</th>
+                                <th class="p-5">Tingkat & Ruang Kelas</th>
+                                <th class="p-5 text-center">Status</th>
+                                <th class="p-5 pr-8 text-center w-52">Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-100 text-gray-700 text-xs">
@@ -220,8 +220,9 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="p-12 text-center text-gray-400 italic bg-gray-50/30">
-                                        Tidak ada data rekam catatan siswa terdaftar.
+                                    <td colspan="5" class="p-16 text-center text-gray-400 bg-gray-50/30">
+                                        <span class="text-5xl block mb-4">📭</span>
+                                        <p class="text-lg font-bold text-gray-500">Tidak ada data rekam catatan siswa terdaftar.</p>
                                     </td>
                                 </tr>
                             @endforelse
