@@ -76,34 +76,41 @@
         <tr>
             <td width="15%">Nama Kelompok</td>
             <td width="35%">: {{ $kelas->nama_kelas }}</td>
-            <td width="15%">Bulan</td>
-            <td width="35%">: .......................................</td>
+            <td width="15%">Jumlah Siswa</td>
+            <td width="35%">: Laki ({{ $laki_laki }}), Prp ({{ $perempuan }})</td>
         </tr>
         <tr>
             <td>Pembimbing / Wali</td>
             <td>: {{ $kelas->waliKelas ? $kelas->waliKelas->nama_lengkap : '-' }}</td>
-            <td>Jumlah Siswa</td>
-            <td>: Laki ({{ $laki_laki }}), Prp ({{ $perempuan }})</td>
+            <td></td>
+            <td></td>
         </tr>
     </table>
 
     <table class="data-table">
         <thead>
             <tr>
-                <th rowspan="2" style="width: 3%;">No</th>
-                <th rowspan="2" style="width: 8%;">NISN</th>
-                <th rowspan="2" style="width: 25%;">Nama Lengkap</th>
-                <th rowspan="2" style="width: 3%;">L/P</th>
-                <th colspan="31">Tanggal Pertemuan</th>
-                <th colspan="3">Ket</th>
+                <th rowspan="3" style="width: 3%;">No</th>
+                <th rowspan="3" style="width: 8%;">NISN</th>
+                <th rowspan="3" style="width: 23%;">Nama Lengkap</th>
+                <th rowspan="3" style="width: 3%;">L/P</th>
+                <th colspan="30">Bulan / Minggu</th>
+                <th colspan="3" rowspan="2">Ket</th>
             </tr>
             <tr>
-                @for($i = 1; $i <= 31; $i++)
-                    <th style="width: 1.79%;">{{ $i }}</th>
+                @for($m = 1; $m <= 6; $m++)
+                    <th colspan="5" style="font-weight: normal; font-size: 8px;">Bulan: .........</th>
                 @endfor
-                <th style="width: 1.79%;">S</th>
-                <th style="width: 1.79%;">I</th>
-                <th style="width: 1.79%;">A</th>
+            </tr>
+            <tr>
+                @for($m = 1; $m <= 6; $m++)
+                    @for($w = 1; $w <= 5; $w++)
+                        <th style="width: 1.9%;">{{ $w }}</th>
+                    @endfor
+                @endfor
+                <th style="width: 1.9%;">S</th>
+                <th style="width: 1.9%;">I</th>
+                <th style="width: 1.9%;">A</th>
             </tr>
         </thead>
         <tbody>
@@ -115,7 +122,7 @@
                     <td class="text-left nama-siswa">{{ $item->siswa->nama_lengkap }}</td>
                     <td class="text-center">{{ $item->siswa->jenis_kelamin == 'Laki-Laki' || $item->siswa->jenis_kelamin == 'Laki-laki' ? 'L' : 'P' }}</td>
                     
-                    @for($i = 1; $i <= 31; $i++)
+                    @for($i = 1; $i <= 30; $i++)
                         <td></td>
                     @endfor
                     
@@ -123,7 +130,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="38" class="text-center" style="padding: 10px;">Belum ada data anggota.</td>
+                    <td colspan="37" class="text-center" style="padding: 10px;">Belum ada data anggota.</td>
                 </tr>
             @endforelse
         </tbody>
