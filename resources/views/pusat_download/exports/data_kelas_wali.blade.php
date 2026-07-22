@@ -105,7 +105,7 @@
             <tr>
                 @for($m = 1; $m <= 6; $m++)
                     @for($w = 1; $w <= 5; $w++)
-                        <th style="width: 1.9%;">{{ $w }}</th>
+                        <th style="width: 1.9%;">...</th>
                     @endfor
                 @endfor
                 <th style="width: 1.9%;">S</th>
