@@ -56,7 +56,7 @@
                 <h2 style="margin: 2px 0;">DAFTAR HADIR SISWA KELAS {{ $kelas->nama_kelas }}</h2>
                 <h3 style="margin: 2px 0;">{{ $nama_sekolah }}</h3>
                 <p style="margin: 2px 0; font-size: 10px;">Tahun Ajaran {{ $tahun_ajaran ?? '-' }}</p>
-                <p style="margin: 2px 0; font-size: 10px;">Semester {{ $semester ?? '-' }}</p>
+                <p style="margin: 2px 0; font-size: 10px;">Semester {{ $semester->nama . ' ' . $semester->semester_ke ?? '-' }}</p>
             </td>
             <td style="width: 15%; text-align: right; vertical-align: middle;">
                 @if($logoSekolah)
