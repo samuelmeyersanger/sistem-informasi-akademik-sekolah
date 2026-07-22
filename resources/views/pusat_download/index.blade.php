@@ -111,15 +111,34 @@
                             
                             <form action="{{ route('pusat_download.absensi') }}" method="GET" target="_blank" class="space-y-4">
                                 @csrf
-                                <select name="kelas_id" required class="w-full text-sm font-bold text-slate-700 rounded-xl border-slate-200 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 bg-slate-50 py-3 shadow-inner">
+                                <select name="kelas_id" required class="w-full text-sm font-bold text-slate-700 rounded-xl border-slate-200 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 bg-slate-50 py-3 shadow-inner mb-4">
                                     <option value="">-- Pilih Ruang Kelas --</option>
                                     @foreach($daftarKelas as $kelas)
                                         <option value="{{ $kelas->id }}">{{ $kelas->tingkat }} - {{ $kelas->nama_kelas }}</option>
                                     @endforeach
                                 </select>
-                                <div class="flex gap-2">
-                                    <button type="submit" name="format" value="excel" class="flex-1 px-3 py-3 bg-slate-800 hover:bg-slate-900 text-white text-[10px] font-black uppercase tracking-wider rounded-xl transition-colors shadow-md">📊 Excel</button>
-                                    <button type="submit" name="format" value="pdf" class="flex-1 px-3 py-3 bg-slate-800 hover:bg-slate-900 text-white text-[10px] font-black uppercase tracking-wider rounded-xl transition-colors shadow-md">📄 PDF</button>
+                                <div class="space-y-3">
+                                    <div>
+                                        <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span> Semua Siswa</div>
+                                        <div class="flex gap-2">
+                                            <button type="submit" formaction="{{ route('pusat_download.absensi') }}" name="format" value="excel" class="flex-1 px-3 py-2 bg-slate-800 hover:bg-slate-900 text-white text-[10px] font-black uppercase tracking-wider rounded-xl transition-colors shadow-md text-center cursor-pointer">📊 Excel</button>
+                                            <button type="submit" formaction="{{ route('pusat_download.absensi') }}" name="format" value="pdf" class="flex-1 px-3 py-2 bg-slate-800 hover:bg-slate-900 text-white text-[10px] font-black uppercase tracking-wider rounded-xl transition-colors shadow-md text-center cursor-pointer">📄 PDF</button>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="text-[10px] font-bold text-indigo-500 uppercase tracking-widest mb-1.5 flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-indigo-400"></span> Laki-laki Saja</div>
+                                        <div class="flex gap-2">
+                                            <button type="submit" formaction="{{ route('pusat_download.absensi-lakilaki') }}" name="format" value="excel" class="flex-1 px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-black uppercase tracking-wider rounded-xl transition-colors shadow-md text-center cursor-pointer">📊 Excel</button>
+                                            <button type="submit" formaction="{{ route('pusat_download.absensi-lakilaki') }}" name="format" value="pdf" class="flex-1 px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-black uppercase tracking-wider rounded-xl transition-colors shadow-md text-center cursor-pointer">📄 PDF</button>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="text-[10px] font-bold text-pink-500 uppercase tracking-widest mb-1.5 flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-pink-400"></span> Perempuan Saja</div>
+                                        <div class="flex gap-2">
+                                            <button type="submit" formaction="{{ route('pusat_download.absensi-perempuan') }}" name="format" value="excel" class="flex-1 px-3 py-2 bg-pink-500 hover:bg-pink-600 text-white text-[10px] font-black uppercase tracking-wider rounded-xl transition-colors shadow-md text-center cursor-pointer">📊 Excel</button>
+                                            <button type="submit" formaction="{{ route('pusat_download.absensi-perempuan') }}" name="format" value="pdf" class="flex-1 px-3 py-2 bg-pink-500 hover:bg-pink-600 text-white text-[10px] font-black uppercase tracking-wider rounded-xl transition-colors shadow-md text-center cursor-pointer">📄 PDF</button>
+                                        </div>
+                                    </div>
                                 </div>
                             </form>
                         </div>

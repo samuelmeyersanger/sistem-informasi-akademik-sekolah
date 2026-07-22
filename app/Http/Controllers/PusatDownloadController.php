@@ -67,6 +67,94 @@ class PusatDownloadController extends Controller
     }
 
     // =========================================================================
+    // FITUR 1A: DOWNLOAD ABSENSI KELAS REGULER (PEREMPUAN ONLY)
+    // =========================================================================
+    public function downloadAbsensiPerempuan(Request $request)
+    {
+        $request->validate([
+            'kelas_id' => 'required|exists:kelas,id',
+            'format' => 'required|in:excel,pdf'
+        ]);
+        $kelas = Kelas::with('waliKelas')->findOrFail($request->kelas_id);
+        $semesterAktif = Semester::with('tahunAjaran')->where('is_aktif', true)->first();
+        
+        $anggota = AnggotaKelas::with('siswa')
+            ->whereHas('siswa', function($q) {
+                $q->whereIn('jenis_kelamin', ['Perempuan', 'P']);
+            })
+            ->where('kelas_id', $kelas->id)
+            ->where('semester_id', $semesterAktif->id ?? null)
+            ->orderBy('id', 'asc') 
+            ->get();
+            
+        $profil = null; 
+        $nama_sekolah = $profil ? $profil->nama_sekolah : 'SMPN 4 CIBITUNG'; 
+        
+        $tahun_ajaran = $semesterAktif && $semesterAktif->tahunAjaran 
+                        ? $semesterAktif->tahunAjaran->nama_tahun_ajaran 
+                        : 'Belum Diset';
+        $data = [
+            'kelas' => $kelas,
+            'anggota' => $anggota,
+            'nama_sekolah' => $nama_sekolah,
+            'tahun_ajaran' => $tahun_ajaran,
+            'laki_laki' => 0,
+            'perempuan' => $anggota->count(),
+        ];
+        
+        $namaFile = "Daftar_Hadir_Perempuan_Kelas_" . str_replace(' ', '_', $kelas->nama_kelas);
+        if ($request->format === 'excel') {
+            return Excel::download(new AbsensiKelasExport($data), $namaFile . '.xlsx');
+        }
+        
+        return view('pusat_download.exports.absensi', $data);
+    }
+
+    // =========================================================================
+    // FITUR 1B: DOWNLOAD ABSENSI KELAS REGULER (LAKI-LAKI ONLY)
+    // =========================================================================
+    public function downloadAbsensiLakilaki(Request $request)
+    {
+        $request->validate([
+            'kelas_id' => 'required|exists:kelas,id',
+            'format' => 'required|in:excel,pdf'
+        ]);
+        $kelas = Kelas::with('waliKelas')->findOrFail($request->kelas_id);
+        $semesterAktif = Semester::with('tahunAjaran')->where('is_aktif', true)->first();
+        
+        $anggota = AnggotaKelas::with('siswa')
+            ->whereHas('siswa', function($q) {
+                $q->whereIn('jenis_kelamin', ['Laki-Laki', 'Laki-laki', 'L']);
+            })
+            ->where('kelas_id', $kelas->id)
+            ->where('semester_id', $semesterAktif->id ?? null)
+            ->orderBy('id', 'asc') 
+            ->get();
+            
+        $profil = null; 
+        $nama_sekolah = $profil ? $profil->nama_sekolah : 'SMPN 4 CIBITUNG'; 
+        
+        $tahun_ajaran = $semesterAktif && $semesterAktif->tahunAjaran 
+                        ? $semesterAktif->tahunAjaran->nama_tahun_ajaran 
+                        : 'Belum Diset';
+        $data = [
+            'kelas' => $kelas,
+            'anggota' => $anggota,
+            'nama_sekolah' => $nama_sekolah,
+            'tahun_ajaran' => $tahun_ajaran,
+            'laki_laki' => $anggota->count(),
+            'perempuan' => 0,
+        ];
+        
+        $namaFile = "Daftar_Hadir_LakiLaki_Kelas_" . str_replace(' ', '_', $kelas->nama_kelas);
+        if ($request->format === 'excel') {
+            return Excel::download(new AbsensiKelasExport($data), $namaFile . '.xlsx');
+        }
+        
+        return view('pusat_download.exports.absensi', $data);
+    }
+
+    // =========================================================================
     // FITUR 2: DOWNLOAD JADWAL PELAJARAN PERKELAS
     // =========================================================================
         public function downloadJadwal(Request $request)

@@ -579,6 +579,8 @@ Route::middleware(['auth', CheckApproval::class])->group(function () {
     Route::prefix('pusat-download')->name('pusat_download.')->group(function () {
         Route::get('/', [\App\Http\Controllers\PusatDownloadController::class, 'index'])->name('index');
         Route::get('/absensi', [\App\Http\Controllers\PusatDownloadController::class, 'downloadAbsensi'])->name('absensi');
+        Route::get('/absensi-perempuan', [\App\Http\Controllers\PusatDownloadController::class, 'downloadAbsensiPerempuan'])->name('absensi-perempuan');
+        Route::get('/absensi-lakilaki', [\App\Http\Controllers\PusatDownloadController::class, 'downloadAbsensiLakilaki'])->name('absensi-lakilaki');
         Route::get('/jadwal', [\App\Http\Controllers\PusatDownloadController::class, 'downloadJadwal'])->name('jadwal');
         Route::get('/cetak-absensi', [\App\Http\Controllers\PusatDownloadController::class, 'cetakAbsensiEkskul'])->name('cetak_absensi_ekskul');
         Route::get('/kelas-wali', [\App\Http\Controllers\PusatDownloadController::class, 'downloadDataKelasWali'])->name('data_kelas_wali');
