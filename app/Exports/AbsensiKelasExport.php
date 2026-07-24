@@ -24,20 +24,21 @@ class AbsensiKelasExport implements FromView, WithColumnWidths, WithStyles
         return [
             'A' => 4,   // No
             'B' => 14,  // NISN
-            'C' => 32,  // Nama
-            'D' => 5,   // L/P
-            'E' => 4, 'F' => 4, 'G' => 4, 'H' => 4, 'I' => 4,
-            'J' => 4, 'K' => 4, 'L' => 4, 'M' => 4, 'N' => 4,
-            'O' => 4, 'P' => 4, 'Q' => 4, 'R' => 4, 'S' => 4,
-            'T' => 4, 'U' => 4, 'V' => 4, 'W' => 4, 'X' => 4,
-            'Y' => 4, 'Z' => 4, 'AA' => 4,
+            'C' => 28,  // Nama
+            'D' => 4,   // L/P
+            'E' => 6,   // Gaya Belajar
+            'F' => 6, 'G' => 6, 'H' => 6, 'I' => 6, 'J' => 6, // 16 Kolom Kosong (sedikit lebih lebar)
+            'K' => 6, 'L' => 6, 'M' => 6, 'N' => 6, 'O' => 6,
+            'P' => 6, 'Q' => 6, 'R' => 6, 'S' => 6, 'T' => 6,
+            'U' => 6, 
+            'V' => 4, 'W' => 4, 'X' => 4, // Ket S, I, A
         ];
     }
     public function styles(Worksheet $sheet)
     {
-        // Ratakan ke tengah secara vertikal & Aktifkan Wrap Text (Turun ke bawah jika kepanjangan)
-        $sheet->getStyle('A1:AA100')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
-        $sheet->getStyle('A1:AA100')->getAlignment()->setWrapText(true);
+        // Ratakan ke tengah secara vertikal & Aktifkan Wrap Text
+        $sheet->getStyle('A1:X100')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+        $sheet->getStyle('A1:X100')->getAlignment()->setWrapText(true);
         $jumlahSiswa = count($this->data['anggota']);
         $barisTerakhir = $jumlahSiswa > 0 ? 6 + $jumlahSiswa : 7;
         // --- ATUR TINGGI BARIS AGAR PROPOSIONAL SEPERTI KERTAS ABSEN ---
@@ -63,17 +64,17 @@ class AbsensiKelasExport implements FromView, WithColumnWidths, WithStyles
             ],
         ];
         // Border Tabel Data
-        $sheet->getStyle('A5:AA' . $barisTerakhir)->applyFromArray($styleBorder);
+        $sheet->getStyle('A5:X' . $barisTerakhir)->applyFromArray($styleBorder);
         // Styling Kop Atas (Wali Kelas & Kelas & Tahun Ajaran)
         $sheet->getStyle('A2:F3')->applyFromArray($styleBorder);
         $sheet->getStyle('A2:F3')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFF2CC');
         $sheet->getStyle('J1:N3')->applyFromArray($styleBorder);
         $sheet->getStyle('J1:N3')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFF2CC');
-        $sheet->getStyle('P3:AA3')->applyFromArray($styleBorder);
-        $sheet->getStyle('P3:AA3')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFF2CC');
+        $sheet->getStyle('P3:X3')->applyFromArray($styleBorder);
+        $sheet->getStyle('P3:X3')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFF2CC');
         // Styling Header Tabel (Abu-abu & Tebal)
-        $sheet->getStyle('A5:AA6')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFF2F2F2');
-        $sheet->getStyle('A5:AA6')->getFont()->setBold(true);
+        $sheet->getStyle('A5:X6')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFF2F2F2');
+        $sheet->getStyle('A5:X6')->getFont()->setBold(true);
         // Rata Kiri untuk Nama Siswa
         if ($jumlahSiswa > 0) {
             $sheet->getStyle('C7:C' . $barisTerakhir)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);

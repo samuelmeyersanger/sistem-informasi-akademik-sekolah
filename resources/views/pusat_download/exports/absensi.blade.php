@@ -85,14 +85,15 @@
             <tr>
                 <th rowspan="2" style="width: 2%;">No</th>
                 <th rowspan="2" style="width: 7%;">NISN</th>
-                <th rowspan="2" style="width: 21%;">Nama Lengkap</th>
+                <th rowspan="2" style="width: 17%;">Nama Lengkap</th>
                 <th rowspan="2" style="width: 2%;">L/P</th>
-                <th colspan="31">Tanggal Pertemuan</th>
+                <th rowspan="2" style="width: 4%;">Gaya<br>Belajar</th>
+                <th colspan="16">Tanggal dan Bulan</th>
                 <th colspan="3">Ket</th>
             </tr>
             <tr>
-                @for($i = 1; $i <= 31; $i++)
-                    <th style="width: 2%;">{{ $i }}</th>
+                @for($i = 1; $i <= 16; $i++)
+                    <th style="width: 3.7%;"></th>
                 @endfor
                 <th style="width: 2%;">S</th>
                 <th style="width: 2%;">I</th>
@@ -107,8 +108,17 @@
                     <td class="text-center">{{ $item->siswa->nisn ?? '-' }}</td>
                     <td class="text-left nama-siswa">{{ $item->siswa->nama_lengkap }}</td>
                     <td class="text-center">{{ $item->siswa->jenis_kelamin == 'Laki-Laki' || $item->siswa->jenis_kelamin == 'Laki-laki' ? 'L' : 'P' }}</td>
+                    <td class="text-center" style="font-size: 7px; font-weight: bold;">
+                        @php 
+                            $gb = $item->siswa->hasilGayaBelajar->gaya_dominan ?? '-';
+                            if ($gb != '-') {
+                                $gb = strtoupper(substr($gb, 0, 1));
+                            }
+                        @endphp
+                        {{ $gb }}
+                    </td>
                     
-                    @for($i = 1; $i <= 31; $i++)
+                    @for($i = 1; $i <= 16; $i++)
                         <td></td>
                     @endfor
                     
@@ -116,7 +126,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="38" class="text-center" style="padding: 10px;">Belum ada data anggota.</td>
+                    <td colspan="24" class="text-center" style="padding: 10px;">Belum ada data anggota.</td>
                 </tr>
             @endforelse
         </tbody>
