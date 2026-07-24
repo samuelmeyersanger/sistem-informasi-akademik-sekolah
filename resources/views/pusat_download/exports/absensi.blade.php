@@ -69,14 +69,14 @@
         <tr>
             <td width="15%">Mata Pelajaran</td>
             <td width="35%">: .......................................</td>
-            <td width="15%">Bulan</td>
-            <td width="35%">: .......................................</td>
+            <td width="15%">Wali Kelas</td>
+            <td width="35%">: {{ $kelas->waliKelas ? $kelas->waliKelas->nama_lengkap : '-' }}</td>
         </tr>
         <tr>
             <td>Guru Pengampu</td>
             <td>: .......................................</td>
-            <td>Wali Kelas</td>
-            <td>: {{ $kelas->waliKelas ? $kelas->waliKelas->nama_lengkap : '-' }}</td>
+            <td></td>
+            <td></td>
         </tr>
     </table>
 
