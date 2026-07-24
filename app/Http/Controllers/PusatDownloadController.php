@@ -398,4 +398,32 @@ class PusatDownloadController extends Controller
         ];
         return view('pusat_download.exports.hasil_survey_skm', $data);
     }
+
+    public function downloadDataSiswaLengkap(Request $request)
+    {
+        $request->validate(['format' => 'required|in:excel,pdf']);
+        
+        $siswa = \App\Models\Siswa::with(['kelas', 'wali'])
+            ->where('status_siswa', 'Aktif')
+            ->orderBy('kelas_id', 'asc')
+            ->orderBy('nama_lengkap', 'asc')
+            ->get();
+            
+        $semesterAktif = \App\Models\Semester::with('tahunAjaran')->where('is_aktif', true)->first();
+        $tahun_ajaran = $semesterAktif && $semesterAktif->tahunAjaran 
+                        ? $semesterAktif->tahunAjaran->nama_tahun_ajaran 
+                        : 'Belum Diset';
+                        
+        $data = [
+            'nama_sekolah' => 'SMPN 4 CIBITUNG',
+            'tahun_ajaran' => $tahun_ajaran,
+            'siswa' => $siswa,
+        ];
+        
+        if ($request->format === 'excel') {
+            return Excel::download(new \App\Exports\DataSiswaLengkapExport($data), 'Master_Data_Siswa_Lengkap.xlsx');
+        }
+        
+        return view('pusat_download.exports.data_siswa_lengkap', $data);
+    }
 }

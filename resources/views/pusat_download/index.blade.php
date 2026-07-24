@@ -41,7 +41,22 @@
                     </div>
                 </div>
                 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    {{-- Card: Data Siswa Lengkap --}}
+                    <div class="bg-white rounded-[2rem] p-6 shadow-xl shadow-slate-200/40 border border-slate-100 flex flex-col justify-between hover:-translate-y-1 hover:shadow-2xl hover:shadow-indigo-200/40 transition-all duration-300 group relative overflow-hidden">
+                        <div class="absolute right-0 top-0 w-32 h-32 bg-indigo-50 rounded-full blur-3xl opacity-60 -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+                        <div>
+                            <div class="w-14 h-14 rounded-[1rem] bg-gradient-to-br from-indigo-100 to-indigo-50 flex items-center justify-center text-3xl mb-5 shadow-sm border border-indigo-100 group-hover:scale-110 transition-transform">👥</div>
+                            <h4 class="font-black text-slate-900 text-lg tracking-tight mb-2">Master Data Siswa</h4>
+                            <p class="text-xs font-medium text-slate-500 leading-relaxed h-12">Unduh seluruh data profil siswa aktif secara komprehensif tanpa batasan kelas.</p>
+                        </div>
+                        <form action="{{ route('pusat_download.data_siswa_lengkap') }}" method="GET" target="_blank" class="flex gap-3 mt-6 pt-6 border-t border-slate-100">
+                            @csrf
+                            <button type="submit" name="format" value="excel" class="flex-1 px-4 py-3 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-[11px] font-black uppercase tracking-wider rounded-xl border border-emerald-200 transition-colors shadow-sm text-center">📊 Excel</button>
+                            <button type="submit" name="format" value="pdf" class="flex-1 px-4 py-3 bg-rose-50 hover:bg-rose-100 text-rose-700 text-[11px] font-black uppercase tracking-wider rounded-xl border border-rose-200 transition-colors shadow-sm text-center">📄 PDF</button>
+                        </form>
+                    </div>
+
                     {{-- Card: Kode Guru --}}
                     <div class="bg-white rounded-[2rem] p-6 shadow-xl shadow-slate-200/40 border border-slate-100 flex flex-col justify-between hover:-translate-y-1 hover:shadow-2xl hover:shadow-indigo-200/40 transition-all duration-300 group relative overflow-hidden">
                         <div class="absolute right-0 top-0 w-32 h-32 bg-sky-50 rounded-full blur-3xl opacity-60 -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>

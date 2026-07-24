@@ -582,6 +582,7 @@ Route::middleware(['auth', CheckApproval::class])->group(function () {
         Route::get('/absensi-perempuan', [\App\Http\Controllers\PusatDownloadController::class, 'downloadAbsensiPerempuan'])->name('absensi-perempuan');
         Route::get('/absensi-lakilaki', [\App\Http\Controllers\PusatDownloadController::class, 'downloadAbsensiLakilaki'])->name('absensi-lakilaki');
         Route::get('/jadwal', [\App\Http\Controllers\PusatDownloadController::class, 'downloadJadwal'])->name('jadwal');
+        Route::get('/data-siswa-lengkap', [\App\Http\Controllers\PusatDownloadController::class, 'downloadDataSiswaLengkap'])->name('data_siswa_lengkap');
         Route::get('/cetak-absensi', [\App\Http\Controllers\PusatDownloadController::class, 'cetakAbsensiEkskul'])->name('cetak_absensi_ekskul');
         Route::get('/kelas-wali', [\App\Http\Controllers\PusatDownloadController::class, 'downloadDataKelasWali'])->name('data_kelas_wali');
         Route::get('/kode-guru', [\App\Http\Controllers\PusatDownloadController::class, 'downloadKodeGuru'])->name('kode_guru');
