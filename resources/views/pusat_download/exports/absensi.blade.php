@@ -133,6 +133,10 @@
     </table>
 
     <div class="footer clearfix">
+        <div style="float: left; width: 50%; font-size: 9px; margin-top: 5px;">
+            <p style="margin: 2px 0;"><strong>Keterangan Gaya Belajar:</strong></p>
+            <p style="margin: 2px 0;"><strong>V</strong> untuk Visual, <strong>A</strong> untuk Auditory, dan <strong>K</strong> untuk Kinesthetic</p>
+        </div>
         <div class="ttd">
             <p>Cibitung, .................................. {{ date('Y') }}</p>
             <p>Guru Pengampu,</p>
