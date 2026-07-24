@@ -519,6 +519,24 @@ sias-akademik/
 
 ---
 
+## 🔗 Integrasi Ekosistem (SSO & E-Antrian)
+
+SIAS dirancang bukan hanya sebagai aplikasi mandiri, tetapi juga sebagai **Pusat Identitas (SSO Provider)** untuk aplikasi ekosistem sekolah lainnya, salah satunya adalah **Aplikasi E-Antrian**.
+
+### Fungsi SIAS dalam Ekosistem:
+1. **Single Sign-On (SSO):** Petugas atau Admin e-Antrian tidak perlu mendaftar akun baru. Mereka dapat login ke e-Antrian menggunakan kredensial (Email & Password) dari SIAS.
+2. **Sinkronisasi Sesi Chat:** Fitur *Ruang Obrolan* pada e-Antrian terhubung langsung dengan modul Chat internal SIAS.
+3. **Pusat Data Pegawai:** Semua manajemen data petugas dan loket terpusat di dalam database SIAS.
+
+### Konfigurasi Penting (Bagi Pengembang):
+Untuk memastikan aplikasi eksternal (seperti e-Antrian) dapat terhubung dengan SIAS, pastikan SIAS dapat diakses melalui IP Publik atau Domain yang sama. Pada file `.env` aplikasi eksternal, biasanya diperlukan URL Publik SIAS, contoh:
+```env
+SIAS_PUBLIC_URL=http://<IP_ADDRESS_SIAS>:8080
+SIAS_API_URL=http://<IP_INTERNAL_SIAS_ATAU_DOCKER_HOST>:8080
+```
+
+---
+
 ## 🔧 Perintah Berguna
 
 ### Development
